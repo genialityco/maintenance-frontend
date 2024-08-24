@@ -1,0 +1,31 @@
+/* Eliminar padding y margen del body */
+body, #root {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Opcional: Asegurar que todos los elementos respeten el box-sizing */
+  *,
+  *::before,
+  *::after {
+    box-sizing: inherit;
+  }
+
+  @media (min-width: $mantine-breakpoint-xs) {
+    .burger-menu {
+      display: none;
+    }
+
+    .menu-links {
+      display: flex !important;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .social-icons {
+      justify-content: flex-start;
+      margin-top: 0;
+    }
+  }
+  

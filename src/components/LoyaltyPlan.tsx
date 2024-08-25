@@ -1,28 +1,25 @@
-import { useState } from 'react';
-import { Box, Group, Text, Progress, Button } from '@mantine/core';
+import React from 'react';
+import { Box, Group, Text, Progress } from '@mantine/core';
 
-const LoyaltyPlan = () => {
-  const [servicesTaken, setServicesTaken] = useState(3);
-  const totalServices = 5;
+interface LoyaltyPlanProps {
+  servicesTaken: number;
+  totalServices: number;
+}
 
-  const handleService = () => {
-    if (servicesTaken < totalServices) {
-      setServicesTaken((prev) => prev + 1);
-    }
-  };
-
+const LoyaltyPlan: React.FC<LoyaltyPlanProps> = ({ servicesTaken, totalServices }) => {
   return (
     <Box
       bg="#1A202C"
       p="xl"
       m="auto"
+      mt="sm"
       style={{
         borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
         color: '#E2E8F0',
       }}
     >
-      <Group >
+      <Group>
         <Text size="xl" fw={700}>
           Plan de Fidelidad
         </Text>
@@ -40,22 +37,13 @@ const LoyaltyPlan = () => {
 
       {servicesTaken === totalServices ? (
         <Text mt="md" color="green" fw={500}>
-          ¡Felicidades! Has alcanzado 5 servicios. Recibe tu descuento o regalo especial.
+          ¡Felicidades! Has alcanzado {totalServices} servicios. Recibe tu descuento o regalo especial.
         </Text>
       ) : (
         <Text mt="md" color="dimmed">
           Completa {totalServices - servicesTaken} servicio(s) más para obtener un beneficio especial.
         </Text>
       )}
-
-      <Button
-        mt="lg"
-        color="blue"
-        onClick={handleService}
-        disabled={servicesTaken === totalServices}
-      >
-        Registrar Servicio
-      </Button>
     </Box>
   );
 };

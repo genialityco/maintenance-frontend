@@ -1,10 +1,12 @@
 import LoyaltyPlan from "../components/LoyaltyPlan";
+import PlanViewer from "../components/PlanViewer";
 import ServicesAndPrices from "../components/ServicesAndPrices";
+import UserManagement from "../components/UserManagement";
 
 const generalRoutes = [
   {
     path: "/",
-    component: LoyaltyPlan,
+    component: PlanViewer,
     MediaMetadata: {
       title: "Plan de fidelidad",
       description: "Sección plan fidelidad.",
@@ -26,6 +28,15 @@ const generalRoutes = [
     MediaMetadata: {
       title: "Servicios y Precios",
       description: "Consulta nuestros servicios y precios en Galaxia Glamour.",
+      image: "/galaxia_glamour.png",
+    },
+  },
+  {
+    path: "/admin",
+    component: UserManagement,
+    MediaMetadata: {
+      title: "Administrar clientes",
+      description: "Administrar clientes en Galaxia Glamour.",
       image: "/galaxia_glamour.png",
     },
   },

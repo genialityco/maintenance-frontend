@@ -12,7 +12,7 @@ import {
   Badge,
   Button,
 } from "@mantine/core";
-import { User as UserType } from '../services/userService.tsx'
+import { User as UserType } from "../services/userService.tsx";
 
 interface PlanInfoProps {
   user: UserType;
@@ -62,12 +62,11 @@ const PlanInfo: React.FC<PlanInfoProps> = ({ user, onLogout }) => {
               <Badge color="teal" variant="light" size="lg">
                 Servicios Tomados: {user.servicesTaken}
               </Badge>
-              {user.servicesTaken && (
-                <LoyaltyPlan
-                  servicesTaken={user.servicesTaken}
-                  totalServices={7}
-                />
-              )}
+
+              <LoyaltyPlan
+                servicesTaken={user?.servicesTaken || 0}
+                totalServices={7}
+              />
             </Card.Section>
 
             <Divider my="sm" variant="dashed" />

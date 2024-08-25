@@ -1,36 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import SearchUser from './SearchUser';
-import PlanInfo from './PlanInfo';
-import { Box } from '@mantine/core';
-import { getUserByPhoneNumber } from '../services/userService.tsx'; // Asegúrate de ajustar la importación según tu estructura de archivos
-import { User as UserType } from '../services/userService.tsx'
+import React, { useState, useEffect } from "react";
+import SearchUser from "./SearchUser";
+import PlanInfo from "./PlanInfo";
+import { Box } from "@mantine/core";
+import { getUserByPhoneNumber } from "../services/userService.tsx"; // Asegúrate de ajustar la importación según tu estructura de archivos
+import { User as UserType } from "../services/userService.tsx";
 
 const PlanViewer: React.FC = () => {
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [setError] = useState<string>('');
+  // const [error, setError] = useState<string>('');
 
   // Efecto para verificar si hay un usuario guardado en el localStorage y actualizar su información
   useEffect(() => {
     const fetchUpdatedUser = async (phoneNumber: string) => {
       try {
-        const updatedUser = await getUserByPhoneNumber(phoneNumber) as UserType;
+        const updatedUser = (await getUserByPhoneNumber(
+          phoneNumber
+        )) as UserType;
         if (updatedUser) {
-          setUser(updatedUser);
-          localStorage.setItem('savedUser', JSON.stringify(updatedUser));
+          const validUser = {
+            ...updatedUser,
+            servicesTaken: updatedUser.servicesTaken || 0,
+            referralsMade: updatedUser.referralsMade || 0,
+          };
+          setUser(validUser);
+          localStorage.setItem("savedUser", JSON.stringify(validUser));
         }
       } catch (err) {
-        setError('Hubo un error al actualizar la información del usuario.');
-        console.error('Error fetching updated user:', err);
+        console.error("Error fetching updated user:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    const savedUser = localStorage.getItem('savedUser');
+    const savedUser = localStorage.getItem("savedUser");
     if (savedUser) {
       const parsedUser: UserType = JSON.parse(savedUser);
-      setUser(parsedUser);
+      const validUser = {
+        ...parsedUser,
+        servicesTaken: parsedUser.servicesTaken || 0,
+        referralsMade: parsedUser.referralsMade || 0,
+      };
+      setUser(validUser);
       fetchUpdatedUser(parsedUser.phoneNumber);
     } else {
       setLoading(false);
@@ -38,21 +49,26 @@ const PlanViewer: React.FC = () => {
   }, []);
 
   const handleUserFound = (user: UserType) => {
-    setUser(user);
-    localStorage.setItem('savedUser', JSON.stringify(user));
+    const validUser = {
+      ...user,
+      servicesTaken: user.servicesTaken || 0,
+      referralsMade: user.referralsMade || 0,
+    };
+    setUser(validUser);
+    localStorage.setItem("savedUser", JSON.stringify(validUser));
   };
 
   const handleLogout = () => {
     setUser(null);
-    localStorage.clear()
-  }
+    localStorage.clear();
+  };
 
   if (loading) {
     return <div>Cargando...</div>;
   }
 
   return (
-    <Box style={{ margin: 'auto' }}>
+    <Box style={{ margin: "auto" }}>
       {!user ? (
         <SearchUser onUserFound={handleUserFound} />
       ) : (

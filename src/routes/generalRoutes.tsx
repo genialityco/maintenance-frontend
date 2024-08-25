@@ -13,15 +13,15 @@ const generalRoutes = [
       image: "/galaxia_glamour.png",
     },
   },
-  {
-    path: "/plan-fidelidad",
-    component: LoyaltyPlan,
-    MediaMetadata: {
-      title: "Plan de fidelidad",
-      description: "Sección plan fidelidad.",
-      image: "/galaxia_glamour.png",
-    },
-  },
+  // {
+  //   path: "/plan-fidelidad",
+  //   component: LoyaltyPlan,
+  //   MediaMetadata: {
+  //     title: "Plan de fidelidad",
+  //     description: "Sección plan fidelidad.",
+  //     image: "/galaxia_glamour.png",
+  //   },
+  // },
   {
     path: "/servicios-precios",
     component: ServicesAndPrices,

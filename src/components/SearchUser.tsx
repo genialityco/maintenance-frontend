@@ -1,18 +1,9 @@
 import { useState } from 'react';
 import { TextInput, Button, Checkbox, Box, Text } from '@mantine/core';
 import { getUserByPhoneNumber } from '../services/userService.tsx';
-
-interface User {
-  id: string;
-  name: string;
-  phoneNumber: string;
-  email?: string;
-  servicesTaken: number;
-  referralsMade: number;
-}
-
+import { User as UserType } from '../services/userService.tsx'
 interface SearchUserProps {
-  onUserFound: (user: User) => void;
+  onUserFound: (user: UserType) => void;
 }
 
 const SearchUser: React.FC<SearchUserProps> = (props) => {
@@ -23,7 +14,8 @@ const SearchUser: React.FC<SearchUserProps> = (props) => {
   const handleSearch = async () => {
     setError('');
     try {
-      const user = await getUserByPhoneNumber(phoneNumber);
+      const user = await getUserByPhoneNumber(phoneNumber) as UserType;
+
       if (user) {
         if (rememberUser) {
           localStorage.setItem('savedUser', JSON.stringify(user));

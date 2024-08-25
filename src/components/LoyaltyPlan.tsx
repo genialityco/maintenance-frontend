@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Group, Text, Progress } from '@mantine/core';
+import { Progress, Text, Box } from '@mantine/core';
 
 interface LoyaltyPlanProps {
   servicesTaken: number;
@@ -7,43 +7,26 @@ interface LoyaltyPlanProps {
 }
 
 const LoyaltyPlan: React.FC<LoyaltyPlanProps> = ({ servicesTaken, totalServices }) => {
+  const progress = (servicesTaken / totalServices) * 100;
+
   return (
     <Box
       bg="#1A202C"
-      p="xl"
-      m="auto"
-      mt="sm"
+      p="md"
+      m="md"
       style={{
         borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
         color: '#E2E8F0',
+        maxWidth: 400,
       }}
     >
-      <Group>
-        <Text size="xl" fw={700}>
-          Plan de Fidelidad
-        </Text>
-        <Text size="md" c="dimmed">
-          {servicesTaken} de {totalServices} servicios tomados
-        </Text>
-      </Group>
-
-      <Progress
-        value={(servicesTaken / totalServices) * 100}
-        size="lg"
-        mt="md"
-        color={servicesTaken === totalServices ? 'green' : 'blue'}
-      />
-
-      {servicesTaken === totalServices ? (
-        <Text mt="md" color="green" fw={500}>
-          ¡Felicidades! Has alcanzado {totalServices} servicios. Recibe tu descuento o regalo especial.
-        </Text>
-      ) : (
-        <Text mt="md" color="dimmed">
-          Completa {totalServices - servicesTaken} servicio(s) más para obtener un beneficio especial.
-        </Text>
-      )}
+      <Text size="lg" fw={700} mb="sm">
+        Plan de Lealtad
+      </Text>
+      <Text>Servicios Tomados: {servicesTaken}</Text>
+      <Text>Servicios Totales: {totalServices}</Text>
+      <Progress value={progress} mt="sm" />
     </Box>
   );
 };

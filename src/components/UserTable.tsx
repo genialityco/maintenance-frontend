@@ -1,19 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Text, Table, Button, Group } from '@mantine/core';
 import { getUsers, registerService, registerReferral } from '../services/userService';
-
-interface User {
-  _id: string;
-  name: string;
-  phoneNumber: string;
-  email?: string;
-  servicesTaken: number;
-  referralsMade: number;
-  // Otros campos relevantes para el usuario
-}
+import { User as UserType } from '../services/userService'; 
 
 const UserTable: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserType[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,6 +14,7 @@ const UserTable: React.FC = () => {
         setUsers(response);
         setError(null);
       } catch (err) {
+        console.log(err);
         setError('Error al obtener la lista de usuarios');
       }
     };
@@ -35,7 +27,7 @@ const UserTable: React.FC = () => {
       await registerService(userId);
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
-          user.id === userId
+          user._id === userId
             ? { ...user, servicesTaken: user.servicesTaken + 1 }
             : user
         )
@@ -50,7 +42,7 @@ const UserTable: React.FC = () => {
       await registerReferral(userId);
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
-          user.id === userId
+          user._id === userId
             ? {
                 ...user,
                 referralsMade: user.referralsMade + 1,
@@ -79,7 +71,7 @@ const UserTable: React.FC = () => {
         Lista de Usuarios
       </Text>
       {error && (
-        <Text mt="md" color="red">
+        <Text mt="md" c="red">
           {error}
         </Text>
       )}
@@ -96,14 +88,14 @@ const UserTable: React.FC = () => {
         </thead>
         <tbody>
           {users.map((user) => (
-            <tr key={user.id}>
+            <tr key={user._id}>
               <td>{user.name}</td>
               <td>{user.phoneNumber}</td>
               <td>{user.email || 'No proporcionado'}</td>
               <td>{user.servicesTaken}</td>
               <td>{user.referralsMade}</td>
               <td>
-                <Group spacing="xs">
+                <Group>
                   <Button
                     size="xs"
                     color="blue"

@@ -12,20 +12,10 @@ import {
   Badge,
   Button,
 } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
-
-interface User {
-  id: string;
-  name: string;
-  phoneNumber: string;
-  email?: string;
-  servicesTaken: number;
-  referralsMade: number;
-  // Otros campos relevantes para el usuario
-}
+import { User as UserType } from '../services/userService.tsx'
 
 interface PlanInfoProps {
-  user: User;
+  user: UserType;
   onLogout: () => void;
 }
 
@@ -72,10 +62,12 @@ const PlanInfo: React.FC<PlanInfoProps> = ({ user, onLogout }) => {
               <Badge color="teal" variant="light" size="lg">
                 Servicios Tomados: {user.servicesTaken}
               </Badge>
-              <LoyaltyPlan
-                servicesTaken={user.servicesTaken}
-                totalServices={7}
-              />
+              {user.servicesTaken && (
+                <LoyaltyPlan
+                  servicesTaken={user.servicesTaken}
+                  totalServices={7}
+                />
+              )}
             </Card.Section>
 
             <Divider my="sm" variant="dashed" />

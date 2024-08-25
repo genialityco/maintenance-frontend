@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { TextInput, Button, Box, Text, Notification } from '@mantine/core';
 import { createUser } from '../services/userService';
 
-interface User {
-  id: string;
-  name: string;
-  phoneNumber: string;
-  email?: string;
-  servicesTaken: number;
-  referralsMade: number;
-  // Otros campos relevantes para el usuario
-}
+// interface User {
+//   id: string;
+//   name: string;
+//   phoneNumber: string;
+//   email?: string;
+//   servicesTaken: number;
+//   referralsMade: number;
+//   // Otros campos relevantes para el usuario
+// }
 
 const CreateUser: React.FC = () => {
   const [name, setName] = useState<string>('');
@@ -19,10 +19,10 @@ const CreateUser: React.FC = () => {
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCreateUser = async () => {
+  const handleCreateUser = async (): Promise<void> => {
     try {
       const newUser = { name, phoneNumber, email };
-      const response = await createUser(newUser);
+      await createUser(newUser); 
       setResponseMessage('Usuario creado con éxito');
       setError(null);
       // Limpiar campos
@@ -30,10 +30,16 @@ const CreateUser: React.FC = () => {
       setPhoneNumber('');
       setEmail('');
     } catch (err) {
+      console.log(err);
       setError('Error al crear el usuario');
       setResponseMessage(null);
     }
   };
+
+  const handleInputChange = (setter: React.Dispatch<React.SetStateAction<string>>) => 
+    (event: ChangeEvent<HTMLInputElement>): void => {
+      setter(event.target.value);
+    };
 
   return (
     <Box
@@ -53,21 +59,21 @@ const CreateUser: React.FC = () => {
         mt="md"
         label="Nombre"
         value={name}
-        onChange={(e) => setName(e.target.value)}
+        onChange={handleInputChange(setName)}
         required
       />
       <TextInput
         mt="md"
         label="Número de Teléfono"
         value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
+        onChange={handleInputChange(setPhoneNumber)}
         required
       />
       <TextInput
         mt="md"
         label="Correo Electrónico"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={handleInputChange(setEmail)}
       />
       <Button mt="md" color="blue" onClick={handleCreateUser}>
         Crear Usuario

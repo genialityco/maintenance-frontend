@@ -1,19 +1,19 @@
 import { apiUser } from './axiosConfig.tsx'; 
 
 // Definir la estructura de un usuario
-interface User {
-  id: string;
+export interface User {
+  _id: string;
   name: string;
   phoneNumber: string;
   email?: string;
-  // Otros campos según la estructura de tu usuario
+  servicesTaken: number;
+  referralsMade: number;
 }
 
 interface CreateUserPayload {
   name: string;
   phoneNumber: string;
   email?: string;
-  password: string;
   // Otros campos necesarios para crear un usuario
 }
 

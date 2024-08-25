@@ -3,27 +3,18 @@ import SearchUser from './SearchUser';
 import PlanInfo from './PlanInfo';
 import { Box } from '@mantine/core';
 import { getUserByPhoneNumber } from '../services/userService.tsx'; // Asegúrate de ajustar la importación según tu estructura de archivos
-
-interface User {
-  id: string;
-  name: string;
-  phoneNumber: string;
-  email?: string;
-  servicesTaken: number;
-  referralsMade: number;
-  // Otros campos relevantes para el usuario
-}
+import { User as UserType } from '../services/userService.tsx'
 
 const PlanViewer: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
+  const [setError] = useState<string>('');
 
   // Efecto para verificar si hay un usuario guardado en el localStorage y actualizar su información
   useEffect(() => {
     const fetchUpdatedUser = async (phoneNumber: string) => {
       try {
-        const updatedUser = await getUserByPhoneNumber(phoneNumber);
+        const updatedUser = await getUserByPhoneNumber(phoneNumber) as UserType;
         if (updatedUser) {
           setUser(updatedUser);
           localStorage.setItem('savedUser', JSON.stringify(updatedUser));
@@ -38,7 +29,7 @@ const PlanViewer: React.FC = () => {
 
     const savedUser = localStorage.getItem('savedUser');
     if (savedUser) {
-      const parsedUser: User = JSON.parse(savedUser);
+      const parsedUser: UserType = JSON.parse(savedUser);
       setUser(parsedUser);
       fetchUpdatedUser(parsedUser.phoneNumber);
     } else {
@@ -46,7 +37,7 @@ const PlanViewer: React.FC = () => {
     }
   }, []);
 
-  const handleUserFound = (user: User) => {
+  const handleUserFound = (user: UserType) => {
     setUser(user);
     localStorage.setItem('savedUser', JSON.stringify(user));
   };

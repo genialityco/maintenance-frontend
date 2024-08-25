@@ -36,11 +36,11 @@ const ReferredPlan: React.FC<ReferredPlanProps> = ({ referralsMade, totalReferra
       />
 
       {referralsMade === totalReferrals ? (
-        <Text mt="md" color="green" fw={500}>
+        <Text mt="md" c="green" fw={500}>
           ¡Felicidades! Has alcanzado {totalReferrals} referidos. Recibe tu beneficio especial.
         </Text>
       ) : (
-        <Text mt="md" color="dimmed">
+        <Text mt="md" c="dimmed">
           Completa {totalReferrals - referralsMade} referido(s) más para obtener un beneficio especial.
         </Text>
       )}

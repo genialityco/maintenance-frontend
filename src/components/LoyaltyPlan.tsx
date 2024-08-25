@@ -15,6 +15,7 @@ const LoyaltyPlan = () => {
     <Box
       bg="#1A202C"
       p="xl"
+      m="auto"
       style={{
         borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
@@ -25,7 +26,7 @@ const LoyaltyPlan = () => {
         <Text size="xl" fw={700}>
           Plan de Fidelidad
         </Text>
-        <Text size="md" color="dimmed">
+        <Text size="md" c="dimmed">
           {servicesTaken} de {totalServices} servicios tomados
         </Text>
       </Group>

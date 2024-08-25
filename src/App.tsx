@@ -1,23 +1,32 @@
-import { Container, Flex } from "@mantine/core";
+import { Flex } from "@mantine/core";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import Header from "./layouts/Header";
 import Footer from "./layouts/Footer";
-import LoyaltyPlan from "./components/LoyaltyPlan";
 import InstallPrompt from "./components/InstallPrompt";
+import generalRoutes from "./routes/generalRoutes";
 
 function App() {
   return (
-    <Flex direction="column" mih="100vh" miw="100vw">
-      <InstallPrompt />
-      <Header />
+    <Router>
+      <Flex direction="column" mih="100vh" miw="100vw">
+        <InstallPrompt />
+        <Header />
 
-      {/* Main Content */}
-      <Container my="auto">
-        <LoyaltyPlan />
-      </Container>
+        {/* Main Content */}
+        <Routes>
+          {generalRoutes.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              element={<route.component />}
+            />
+          ))}
+        </Routes>
 
-      <Footer />
-    </Flex>
+        <Footer />
+      </Flex>
+    </Router>
   );
 }
 

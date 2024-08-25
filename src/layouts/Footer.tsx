@@ -9,11 +9,15 @@ export const Footer = () => {
       style={{
         width: "100%",
         boxShadow: "0 -2px 10px rgba(0, 0, 0, 0.2)",
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        zIndex: 1000, // Asegura que el footer esté por encima de otros elementos
       }}
     >
       <Center>
         <Text
-        size="xs"
+          size="xs"
           style={{
             color: "#E2E8F0",
             fontWeight: 500,

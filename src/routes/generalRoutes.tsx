@@ -1,4 +1,4 @@
-import LoyaltyPlan from "../components/LoyaltyPlan";
+// import LoyaltyPlan from "../components/LoyaltyPlan";
 import PlanViewer from "../components/PlanViewer";
 import ServicesAndPrices from "../components/ServicesAndPrices";
 import UserManagement from "../components/UserManagement";

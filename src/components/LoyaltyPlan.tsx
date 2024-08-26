@@ -39,11 +39,11 @@ const LoyaltyPlan: React.FC<LoyaltyPlanProps> = ({ servicesTaken, totalServices 
 
       {servicesTaken === totalServices ? (
         <Text mt="md" c="green" fw={500}>
-          ¡Felicidades! Has completado {totalServices} servicios. Recibe tu beneficio especial.
+          ¡Felicidades! Has completado {totalServices} servicios. Recibe tu siguiente servicio gratuito.
         </Text>
       ) : (
         <Text mt="md" c="dimmed">
-          Completa {totalServices - servicesTaken} servicio(s) más para obtener un beneficio especial.
+          Completa {totalServices - servicesTaken} servicio(s) más para obtener el siguiente servicio gratuito.
         </Text>
       )}
     </Box>

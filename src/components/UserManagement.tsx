@@ -7,13 +7,15 @@ const UserManagement: React.FC = () => {
   return (
     <Box
       bg="#1A202C"
-      p="xl"
+      p="lg"
       m="auto"
       style={{
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        color: '#E2E8F0',
-        maxWidth: '800px',
+        maxWidth: '1200px',
+        width: '100%',
+        padding: '1rem',
+        '@media (maxWidth: 768px)': {
+          padding: '0.5rem',
+        },
       }}
     >
       <CreateUser />

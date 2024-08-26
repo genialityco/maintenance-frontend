@@ -52,7 +52,13 @@ const Header = () => {
               Precios y servicios
             </Link>
           </Text>
+          <Text c="white" fw={600}>
+            <Link to="/" style={{ textDecoration: "none", color: "white" }}>
+              Plan de fidelidad
+            </Link>
+          </Text>
         </Group>
+
 
         <Group
           gap="md"

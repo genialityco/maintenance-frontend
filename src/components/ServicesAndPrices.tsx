@@ -46,6 +46,9 @@ const ServiceItem: React.FC<ServiceItemProps> = ({
 }) => {
   const [opened, setOpened] = useState(false);
 
+  // Verifica si el nombre es un enlace (por ejemplo, comienza con "http")
+  const isLink = price.startsWith("www");
+
   return (
     <>
       <List.Item
@@ -64,9 +67,23 @@ const ServiceItem: React.FC<ServiceItemProps> = ({
         <Text fw={500} style={{ color: "white" }}>
           {name}
         </Text>
-        <Text size="xl" variant="gradient" gradient={gradientPriceStyle}>
-          {price}
-        </Text>
+
+        {isLink ? (
+          <a
+            href={`https://${price}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "white", textDecoration: "none" }}
+          >
+            <Text size="xl" variant="gradient" gradient={gradientPriceStyle}>
+              {price}
+            </Text>
+          </a>
+        ) : (
+          <Text size="xl" variant="gradient" gradient={gradientPriceStyle}>
+            {price}
+          </Text>
+        )}
       </List.Item>
 
       <Modal
@@ -99,14 +116,32 @@ const ServiceItem: React.FC<ServiceItemProps> = ({
             {description || "Descripción no disponible"}
           </Text>
           <Divider my="sm" />
-          <Text
-            size="lg"
-            fw={700}
-            variant="gradient"
-            gradient={gradientPriceStyle}
-          >
-            Precio: {price}
-          </Text>
+          {price.startsWith("www") ? (
+            <a
+              href={`https://${price}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "white", textDecoration: "none" }}
+            >
+              <Text
+                size="lg"
+                fw={700}
+                variant="gradient"
+                gradient={gradientPriceStyle}
+              >
+                {price}
+              </Text>
+            </a>
+          ) : (
+            <Text
+              size="lg"
+              fw={700}
+              variant="gradient"
+              gradient={gradientPriceStyle}
+            >
+              {price}
+            </Text>
+          )}
         </Flex>
       </Modal>
     </>
@@ -205,6 +240,55 @@ const ServicesAndPrices: React.FC = () => {
     },
   ];
 
+  const supliesEyebrowsAndEyelashes: ServiceItemProps[] = [
+    {
+      name: "¿Eres artista de pestañas y cejas? - ¡Clic en el enlace!",
+      price: "www.zybizobazar.com",
+      description:
+        "Consulta el catálogo y realiza tu pedido en el enlace siguiente",
+      images: ["https://i.ibb.co/FhpJkcH/Presentaci-n.jpg"],
+    },
+  ];
+
+  const eyelashServicesRetouch: ServiceItemProps[] = [
+    {
+      name: "Retoque Efecto Seminatural y pestañina",
+      price: "$35.000",
+      description: "Se recomienda el retoque al tener un 80% de pestañas.",
+      images: [
+        "https://i.ibb.co/L0ZcZQk/No-Services.png",
+        "https://i.ibb.co/L0ZcZQk/No-Services.png",
+      ],
+    },
+    {
+      name: "Retoque Volumen (YY) / Efecto Hawaiano",
+      price: "$40.000",
+      description: "Se recomienda el retoque al tener un 80% de pestañas.",
+      images: [
+        "https://i.ibb.co/L0ZcZQk/No-Services.png",
+        "https://i.ibb.co/L0ZcZQk/No-Services.png",
+      ],
+    },
+    {
+      name: "Retoque Volumen (3D) / Efecto Griego",
+      price: "$60.000",
+      description: "Se recomienda el retoque al tener un 80% de pestañas.",
+      images: [
+        "https://i.ibb.co/L0ZcZQk/No-Services.png",
+        "https://i.ibb.co/L0ZcZQk/No-Services.png",
+      ],
+    },
+    {
+      name: "Retoque Volumen (6D) / Efecto Egipcio",
+      price: "$70.000",
+      description: "Se recomienda el retoque al tener un 80% de pestañas.",
+      images: [
+        "https://i.ibb.co/L0ZcZQk/No-Services.png",
+        "https://i.ibb.co/L0ZcZQk/No-Services.png",
+      ],
+    },
+  ];
+
   return (
     <Box p="xl" bg="#1A202C" color="white">
       <Title order={1} mb="lg" style={gradientTextStyle}>
@@ -221,6 +305,14 @@ const ServicesAndPrices: React.FC = () => {
           <ServiceCategory
             title="Pestañas Fibras Tecnológicas"
             services={eyelashServicesTechnological}
+          />
+          <ServiceCategory
+            title="Retoques pestañas"
+            services={eyelashServicesRetouch}
+          />
+          <ServiceCategory
+            title="Insumos para cejas y pestañas"
+            services={supliesEyebrowsAndEyelashes}
           />
         </Flex>
       </Group>

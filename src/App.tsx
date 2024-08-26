@@ -1,5 +1,6 @@
 import { Flex } from "@mantine/core";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react"
 import "./App.css";
 import Header from "./layouts/Header";
 import Footer from "./layouts/Footer";
@@ -9,6 +10,7 @@ import generalRoutes from "./routes/generalRoutes";
 function App() {
   return (
     <Router>
+      <Analytics />
       <Flex direction="column" mih="100vh" miw="100vw">
         <InstallPrompt />
         <Header />

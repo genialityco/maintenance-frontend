@@ -2,16 +2,6 @@ import React, { useState, ChangeEvent } from 'react';
 import { TextInput, Button, Box, Text, Notification } from '@mantine/core';
 import { createUser } from '../services/userService';
 
-// interface User {
-//   id: string;
-//   name: string;
-//   phoneNumber: string;
-//   email?: string;
-//   servicesTaken: number;
-//   referralsMade: number;
-//   // Otros campos relevantes para el usuario
-// }
-
 const CreateUser: React.FC = () => {
   const [name, setName] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
@@ -25,7 +15,6 @@ const CreateUser: React.FC = () => {
       await createUser(newUser); 
       setResponseMessage('Usuario creado con éxito');
       setError(null);
-      // Limpiar campos
       setName('');
       setPhoneNumber('');
       setEmail('');
@@ -50,6 +39,11 @@ const CreateUser: React.FC = () => {
         borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
         color: '#E2E8F0',
+        maxWidth: '600px',
+        width: '100%',
+        '@media (maxWidth: 768px)': {
+          padding: '1rem',
+        },
       }}
     >
       <Text size="xl" fw={700}>

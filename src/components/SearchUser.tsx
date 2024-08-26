@@ -42,7 +42,7 @@ const SearchUser: React.FC<SearchUserProps> = (props) => {
       }}
     >
       <Text size="xl" fw={700}>
-        Buscar Usuario
+        Plan de fidelidad
       </Text>
       <TextInput
         mt="md"
@@ -63,7 +63,7 @@ const SearchUser: React.FC<SearchUserProps> = (props) => {
         </Text>
       )}
       <Button mt="md" color="blue" onClick={handleSearch}>
-        Buscar
+        BUSCAR
       </Button>
     </Box>
   );

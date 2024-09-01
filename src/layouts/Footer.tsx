@@ -1,6 +1,10 @@
-import { Text, Box, Center } from "@mantine/core";
+import { Text, Box, Center, ActionIcon } from "@mantine/core";
+import { FaUserShield } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export const Footer = () => {
+  const navigate = useNavigate();
+
   return (
     <Box
       component="footer"
@@ -26,6 +30,18 @@ export const Footer = () => {
           © 2024 Galaxia Glamour. Belleza con Estilo y Elegancia.
         </Text>
       </Center>
+      <ActionIcon
+        style={{
+          position: "absolute",
+          right: "5px",
+          bottom: "5px",
+          color: "#E2E8F0",
+        }}
+        radius="lg"
+        onClick={() => navigate("/admin")}
+      >
+        <FaUserShield size="1.5rem" />
+      </ActionIcon>
     </Box>
   );
 };

@@ -1,26 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Text, Table, Button, Group } from '@mantine/core';
-import { getUsers, registerService, registerReferral } from '../services/userService';
-import { User as UserType } from '../services/userService'; 
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Text,
+  Table,
+  Group,
+  ActionIcon,
+  Flex,
+} from "@mantine/core";
+import {
+  getUsers,
+  registerService,
+  registerReferral,
+  deleteUser,
+} from "../services/userService";
+import { User as UserType } from "../services/userService";
+import { BiRefresh, BiTrash } from "react-icons/bi";
+import { CgAdd, CgUserAdd } from "react-icons/cg";
 
 const UserTable: React.FC = () => {
   const [users, setUsers] = useState<UserType[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await getUsers();
-        setUsers(response);
-        setError(null);
-      } catch (err) {
-        console.log(err);
-        setError('Error al obtener la lista de usuarios');
-      }
-    };
-
     fetchUsers();
   }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await getUsers();
+      setUsers(response);
+      setError(null);
+    } catch (err) {
+      console.log(err);
+      setError("Error al obtener la lista de usuarios");
+    }
+  };
 
   const handleRegisterService = async (userId: string) => {
     try {
@@ -33,7 +47,7 @@ const UserTable: React.FC = () => {
         )
       );
     } catch (err) {
-      console.error('Error al registrar el servicio', err);
+      console.error("Error al registrar el servicio", err);
     }
   };
 
@@ -52,7 +66,16 @@ const UserTable: React.FC = () => {
         )
       );
     } catch (err) {
-      console.error('Error al registrar el referido', err);
+      console.error("Error al registrar el referido", err);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      await deleteUser(userId);
+      await fetchUsers();
+    } catch (err) {
+      console.error("Error al registrar el referido", err);
     }
   };
 
@@ -62,65 +85,73 @@ const UserTable: React.FC = () => {
       p="xl"
       m="auto"
       style={{
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        color: '#E2E8F0',
-        maxWidth: '100%',
-        width: '100%',
-        overflowX: 'auto',
-        '@media (maxWidth: 768px)': {
-          padding: '1rem',
+        borderRadius: "8px",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+        color: "#E2E8F0",
+        maxWidth: "100%",
+        width: "100%",
+        overflowX: "auto",
+        "@media (maxWidth: 768px)": {
+          padding: "1rem",
         },
       }}
     >
-      <Text size="xl" fw={700}>
-        Lista de Usuarios
-      </Text>
+      <Group justify="center">
+        <Text size="xl" fw={700}>
+          Lista de Usuarios
+        </Text>
+        <ActionIcon radius="xl" onClick={fetchUsers}>
+          <BiRefresh />
+        </ActionIcon>
+      </Group>
       {error && (
         <Text mt="md" c="red">
           {error}
         </Text>
       )}
       <Table mt="md">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Teléfono</th>
-            <th>Email</th>
-            <th>Servicios Tomados</th>
-            <th>Referidos Hechos</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Nombre</Table.Th>
+            <Table.Th>Teléfono</Table.Th>
+            {/* <Table.Th>Email</Table.Th> */}
+            <Table.Th>Servicios Tomados</Table.Th>
+            <Table.Th>Referidos Hechos</Table.Th>
+            <Table.Th>Acciones</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {users.map((user) => (
-            <tr key={user._id}>
-              <td>{user.name}</td>
-              <td>{user.phoneNumber}</td>
-              <td>{user.email || 'No proporcionado'}</td>
-              <td>{user.servicesTaken}</td>
-              <td>{user.referralsMade}</td>
-              <td>
-                <Group>
-                  <Button
-                    size="xs"
-                    color="blue"
-                    onClick={() => handleRegisterService(user._id)}
-                  >
-                    Registrar Servicio
-                  </Button>
-                  <Button
-                    size="xs"
-                    color="green"
-                    onClick={() => handleRegisterReferral(user._id)}
-                  >
-                    Registrar Referido
-                  </Button>
+            <Table.Tr key={user._id}>
+              <Table.Td>{user.name}</Table.Td>
+              <Table.Td>{user.phoneNumber}</Table.Td>
+              {/* <Table.Td>{user.email || "No proporcionado"}</Table.Td> */}
+              <Table.Td>{user.servicesTaken}</Table.Td>
+              <Table.Td>{user.referralsMade}</Table.Td>
+              <Table.Td>
+                <Group justify="between">
+                  <Flex>
+                    <ActionIcon
+                      mr="xs"
+                      onClick={() => handleRegisterService(user._id)}
+                    >
+                      <CgAdd />
+                    </ActionIcon>
+                    <ActionIcon
+                      mr="xs"
+                      onClick={() => handleRegisterReferral(user._id)}
+                    >
+                      <CgUserAdd />
+                    </ActionIcon>
+                    <ActionIcon onClick={() => handleDeleteUser(user._id)}>
+                      <BiTrash />
+                    </ActionIcon>
+                  </Flex>
                 </Group>
-              </td>
-            </tr>
+              </Table.Td>
+            </Table.Tr>
           ))}
-        </tbody>
+        </Table.Tbody>
       </Table>
     </Box>
   );

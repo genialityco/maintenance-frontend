@@ -1,6 +1,6 @@
 import React from "react";
-import LoyaltyPlan from "./LoyaltyPlan";
-import ReferredPlan from "./ReferredPlan";
+import LoyaltyPlan from "./LoyaltyPlan.tsx";
+import ReferredPlan from "./ReferredPlan.tsx";
 import {
   Box,
   Card,
@@ -12,7 +12,7 @@ import {
   Badge,
   Button,
 } from "@mantine/core";
-import { User as UserType } from "../services/userService.tsx";
+import { User as UserType } from "../../services/userService.tsx";
 
 interface PlanInfoProps {
   user: UserType;

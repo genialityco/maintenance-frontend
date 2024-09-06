@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import SearchUser from "./SearchUser";
-import PlanInfo from "./PlanInfo";
+import SearchUser from "./SearchUser.tsx";
+import PlanInfo from "./PlanInfo.tsx";
 import { Box } from "@mantine/core";
-import { getUserByPhoneNumber } from "../services/userService.tsx"; // Asegúrate de ajustar la importación según tu estructura de archivos
-import { User as UserType } from "../services/userService.tsx";
+import { getUserByPhoneNumber } from "../../services/userService.tsx"; // Asegúrate de ajustar la importación según tu estructura de archivos
+import { User as UserType } from "../../services/userService.tsx";
 
 const PlanViewer: React.FC = () => {
   const [user, setUser] = useState<UserType | null>(null);

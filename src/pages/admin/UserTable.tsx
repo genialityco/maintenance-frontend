@@ -12,8 +12,8 @@ import {
   registerService,
   registerReferral,
   deleteUser,
-} from "../services/userService";
-import { User as UserType } from "../services/userService";
+} from "../../services/userService";
+import { User as UserType } from "../../services/userService";
 import { BiRefresh, BiTrash } from "react-icons/bi";
 import { CgAdd, CgUserAdd } from "react-icons/cg";
 

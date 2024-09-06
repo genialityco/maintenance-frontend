@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from 'react';
 import { TextInput, Button, Box, Text, Notification } from '@mantine/core';
-import { createUser } from '../services/userService';
+import { createUser } from '../../services/userService';
 
 const CreateUser: React.FC = () => {
   const [name, setName] = useState<string>('');

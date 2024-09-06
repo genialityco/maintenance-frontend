@@ -1,7 +1,7 @@
 // import LoyaltyPlan from "../components/LoyaltyPlan";
-import PlanViewer from "../components/PlanViewer";
+import PlanViewer from "../pages/loyalty/PlanViewer";
 import ServicesAndPrices from "../components/ServicesAndPrices";
-import UserManagement from "../components/UserManagement";
+import UserManagement from "../pages/admin/UserManagement";
 
 const generalRoutes = [
   {

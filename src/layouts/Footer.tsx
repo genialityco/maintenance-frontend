@@ -1,9 +1,53 @@
-import { Text, Box, Center, ActionIcon } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { Text, Box, Center, ActionIcon, Button } from "@mantine/core";
 import { FaUserShield } from "react-icons/fa";
+import { MdInstallMobile } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => void;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
 export const Footer = () => {
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener(
+      "beforeinstallprompt",
+      handleBeforeInstallPrompt as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt as EventListener
+      );
+    };
+  }, []);
+
+  const handleInstallClick = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(
+        (choiceResult: { outcome: "accepted" | "dismissed" }) => {
+          if (choiceResult.outcome === "accepted") {
+            console.log("User accepted the install prompt");
+          } else {
+            console.log("User dismissed the install prompt");
+          }
+          setDeferredPrompt(null); 
+        }
+      );
+    }
+  };
 
   return (
     <Box
@@ -16,9 +60,21 @@ export const Footer = () => {
         position: "fixed",
         bottom: 0,
         left: 0,
-        zIndex: 1000, // Asegura que el footer esté por encima de otros elementos
+        zIndex: 1000,
       }}
     >
+      {deferredPrompt && (
+        <Button
+          leftSection={<MdInstallMobile />}
+          variant="transparent"
+          style={{
+            position: "absolute",
+            left: "0px",
+            bottom: "-8px",
+          }}
+          onClick={handleInstallClick}
+        ></Button>
+      )}
       <Center>
         <Text
           size="xs"
@@ -27,9 +83,10 @@ export const Footer = () => {
             fontWeight: 500,
           }}
         >
-          © 2024 Galaxia Glamour. Belleza con Estilo y Elegancia.
+          © 2024 Galaxia Glamour.
         </Text>
       </Center>
+
       <ActionIcon
         style={{
           position: "absolute",
@@ -38,7 +95,7 @@ export const Footer = () => {
           color: "#E2E8F0",
         }}
         radius="lg"
-        onClick={() => navigate("/admin")}
+        onClick={() => navigate("/login-admin")}
       >
         <FaUserShield size="1.5rem" />
       </ActionIcon>

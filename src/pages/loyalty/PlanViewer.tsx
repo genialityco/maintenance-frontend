@@ -24,7 +24,7 @@ const PlanViewer: React.FC = () => {
             referralsMade: updatedUser.referralsMade || 0,
           };
           setUser(validUser);
-          localStorage.setItem("savedUser", JSON.stringify(validUser));
+          // localStorage.setItem("savedUser", JSON.stringify(validUser));
         }
       } catch (err) {
         console.error("Error fetching updated user:", err);
@@ -55,7 +55,7 @@ const PlanViewer: React.FC = () => {
       referralsMade: user.referralsMade || 0,
     };
     setUser(validUser);
-    localStorage.setItem("savedUser", JSON.stringify(validUser));
+    // localStorage.setItem("savedUser", JSON.stringify(validUser));
   };
 
   const handleLogout = () => {

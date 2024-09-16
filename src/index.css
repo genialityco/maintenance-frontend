@@ -1,16 +1,7 @@
-/* Eliminar padding y margen del body */
-body, #root {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+
   
   /* Opcional: Asegurar que todos los elementos respeten el box-sizing */
-  *,
-  *::before,
-  *::after {
-    box-sizing: inherit;
-  }
+
 
   @media (min-width: $mantine-breakpoint-xs) {
     .burger-menu {
@@ -28,4 +19,5 @@ body, #root {
       margin-top: 0;
     }
   }
+  
   

@@ -1,7 +1,8 @@
 // import LoyaltyPlan from "../components/LoyaltyPlan";
 import PlanViewer from "../pages/loyalty/PlanViewer";
 import ServicesAndPrices from "../components/ServicesAndPrices";
-import UserManagement from "../pages/admin/UserManagement";
+import LoginAdmin from "../pages/admin/LoginAdmin";
+import Dashboard from "../pages/admin/Dashboard";
 
 const generalRoutes = [
   {
@@ -32,14 +33,23 @@ const generalRoutes = [
     },
   },
   {
-    path: "/admin",
-    component: UserManagement,
+    path: "/login-admin",
+    component: LoginAdmin,
     MediaMetadata: {
       title: "Administrar clientes",
       description: "Administrar clientes en Galaxia Glamour.",
       image: "/galaxia_glamour.png",
     },
   },
+  {
+    path: "/dashboard",
+    component: Dashboard,
+    MediaMetadata: {
+      title: "Dashboard",
+      description: "Dashboard de Galaxia Glamour.",
+      image: "/galaxia_glamour.png",
+    },
+  }
 ];
 
 export default generalRoutes;

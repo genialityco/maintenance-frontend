@@ -8,18 +8,21 @@ import Footer from "./layouts/Footer";
 import NavbarLinks from "./layouts/NavbarLinks";
 import generalRoutes from "./routes/generalRoutes";
 import { useEffect, useState } from "react";
-// import InstallPrompt from './components/InstallPrompt';
+import { useSelector } from "react-redux";
+import { RootState } from "./app/store";
 
 function App() {
-  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
-  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const [opened, { toggle, close }] = useDisclosure(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const { isAuthenticated, role } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    if (localStorage.getItem("authenticated")) {
+    if (isAuthenticated && role === "admin") {
       setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
     }
-  }, []);
+  }, [isAuthenticated, role]);
 
   return (
     <Router>
@@ -30,23 +33,15 @@ function App() {
         navbar={{
           width: 300,
           breakpoint: "sm",
-          collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+          collapsed: { desktop: !opened, mobile: !opened },
         }}
         header={{ height: 50 }}
       >
         <AppShell.Header bg="#1A202C">
           <Flex align="center" px="sm">
             <Burger
-              opened={mobileOpened}
-              onClick={toggleMobile}
-              hiddenFrom="sm"
-              size="sm"
-              color="white"
-            />
-            <Burger
-              opened={desktopOpened}
-              onClick={toggleDesktop}
-              visibleFrom="sm"
+              opened={opened}
+              onClick={toggle}
               size="sm"
               color="white"
             />
@@ -54,7 +49,7 @@ function App() {
           </Flex>
         </AppShell.Header>
         <AppShell.Navbar p="md" bg="#1A202C">
-          <NavbarLinks isAdmin={isAdmin} />
+          <NavbarLinks isAdmin={isAdmin} closeNavbar={close} />
         </AppShell.Navbar>
         <AppShell.Main style={{ height: "100vh", overflow: "auto" }} bg="#1A202C">
           <Routes>

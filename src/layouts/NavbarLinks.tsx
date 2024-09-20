@@ -8,13 +8,18 @@ import { BiCalendarCheck } from "react-icons/bi";
 
 interface NavbarLinksProps {
   isAdmin: boolean;
+  closeNavbar: () => void;
 }
 
-const NavbarLinks: React.FC<NavbarLinksProps> = ({ isAdmin }) => {
+const NavbarLinks: React.FC<NavbarLinksProps> = ({ isAdmin, closeNavbar }) => {
   return (
     <Box>
       <Flex direction="column" align="center" justify="center">
-        <NavLink to="/servicios-precios" style={{ textDecoration: "none" }}>
+        <NavLink
+          to="/servicios-precios"
+          onClick={closeNavbar}
+          style={{ textDecoration: "none" }}
+        >
           <Flex align="center" justify="center" gap="sm">
             <MdPriceCheck size={20} color="white" />
             <Text c="white" fw={600} my="md">
@@ -23,7 +28,11 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ isAdmin }) => {
           </Flex>
         </NavLink>
 
-        <NavLink to="/" style={{ textDecoration: "none" }}>
+        <NavLink
+          to="/"
+          onClick={closeNavbar}
+          style={{ textDecoration: "none" }}
+        >
           <Flex align="center" justify="center" gap="sm">
             <MdOutlineLoyalty size={20} color="white" />
             <Text c="white" fw={600} my="md">
@@ -32,7 +41,11 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ isAdmin }) => {
           </Flex>
         </NavLink>
 
-        <NavLink to="/reservar" style={{ textDecoration: "none" }}>
+        <NavLink
+          to="/reservar"
+          onClick={closeNavbar}
+          style={{ textDecoration: "none" }}
+        >
           <Flex align="center" justify="center" gap="sm">
             <RiReservedLine size={20} color="white" />
             <Text c="white" fw={600} my="md">
@@ -42,11 +55,19 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ isAdmin }) => {
         </NavLink>
       </Flex>
       {isAdmin && (
-        <Divider my="xs" label="Sección administrativa" labelPosition="center" />
+        <Divider
+          my="xs"
+          label="Sección administrativa"
+          labelPosition="center"
+        />
       )}
       {isAdmin && (
         <Flex direction="column" align="center" justify="center">
-          <NavLink to="/gestionar-usuarios" style={{ textDecoration: "none" }}>
+          <NavLink
+            to="/gestionar-usuarios"
+            onClick={closeNavbar}
+            style={{ textDecoration: "none" }}
+          >
             <Flex align="center" justify="center" gap="sm">
               <GrUserSettings size={20} color="white" />
               <Text c="white" fw={600} my="md">
@@ -55,7 +76,11 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ isAdmin }) => {
             </Flex>
           </NavLink>
 
-          <NavLink to="/gestionar-agenda" style={{ textDecoration: "none" }}>
+          <NavLink
+            to="/gestionar-agenda"
+            onClick={closeNavbar}
+            style={{ textDecoration: "none" }}
+          >
             <Flex align="center" justify="center" gap="sm">
               <BiCalendarCheck size={20} color="white" />
               <Text c="white" fw={600} my="md">

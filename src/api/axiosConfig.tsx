@@ -3,7 +3,7 @@ import axios, { AxiosInstance } from 'axios';
 const API_BASE_URL: string =
   import.meta.env.VITE_NODE_ENV === 'production'
     ? (import.meta.env.VITE_APP_API_URL as string)
-    : (import.meta.env.VITE_APP_URL_DEPLOYMENT as string);
+    : (import.meta.env.VITE_APP_API_URL_DEPLOYMENT as string);
 
 const createAxiosInstance = (baseURL: string): AxiosInstance => {
   const api = axios.create({

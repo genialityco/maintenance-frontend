@@ -1,35 +1,41 @@
-import React, { useEffect, useState } from "react";
-import { Box, Divider, TextInput, Button, Text, Card } from "@mantine/core";
+import React, { useState } from "react";
+import { TextInput, Button, Text, Card, Flex } from "@mantine/core";
 import colors from "../../theme/colores";
-import CreateUser from "./CreateUser";
-import UserTable from "./UserTable";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../../features/auth/sliceAuth";
+
+interface LoginResponse {
+  user: string;
+  token: string;
+  role: string;
+}
 
 const LoginAdmin: React.FC = () => {
-  const [authenticated, setAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigation = useNavigate();
-
-  useEffect(() => {
-    if (localStorage.getItem("authenticated")) {
-      setAuthenticated(true);
-    }
-  }, []);
+  const dispatch = useDispatch();
 
   const handleLogin = () => {
     if (username === "natysipq" && password === "0714") {
-      localStorage.setItem("authenticated", "true");
-      setAuthenticated(true);
-      navigation("/dashboard");
+      const data: LoginResponse = {
+        user: "natysipq",
+        token: "0714",
+        role: "admin",
+      };
+      dispatch(
+        loginSuccess({ user: data.user, token: data.token, role: data.role })
+      );
+      navigation("/gestionar-usuarios");
     } else {
       setError("Credenciales incorrectas");
     }
   };
 
-  if (!authenticated) {
-    return (
+  return (
+    <Flex justify="center" align="center" style={{ height: "100%" }}>
       <Card
         style={{
           maxWidth: "80%",
@@ -38,7 +44,7 @@ const LoginAdmin: React.FC = () => {
           backgroundColor: colors.cardBackground,
           color: colors.primaryText,
           borderRadius: "8px",
-          boxShadow: colors.cardShadow,
+          boxShadow: "0 0 20px rgba(0, 0, 0, 1)",
         }}
       >
         <Text size="xl" mb="xl">
@@ -68,27 +74,7 @@ const LoginAdmin: React.FC = () => {
           Iniciar sesión
         </Button>
       </Card>
-    );
-  }
-
-  return (
-    <Box
-      bg={colors.primaryBackground}
-      p="lg"
-      m="auto"
-      style={{
-        maxWidth: "1200px",
-        width: "100%",
-        padding: "1rem",
-        "@media (maxWidth: 768px)": {
-          padding: "0.5rem",
-        },
-      }}
-    >
-      <CreateUser />
-      <Divider my="xl" />
-      <UserTable />
-    </Box>
+    </Flex>
   );
 };
 

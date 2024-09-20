@@ -2,7 +2,8 @@
 import PlanViewer from "../pages/loyalty/PlanViewer";
 import ServicesAndPrices from "../components/ServicesAndPrices";
 import LoginAdmin from "../pages/admin/LoginAdmin";
-import Dashboard from "../pages/admin/Dashboard";
+import UserManagement from "../pages/admin/manageUsers";
+import ScheduleView from "../pages/admin/manageAgenda";
 
 const generalRoutes = [
   {
@@ -42,11 +43,20 @@ const generalRoutes = [
     },
   },
   {
-    path: "/dashboard",
-    component: Dashboard,
+    path: "/gestionar-usuarios",
+    component: UserManagement,
     MediaMetadata: {
       title: "Dashboard",
       description: "Dashboard de Galaxia Glamour.",
+      image: "/galaxia_glamour.png",
+    },
+  },
+  {
+    path: "/gestionar-agenda",
+    component: ScheduleView,
+    MediaMetadata: {
+      title: "Gestionar Agenda",
+      description: "Gestiona la agenda de Galaxia Glamour.",
       image: "/galaxia_glamour.png",
     },
   }

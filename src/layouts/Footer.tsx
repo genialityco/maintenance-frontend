@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { Text, Box, Center, ActionIcon, Button } from "@mantine/core";
-import { FaUserShield } from "react-icons/fa";
+import { FaUserShield, FaSignOutAlt } from "react-icons/fa"; // Importa el ícono de cerrar sesión
 import { MdInstallMobile } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux"; // Importa useDispatch para manejar el logout
+import { RootState } from "../app/store";
+import { logout } from "../features/auth/sliceAuth"; 
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => void;
@@ -13,6 +16,8 @@ export const Footer = () => {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const navigate = useNavigate();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const dispatch = useDispatch(); 
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
@@ -43,10 +48,15 @@ export const Footer = () => {
           } else {
             console.log("User dismissed the install prompt");
           }
-          setDeferredPrompt(null); 
+          setDeferredPrompt(null);
         }
       );
     }
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
   };
 
   return (
@@ -87,6 +97,7 @@ export const Footer = () => {
         </Text>
       </Center>
 
+      {/* Si el usuario está autenticado, muestra el icono de logout, de lo contrario, el de admin */}
       <ActionIcon
         style={{
           position: "absolute",
@@ -95,9 +106,9 @@ export const Footer = () => {
           color: "#E2E8F0",
         }}
         radius="lg"
-        onClick={() => navigate("/login-admin")}
+        onClick={isAuthenticated ? handleLogout : () => navigate("/login-admin")}
       >
-        <FaUserShield size="1.5rem" />
+        {isAuthenticated ? <FaSignOutAlt size="1.5rem" /> : <FaUserShield size="1.5rem" />}
       </ActionIcon>
     </Box>
   );

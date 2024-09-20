@@ -7,6 +7,8 @@ import "@mantine/core/styles.css";
 import '@mantine/carousel/styles.css';
 import '@mantine/notifications/styles.css';
 import { Notifications } from "@mantine/notifications";
+import { Provider } from "react-redux";
+import { store } from "./app/store.ts";
 
 const theme = createTheme({
   fontFamily: "Playfair Display, serif",
@@ -16,9 +18,11 @@ const theme = createTheme({
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <Provider store={store}>
     <MantineProvider theme={theme}>
       <Notifications />
       <App />
     </MantineProvider>
+    </Provider>
   </StrictMode>
 );

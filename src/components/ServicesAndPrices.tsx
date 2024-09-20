@@ -153,7 +153,7 @@ const ServiceCategory: React.FC<ServiceCategoryProps> = ({
   title,
   services,
 }) => (
-  <Card shadow="sm" my="sm" radius="md" withBorder bg="#2A2E35">
+  <Card shadow="sm" my="sm" radius="md" withBorder bg="#2A2E35" style={{textAlign: "center"}}>
     <Title order={2}>
       <Text size="xl" fw={900} style={gradientTextStyle}>
         {title}
@@ -194,8 +194,7 @@ const ServicesAndPrices: React.FC = () => {
       price: "$50.000",
       description: "Este servicio incluye pestañas con un efecto natural.",
       images: [
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
+        "https://ik.imagekit.io/6cx9tc1kx/Galaxia%20Glamour/LUBA-46-scaled.jpg?updatedAt=1726793655718",
       ],
     },
     {

@@ -12,7 +12,7 @@ import {
   Badge,
   Button,
 } from "@mantine/core";
-import { User as UserType } from "../../services/userService.tsx";
+import { User as UserType } from "../../api/userService.tsx";
 
 interface PlanInfoProps {
   user: UserType;

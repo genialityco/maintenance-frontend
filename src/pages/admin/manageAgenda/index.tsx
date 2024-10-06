@@ -1,22 +1,22 @@
 import React, { useState } from "react";
-import { Box, Button, Modal, TextInput, Group, Text } from "@mantine/core";
-import { Calendar, dateFnsLocalizer } from "react-big-calendar";
-import { format, parse, startOfWeek, getDay } from "date-fns";
+import { Box, Button, Modal, TextInput } from "@mantine/core";
+// import { dateFnsLocalizer } from "react-big-calendar";
+import { format } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { es } from "date-fns/locale";
+// import { es } from "date-fns/locale";
 import CustomCalendar from "../../../components/CustomCalendar";
 
-const locales = {
-  es: es,
-};
+// const locales = {
+//   es: es,
+// };
 
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  locales,
-});
+// const localizer = dateFnsLocalizer({
+//   format,
+//   parse,
+//   startOfWeek,
+//   getDay,
+//   locales,
+// });
 
 interface Event {
   title: string;

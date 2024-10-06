@@ -4,6 +4,7 @@ import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { es } from "date-fns/locale";
+import CustomCalendar from "../../../components/CustomCalendar";
 
 const locales = {
   es: es,
@@ -38,15 +39,15 @@ const ScheduleView: React.FC = () => {
   };
 
   return (
-    <Box bg="#1A202C">
-      <Group justify="space-around" mb="md">
-        <Text size="xl" fw={700} c="white">
+    <Box>
+      {/* <Group justify="space-around" mb="md">
+        <Text size="xl" fw={700}>
           Gestionar Agenda
         </Text>
         <Button color="blue" onClick={() => setModalOpened(true)}>
           Añadir Cita
         </Button>
-      </Group>
+      </Group> */}
 
       <Modal
         opened={modalOpened}
@@ -86,7 +87,7 @@ const ScheduleView: React.FC = () => {
       </Modal>
 
       {/* Vista del calendario con vistas habilitadas */}
-      <Calendar
+      {/* <Calendar
         localizer={localizer}
         events={events}
         startAccessor="start"
@@ -102,7 +103,9 @@ const ScheduleView: React.FC = () => {
           next: "Siguiente",
           noEventsInRange: "No hay eventos en este rango",
         }}
-      />
+      /> */}
+
+      <CustomCalendar />
     </Box>
   );
 };

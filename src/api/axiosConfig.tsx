@@ -17,5 +17,6 @@ const createAxiosInstance = (baseURL: string): AxiosInstance => {
 
 // Crear instancias de Axios para diferentes partes de la API
 const apiUser: AxiosInstance = createAxiosInstance(`${API_BASE_URL}/user`);
+const apiAppointment: AxiosInstance = createAxiosInstance(`${API_BASE_URL}/appointment`);
 
-export { apiUser };
+export { apiUser, apiAppointment };

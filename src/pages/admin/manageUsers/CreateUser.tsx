@@ -24,7 +24,8 @@ const CreateUser: React.FC<CreateUserProps> = ({ opened, onClose, fetchUsers }) 
         title: "Éxito",
         message: "Usuario creado con éxito",
         color: "green",
-        autoClose: 3000,
+        autoClose: 1000,
+        position: "top-right",
       });
 
       // Resetear campos del formulario

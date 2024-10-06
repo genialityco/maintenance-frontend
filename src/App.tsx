@@ -51,7 +51,7 @@ function App() {
         <AppShell.Navbar p="md" bg="#1A202C">
           <NavbarLinks isAdmin={isAdmin} closeNavbar={close} />
         </AppShell.Navbar>
-        <AppShell.Main style={{ height: "100vh", overflow: "auto" }} bg="#1A202C">
+        <AppShell.Main style={{ height: "100vh", overflow: "auto" }} >
           <Routes>
             {generalRoutes.map((route, index) => (
               <Route

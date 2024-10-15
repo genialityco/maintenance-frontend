@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Text,
@@ -14,6 +14,7 @@ import {
 } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import { BsEye } from "react-icons/bs";
+import { getServices, Service } from "../services/serviceService";
 
 // Constantes para estilos reutilizables
 const gradientTextStyle: React.CSSProperties = {
@@ -46,9 +47,6 @@ const ServiceItem: React.FC<ServiceItemProps> = ({
 }) => {
   const [opened, setOpened] = useState(false);
 
-  // Verifica si el nombre es un enlace (por ejemplo, comienza con "http")
-  const isLink = price.startsWith("www");
-
   return (
     <>
       <List.Item
@@ -68,22 +66,9 @@ const ServiceItem: React.FC<ServiceItemProps> = ({
           {name}
         </Text>
 
-        {isLink ? (
-          <a
-            href={`https://${price}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: "white", textDecoration: "none" }}
-          >
-            <Text size="xl" variant="gradient" gradient={gradientPriceStyle}>
-              {price}
-            </Text>
-          </a>
-        ) : (
-          <Text size="xl" variant="gradient" gradient={gradientPriceStyle}>
-            {price}
-          </Text>
-        )}
+        <Text size="xl" variant="gradient" gradient={gradientPriceStyle}>
+          {price}
+        </Text>
       </List.Item>
 
       <Modal
@@ -113,35 +98,9 @@ const ServiceItem: React.FC<ServiceItemProps> = ({
           )}
           <Divider my="sm" />
           <Text size="md" style={{ color: "#2A2E35" }}>
-            {description || "Descripción no disponible"}
+            {description || ""}
           </Text>
           <Divider my="sm" />
-          {price.startsWith("www") ? (
-            <a
-              href={`https://${price}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "white", textDecoration: "none" }}
-            >
-              <Text
-                size="lg"
-                fw={700}
-                variant="gradient"
-                gradient={gradientPriceStyle}
-              >
-                {price}
-              </Text>
-            </a>
-          ) : (
-            <Text
-              size="lg"
-              fw={700}
-              variant="gradient"
-              gradient={gradientPriceStyle}
-            >
-              {price}
-            </Text>
-          )}
         </Flex>
       </Modal>
     </>
@@ -153,7 +112,14 @@ const ServiceCategory: React.FC<ServiceCategoryProps> = ({
   title,
   services,
 }) => (
-  <Card shadow="sm" my="sm" radius="md" withBorder bg="#2A2E35" style={{textAlign: "center"}}>
+  <Card
+    shadow="sm"
+    my="sm"
+    radius="md"
+    withBorder
+    bg="#2A2E35"
+    style={{ textAlign: "center" }}
+  >
     <Title order={2}>
       <Text size="xl" fw={900} style={gradientTextStyle}>
         {title}
@@ -175,143 +141,68 @@ const ServiceCategory: React.FC<ServiceCategoryProps> = ({
 );
 
 const ServicesAndPrices: React.FC = () => {
-  // Datos de los servicios
-  const eyebrowServices: ServiceItemProps[] = [
-    {
-      name: "Depilación en hilo y sombreado en henna",
-      price: "$25.000",
-      description: "Esta es una descripción detallada del servicio de cejas.",
-      images: [
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-      ],
-    },
-  ];
+  const [services, setServices] = useState<Service[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const eyelashServicesClassic: ServiceItemProps[] = [
-    {
-      name: "Efecto Seminatural",
-      price: "$50.000",
-      description: "Este servicio incluye pestañas con un efecto natural.",
-      images: [
-        "https://ik.imagekit.io/6cx9tc1kx/Galaxia%20Glamour/LUBA-46-scaled.jpg?updatedAt=1726793655718",
-      ],
-    },
-    {
-      name: "Efecto Pestañina",
-      price: "$60.000",
-      description:
-        "Este servicio da un efecto de pestañina sin la necesidad de usarla.",
-      images: [
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-      ],
-    },
-  ];
+  // Obtener servicios desde la API
+  useEffect(() => {
+    const fetchServices = async () => {
+      setIsLoading(true);
+      const data = await getServices();
+      setServices(data);
+      setIsLoading(false);
+    };
 
-  const eyelashServicesTechnological: ServiceItemProps[] = [
-    {
-      name: "Volumen (YY) / Efecto Hawaiano",
-      price: "$70.000",
-      description: "Pestañas con un volumen YY y un efecto hawaiano único.",
-      images: [
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-      ],
-    },
-    {
-      name: "Volumen (3D) / Efecto Griego",
-      price: "$90.000",
-      description: "Pestañas con volumen 3D y un impresionante efecto griego.",
-      images: [
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-      ],
-    },
-    {
-      name: "Volumen (6D) / Efecto Egipcio",
-      price: "$100.000",
-      description: "El máximo volumen 6D con un exótico efecto egipcio.",
-      images: [
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-      ],
-    },
-  ];
+    fetchServices();
+  }, []);
 
-  const supliesEyebrowsAndEyelashes: ServiceItemProps[] = [
-    {
-      name: "¿Eres artista de pestañas y cejas? - ¡Clic en el enlace!",
-      price: "www.zybizobazar.com",
-      description:
-        "Consulta el catálogo y realiza tu pedido en el enlace siguiente",
-      images: ["https://i.ibb.co/FhpJkcH/Presentaci-n.jpg"],
-    },
-  ];
+  // Filtrar los servicios por tipo
+  const filterServicesByType = (type: string) => {
+    return services
+      .filter((service) => service.type === type)
+      .map((service) => ({
+        name: service.name,
+        price: `$${service.price.toLocaleString()}`,
+        description: service.description || "",
+        images: service.images || [],
+      }));
+  };
 
-  const eyelashServicesRetouch: ServiceItemProps[] = [
-    {
-      name: "Retoque Efecto Seminatural y pestañina",
-      price: "$35.000",
-      description: "Se recomienda el retoque al tener un 80% de pestañas.",
-      images: [
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-      ],
-    },
-    {
-      name: "Retoque Volumen (YY) / Efecto Hawaiano",
-      price: "$40.000",
-      description: "Se recomienda el retoque al tener un 80% de pestañas.",
-      images: [
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-      ],
-    },
-    {
-      name: "Retoque Volumen (3D) / Efecto Griego",
-      price: "$60.000",
-      description: "Se recomienda el retoque al tener un 80% de pestañas.",
-      images: [
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-      ],
-    },
-    {
-      name: "Retoque Volumen (6D) / Efecto Egipcio",
-      price: "$70.000",
-      description: "Se recomienda el retoque al tener un 80% de pestañas.",
-      images: [
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-        "https://i.ibb.co/L0ZcZQk/No-Services.png",
-      ],
-    },
-  ];
+  if (isLoading) {
+    return <Text>Cargando servicios...</Text>;
+  }
 
   return (
-    <Box p="xl" bg="#1A202C" color="white">
-      <Title order={1} mb="lg" style={gradientTextStyle}>
+    <Box color="white">
+      <Title order={1} mb="lg" ta="center">
         Precios y servicios
       </Title>
 
       <Group justify="center" grow>
         <Flex direction="column">
-          <ServiceCategory title="Cejas" services={eyebrowServices} />
           <ServiceCategory
             title="Pestañas Clásicas"
-            services={eyelashServicesClassic}
+            services={filterServicesByType("Pestañas Clásicas")}
           />
           <ServiceCategory
             title="Pestañas Fibras Tecnológicas"
-            services={eyelashServicesTechnological}
+            services={filterServicesByType("Pestañas Fibras Tecnológicas")}
           />
           <ServiceCategory
             title="Retoques pestañas"
-            services={eyelashServicesRetouch}
+            services={filterServicesByType("Retoques pestañas")}
           />
           <ServiceCategory
             title="Insumos para cejas y pestañas"
-            services={supliesEyebrowsAndEyelashes}
+            services={[
+              {
+                name: "¿Eres artista de pestañas y cejas? - ¡Clic en el enlace!",
+                price: "www.zybizobazar.com",
+                description:
+                  "Consulta el catálogo y realiza tu pedido en el enlace siguiente",
+                images: ["https://i.ibb.co/FhpJkcH/Presentaci-n.jpg"],
+              },
+            ]}
           />
         </Flex>
       </Group>

@@ -7,11 +7,16 @@ interface AuthState {
   role: string | null;
 }
 
+// Comprueba si hay datos en localStorage
+const storedUser = localStorage.getItem("user");
+const storedToken = localStorage.getItem("token");
+const storedRole = localStorage.getItem("role");
+
 const initialState: AuthState = {
-  isAuthenticated: false,
-  user: null,
-  token: null,
-  role: null,
+  isAuthenticated: !!storedToken,
+  user: storedUser,
+  token: storedToken,
+  role: storedRole,
 };
 
 const authSlice = createSlice({
@@ -26,12 +31,22 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.role = action.payload.role;
+
+      // Guardar los datos en localStorage
+      localStorage.setItem("user", action.payload.user);
+      localStorage.setItem("token", action.payload.token);
+      localStorage.setItem("role", action.payload.role);
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
       state.token = null;
       state.role = null;
+
+      // Eliminar datos de localStorage
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
     },
   },
 });

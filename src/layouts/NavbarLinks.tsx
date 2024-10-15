@@ -5,6 +5,7 @@ import { MdOutlineLoyalty, MdPriceCheck } from "react-icons/md";
 import { RiReservedLine } from "react-icons/ri";
 import { GrUserSettings } from "react-icons/gr";
 import { BiCalendarCheck } from "react-icons/bi";
+import { GiClawSlashes } from "react-icons/gi";
 
 interface NavbarLinksProps {
   isAdmin: boolean;
@@ -71,7 +72,7 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ isAdmin, closeNavbar }) => {
             <Flex align="center" justify="center" gap="sm">
               <GrUserSettings size={20} color="white" />
               <Text c="white" fw={600} my="md">
-                Gestionar usuarios
+                Gestionar clientes
               </Text>
             </Flex>
           </NavLink>
@@ -85,6 +86,18 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ isAdmin, closeNavbar }) => {
               <BiCalendarCheck size={20} color="white" />
               <Text c="white" fw={600} my="md">
                 Gestionar agenda
+              </Text>
+            </Flex>
+          </NavLink>
+          <NavLink
+            to="/gestionar-servicios"
+            onClick={closeNavbar}
+            style={{ textDecoration: "none" }}
+          >
+            <Flex align="center" justify="center" gap="sm">
+              <GiClawSlashes  size={20} color="white" />
+              <Text c="white" fw={600} my="md">
+                Gestionar servicios
               </Text>
             </Flex>
           </NavLink>

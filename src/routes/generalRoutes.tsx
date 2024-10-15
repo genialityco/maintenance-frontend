@@ -1,9 +1,11 @@
-// import LoyaltyPlan from "../components/LoyaltyPlan";
 import PlanViewer from "../pages/loyalty/PlanViewer";
 import ServicesAndPrices from "../components/ServicesAndPrices";
 import LoginAdmin from "../pages/admin/LoginAdmin";
 import UserManagement from "../pages/admin/manageUsers";
 import ScheduleView from "../pages/admin/manageAgenda";
+import ProtectedRoute from "../components/ProtectedRoute";
+import { JSX } from "react/jsx-runtime";
+import AdminServices from "../pages/admin/manageServices";
 
 const generalRoutes = [
   {
@@ -15,15 +17,6 @@ const generalRoutes = [
       image: "/galaxia_glamour.png",
     },
   },
-  // {
-  //   path: "/plan-fidelidad",
-  //   component: LoyaltyPlan,
-  //   MediaMetadata: {
-  //     title: "Plan de fidelidad",
-  //     description: "Sección plan fidelidad.",
-  //     image: "/galaxia_glamour.png",
-  //   },
-  // },
   {
     path: "/servicios-precios",
     component: ServicesAndPrices,
@@ -44,7 +37,11 @@ const generalRoutes = [
   },
   {
     path: "/gestionar-usuarios",
-    component: UserManagement,
+    component: (props: JSX.IntrinsicAttributes) => (
+      <ProtectedRoute>
+        <UserManagement {...props} />
+      </ProtectedRoute>
+    ),
     MediaMetadata: {
       title: "Dashboard",
       description: "Dashboard de Galaxia Glamour.",
@@ -53,10 +50,27 @@ const generalRoutes = [
   },
   {
     path: "/gestionar-agenda",
-    component: ScheduleView,
+    component: (props: JSX.IntrinsicAttributes) => (
+      <ProtectedRoute>
+        <ScheduleView {...props} />
+      </ProtectedRoute>
+    ),
     MediaMetadata: {
       title: "Gestionar Agenda",
       description: "Gestiona la agenda de Galaxia Glamour.",
+      image: "/galaxia_glamour.png",
+    },
+  },
+  {
+    path: "/gestionar-servicios",
+    component: (props: JSX.IntrinsicAttributes) => (
+      <ProtectedRoute>
+        <AdminServices {...props} />
+      </ProtectedRoute>
+    ),
+    MediaMetadata: {
+      title: "Gestionar Servicios",
+      description: "Gestiona los servicios de Galaxia Glamour.",
       image: "/galaxia_glamour.png",
     },
   }

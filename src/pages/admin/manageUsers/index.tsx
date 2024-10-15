@@ -1,20 +1,31 @@
-import { Box, Text, Flex, ActionIcon, Divider } from "@mantine/core";
+import {
+  Box,
+  Flex,
+  Divider,
+  TextInput,
+  Group,
+  Title,
+  Button,
+} from "@mantine/core";
 import { useState, useEffect } from "react";
 import CreateUser from "./CreateUser";
 import UserTable from "./UserTable";
 import { IoAddCircleOutline } from "react-icons/io5";
+import { BsSearch } from "react-icons/bs";
 import {
   deleteUser,
   getUsers,
   registerReferral,
   registerService,
   User,
-} from "../../../api/userService";
+} from "../../../services/userService";
 import { showNotification } from "@mantine/notifications";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const handleOpenModal = () => {
@@ -40,6 +51,19 @@ const Dashboard = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    filterUsers();
+  }, [searchTerm, users]);
+
+  const filterUsers = () => {
+    const filtered = users.filter(
+      (user) =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  };
 
   const handleRegisterService = async (userId: string) => {
     try {
@@ -71,7 +95,7 @@ const Dashboard = () => {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   const handleDeleteUser = async (id: string) => {
     try {
@@ -91,41 +115,48 @@ const Dashboard = () => {
   };
 
   return (
-    <Box p="lg">
-      <Divider mb="sm" />
+    <Box>
       <Flex
         gap="md"
-        justify="center"
+        justify="space-between"
         align="center"
         direction="row"
         wrap="wrap"
+        mb="md"
       >
-        <Text size="xl">
-          Gestionar clientes
-        </Text>
-        <ActionIcon onClick={handleOpenModal} color="blue">
-          <IoAddCircleOutline size={30} />
-        </ActionIcon>
+        <Title order={1}>Gestionar clientes</Title>
+        <Button leftSection={<IoAddCircleOutline />} onClick={handleOpenModal}>
+          Crear cliente
+        </Button>
       </Flex>
 
-      {/* Pasa la función fetchUsers como prop a CreateUser */}
+      <Divider mb="md" />
+
+      <Group mb="md" justify="space-between">
+        <TextInput
+          leftSection={<BsSearch />}
+          placeholder="Buscar por nombre o correo..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.currentTarget.value)}
+          style={{ flexGrow: 1 }}
+        />
+      </Group>
+
       <CreateUser
         opened={openModal}
         onClose={handleCloseModal}
         fetchUsers={fetchUsers}
       />
-
-      <Divider my="sm" />
-
-      {/* Pasa los usuarios como prop a UserTable */}
-      <UserTable
-        users={users}
-        fetchUsers={fetchUsers}
-        handleDeleteUser={handleDeleteUser}
-        handleRegisterService={handleRegisterService}
-        handleReferal={handleReferal}
-        error={error}
-      />
+      <div style={{ overflowX: "auto" }}>
+        <UserTable
+          users={filteredUsers}
+          fetchUsers={fetchUsers}
+          handleDeleteUser={handleDeleteUser}
+          handleRegisterService={handleRegisterService}
+          handleReferal={handleReferal}
+          error={error}
+        />
+      </div>
     </Box>
   );
 };

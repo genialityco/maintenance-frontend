@@ -1,111 +1,121 @@
-import React, { useState } from "react";
-import { Box, Button, Modal, TextInput } from "@mantine/core";
-// import { dateFnsLocalizer } from "react-big-calendar";
+import React, { useEffect, useState } from "react";
+import { Box, Button, Group, Modal, TextInput, Title } from "@mantine/core";
 import { format } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-// import { es } from "date-fns/locale";
-import CustomCalendar from "../../../components/CustomCalendar";
+import CustomCalendar from "../../../components/customCalendar/CustomCalendar";
+import {
+  createAppointment,
+  getAppointments,
+} from "../../../services/appointmentService";
 
-// const locales = {
-//   es: es,
-// };
-
-// const localizer = dateFnsLocalizer({
-//   format,
-//   parse,
-//   startOfWeek,
-//   getDay,
-//   locales,
-// });
-
-interface Event {
-  title: string;
-  start: Date;
-  end: Date;
+interface Appointment {
+  service: string;
+  startDate: Date;
+  endDate: Date;
 }
 
 const ScheduleView: React.FC = () => {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [modalOpened, setModalOpened] = useState(false);
-  const [newEvent, setNewEvent] = useState({
-    title: "",
-    start: new Date(),
-    end: new Date(),
-  });
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [newAppointment, setNewAppointment] = useState<Partial<Appointment>>(
+    {}
+  );
+  const [modalOpenedAppointment, setModalOpenedAppointment] = useState(false);
 
-  const handleAddEvent = () => {
-    setEvents([...events, newEvent]);
-    setModalOpened(false);
+  const fetchAppointments = async () => {
+    try {
+      const response = await getAppointments();
+      setAppointments(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const addAppointment = async () => {
+    try {
+      await createAppointment(newAppointment as Appointment);
+      setModalOpenedAppointment(false);
+      setNewAppointment({});
+      fetchAppointments();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Modal para añadir citas
+  const renderAddAppointmentModal = () => {
+    return (
+      <Modal
+        opened={modalOpenedAppointment}
+        onClose={() => setModalOpenedAppointment(false)}
+        title="Añadir nueva cita"
+      >
+        <TextInput
+          label="Servicio"
+          placeholder="Descripción del servicio"
+          value={newAppointment?.service || ""}
+          onChange={(e) =>
+            setNewAppointment({
+              ...newAppointment,
+              service: e.currentTarget.value,
+            })
+          }
+          required
+        />
+        <TextInput
+          label="Inicio de la cita"
+          type="datetime-local"
+          value={
+            newAppointment?.startDate
+              ? format(newAppointment.startDate, "yyyy-MM-dd'T'HH:mm")
+              : ""
+          }
+          onChange={(e) =>
+            setNewAppointment({
+              ...newAppointment,
+              startDate: new Date(e.currentTarget.value),
+            })
+          }
+          required
+        />
+        <TextInput
+          label="Fin de la cita"
+          type="datetime-local"
+          value={
+            newAppointment?.endDate
+              ? format(newAppointment.endDate, "yyyy-MM-dd'T'HH:mm")
+              : ""
+          }
+          onChange={(e) =>
+            setNewAppointment({
+              ...newAppointment,
+              endDate: new Date(e.currentTarget.value),
+            })
+          }
+          required
+        />
+        <Button fullWidth mt="md" onClick={addAppointment}>
+          Añadir Cita
+        </Button>
+      </Modal>
+    );
   };
 
   return (
     <Box>
-      {/* <Group justify="space-around" mb="md">
-        <Text size="xl" fw={700}>
-          Gestionar Agenda
-        </Text>
-        <Button color="blue" onClick={() => setModalOpened(true)}>
+      <Group justify="space-between" mb="md">
+        <Title order={2}>Gestionar Agenda</Title>
+        <Button color="blue" onClick={() => setModalOpenedAppointment(true)}>
           Añadir Cita
         </Button>
-      </Group> */}
+      </Group>
+      <CustomCalendar appointments={appointments} />
 
-      <Modal
-        opened={modalOpened}
-        onClose={() => setModalOpened(false)}
-        title="Añadir nueva cita"
-      >
-        <TextInput
-          label="Título"
-          placeholder="Descripción de la cita"
-          value={newEvent.title}
-          onChange={(e) =>
-            setNewEvent({ ...newEvent, title: e.currentTarget.value })
-          }
-          required
-        />
-        <TextInput
-          label="Fecha de inicio"
-          type="datetime-local"
-          value={format(newEvent.start, "yyyy-MM-dd'T'HH:mm")}
-          onChange={(e) =>
-            setNewEvent({ ...newEvent, start: new Date(e.currentTarget.value) })
-          }
-          required
-        />
-        <TextInput
-          label="Fecha de fin"
-          type="datetime-local"
-          value={format(newEvent.end, "yyyy-MM-dd'T'HH:mm")}
-          onChange={(e) =>
-            setNewEvent({ ...newEvent, end: new Date(e.currentTarget.value) })
-          }
-          required
-        />
-        <Button fullWidth mt="md" onClick={handleAddEvent}>
-          Añadir Cita
-        </Button>
-      </Modal>
-
-      {/* Vista del calendario con vistas habilitadas */}
-      {/* <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500, backgroundColor: "white", padding: "1rem" }}
-        culture="es"
-        messages={{
-          week: "Semana",
-          day: "Día",
-          month: "Mes",
-          today: "Hoy",
-          previous: "Anterior",
-          next: "Siguiente",
-          noEventsInRange: "No hay eventos en este rango",
-        }}
-      /> */}
-
-      <CustomCalendar />
+      {/* Modal para añadir cita */}
+      {renderAddAppointmentModal()}
     </Box>
   );
 };

@@ -8,7 +8,7 @@ import {
   Flex,
   Badge,
 } from "@mantine/core";
-import { User as UserType } from "../../../api/userService";
+import { User as UserType } from "../../../services/userService";
 import { BiTrash } from "react-icons/bi";
 import { CgAdd, CgUserAdd } from "react-icons/cg";
 

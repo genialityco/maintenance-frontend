@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
 import { TextInput, Button, Box, Modal } from "@mantine/core";
-import { createUser } from "../../../api/userService";
+import { createUser } from "../../../services/userService";
 import { showNotification } from "@mantine/notifications"; // Para mostrar notificación flotante
 
 interface CreateUserProps {

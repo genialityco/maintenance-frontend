@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TextInput, Button, Checkbox, Box, Text, Flex } from "@mantine/core";
-import { getUserByPhoneNumber } from "../../api/userService.tsx";
-import { User as UserType } from "../../api/userService.tsx";
+import { getUserByPhoneNumber } from "../../services/userService";
+import { User as UserType } from "../../services/userService";
 
 interface SearchUserProps {
   onUserFound: (user: UserType) => void;

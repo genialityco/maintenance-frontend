@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
   Modal,
-  TextInput,
   Group,
   Text,
   SegmentedControl,
   Paper,
   Container,
-  Title,
   Grid,
 } from "@mantine/core";
 import {
@@ -32,40 +30,24 @@ import { es } from "date-fns/locale";
 import { useMediaQuery } from "@mantine/hooks";
 import { BiArrowBack } from "react-icons/bi";
 import { BsArrowRight } from "react-icons/bs";
-import { createAppointment, getAppointments } from "../api/appointmentService";
-
 interface Appointment {
   service: string;
   startDate: Date;
   endDate: Date;
 }
 
-const CustomCalendar: React.FC = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+interface CustomCalendarProps {
+  appointments: Appointment[];
+}
+
+const CustomCalendar: React.FC<CustomCalendarProps> = ({ appointments }) => {
   const [modalOpened, setModalOpened] = useState(false);
-  const [modalOpenedAppointment, setModalOpenedAppointment] = useState(false);
-  const [newAppointment, setNewAppointment] = useState<Partial<Appointment>>(
-    {}
-  );
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [view, setView] = useState<"month" | "week" | "day">("day");
   const [currentDate, setCurrentDate] = useState(new Date());
 
   // Detectar si es pantalla móvil
   const isMobile = useMediaQuery("(max-width: 768px)");
-
-  const fetchAppointments = async () => {
-    try {
-      const response = await getAppointments();
-      setAppointments(response);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
 
   const handleNavigation = (direction: "prev" | "next") => {
     const dateAdjustments = {
@@ -81,17 +63,6 @@ const CustomCalendar: React.FC = () => {
   const handleDayClick = (day: Date) => {
     setSelectedDay(day);
     setModalOpened(true);
-  };
-
-  const addAppointment = async () => {
-    try {
-      await createAppointment(newAppointment as Appointment);
-      setModalOpenedAppointment(false);
-      setNewAppointment({});
-      fetchAppointments();
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   const getAppointmentsForDay = (day: Date) =>
@@ -198,7 +169,8 @@ const CustomCalendar: React.FC = () => {
                       marginTop: "0.5rem",
                     }}
                   >
-                    {event.service} -{" "} {format(event.startDate, "HH:mm")} -{" "} {format(event.endDate, "HH:mm")}
+                    {event.service} - {format(event.startDate, "HH:mm")} -{" "}
+                    {format(event.endDate, "HH:mm")}
                   </Paper>
                 ))
               ) : (
@@ -236,7 +208,8 @@ const CustomCalendar: React.FC = () => {
                       marginTop: "0.5rem",
                     }}
                   >
-                    {event.service} -{" "} {format(event.startDate, "HH:mm")} -{" "} {format(event.endDate, "HH:mm")}
+                    {event.service} - {format(event.startDate, "HH:mm")} -{" "}
+                    {format(event.endDate, "HH:mm")}
                   </Paper>
                 ))
               ) : (
@@ -248,65 +221,6 @@ const CustomCalendar: React.FC = () => {
           </Paper>
         </Grid.Col>
       </Grid>
-    );
-  };
-
-  // Modal para añadir citas
-  const renderAddAppointmentModal = () => {
-    return (
-      <Modal
-        opened={modalOpenedAppointment}
-        onClose={() => setModalOpenedAppointment(false)}
-        title="Añadir nueva cita"
-      >
-        <TextInput
-          label="Servicio"
-          placeholder="Descripción del servicio"
-          value={newAppointment?.service || ""}
-          onChange={(e) =>
-            setNewAppointment({
-              ...newAppointment,
-              service: e.currentTarget.value,
-            })
-          }
-          required
-        />
-        <TextInput
-          label="Inicio de la cita"
-          type="datetime-local"
-          value={
-            newAppointment?.startDate
-              ? format(newAppointment.startDate, "yyyy-MM-dd'T'HH:mm")
-              : ""
-          }
-          onChange={(e) =>
-            setNewAppointment({
-              ...newAppointment,
-              startDate: new Date(e.currentTarget.value),
-            })
-          }
-          required
-        />
-        <TextInput
-          label="Fin de la cita"
-          type="datetime-local"
-          value={
-            newAppointment?.endDate
-              ? format(newAppointment.endDate, "yyyy-MM-dd'T'HH:mm")
-              : ""
-          }
-          onChange={(e) =>
-            setNewAppointment({
-              ...newAppointment,
-              endDate: new Date(e.currentTarget.value),
-            })
-          }
-          required
-        />
-        <Button fullWidth mt="md" onClick={addAppointment}>
-          Añadir Cita
-        </Button>
-      </Modal>
     );
   };
 
@@ -338,7 +252,8 @@ const CustomCalendar: React.FC = () => {
                 marginBottom: "0.5rem",
               }}
             >
-              {event.service} -{" "} {format(event.startDate, "HH:mm")} -{" "} {format(event.endDate, "HH:mm")}
+              {event.service} - {format(event.startDate, "HH:mm")} -{" "}
+              {format(event.endDate, "HH:mm")}
             </Paper>
           ))
         ) : (
@@ -352,13 +267,6 @@ const CustomCalendar: React.FC = () => {
 
   return (
     <Container size="lg" mt="xl">
-      <Group justify="space-between" mb="md">
-        <Title order={2}>Gestionar Agenda</Title>
-        <Button color="blue" onClick={() => setModalOpenedAppointment(true)}>
-          Añadir Cita
-        </Button>
-      </Group>
-
       <SegmentedControl
         value={view}
         onChange={(value) => setView(value as "month" | "week" | "day")}
@@ -403,9 +311,6 @@ const CustomCalendar: React.FC = () => {
 
       {/* Modal de citas del día */}
       {renderDayModal()}
-
-      {/* Modal para añadir cita */}
-      {renderAddAppointmentModal()}
     </Container>
   );
 };

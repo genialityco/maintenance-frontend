@@ -6,6 +6,7 @@ import ScheduleView from "../pages/admin/manageAgenda";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { JSX } from "react/jsx-runtime";
 import AdminServices from "../pages/admin/manageServices";
+import AdminEmployees from "../pages/admin/manageEmployees";
 
 const generalRoutes = [
   {
@@ -71,6 +72,19 @@ const generalRoutes = [
     MediaMetadata: {
       title: "Gestionar Servicios",
       description: "Gestiona los servicios de Galaxia Glamour.",
+      image: "/galaxia_glamour.png",
+    },
+  },
+  {
+    path: "/gestionar-empleados",
+    component: (props: JSX.IntrinsicAttributes) => (
+      <ProtectedRoute>
+        <AdminEmployees {...props} />
+      </ProtectedRoute>
+    ),
+    MediaMetadata: {
+      title: "Gestionar Empleados",
+      description: "Gestiona los empleados de Galaxia Glamour.",
       image: "/galaxia_glamour.png",
     },
   }

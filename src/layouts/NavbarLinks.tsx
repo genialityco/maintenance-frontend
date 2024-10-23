@@ -6,6 +6,7 @@ import { RiReservedLine } from "react-icons/ri";
 import { GrUserSettings } from "react-icons/gr";
 import { BiCalendarCheck } from "react-icons/bi";
 import { GiClawSlashes } from "react-icons/gi";
+import { FaUsers } from "react-icons/fa";
 
 interface NavbarLinksProps {
   isAdmin: boolean;
@@ -95,9 +96,21 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ isAdmin, closeNavbar }) => {
             style={{ textDecoration: "none" }}
           >
             <Flex align="center" justify="center" gap="sm">
-              <GiClawSlashes  size={20} color="white" />
+              <GiClawSlashes size={20} color="white" />
               <Text c="white" fw={600} my="md">
                 Gestionar servicios
+              </Text>
+            </Flex>
+          </NavLink>
+          <NavLink
+            to="/gestionar-empleados"
+            onClick={closeNavbar}
+            style={{ textDecoration: "none" }}
+          >
+            <Flex align="center" justify="center" gap="sm">
+              <FaUsers size={20} color="white" />
+              <Text c="white" fw={600} my="md">
+                Gestionar empleados
               </Text>
             </Flex>
           </NavLink>

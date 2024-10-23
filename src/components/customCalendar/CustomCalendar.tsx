@@ -30,11 +30,7 @@ import { es } from "date-fns/locale";
 import { useMediaQuery } from "@mantine/hooks";
 import { BiArrowBack } from "react-icons/bi";
 import { BsArrowRight } from "react-icons/bs";
-interface Appointment {
-  service: string;
-  startDate: Date;
-  endDate: Date;
-}
+import { Appointment } from "../../services/appointmentService";
 
 interface CustomCalendarProps {
   appointments: Appointment[];
@@ -65,8 +61,17 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ appointments }) => {
     setModalOpened(true);
   };
 
-  const getAppointmentsForDay = (day: Date) =>
-    appointments.filter((event) => isSameDay(event.startDate, day));
+  const getAppointmentsForDay = (day: Date) => {
+    // appointments.filter((event) => isSameDay(event.startDate, day));
+    const dayAppointments = appointments.filter((event) =>
+      isSameDay(event.startDate, day)
+    );
+
+    return dayAppointments.sort(
+      (a, b) =>
+        new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    );
+  };
 
   // Vista de mes
   const renderMonthView = () => {
@@ -169,8 +174,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ appointments }) => {
                       marginTop: "0.5rem",
                     }}
                   >
-                    {event.service} - {format(event.startDate, "HH:mm")} -{" "}
-                    {format(event.endDate, "HH:mm")}
+                    {event.service.name} - {format(event.startDate, "h:mm a")} -{" "}
+                    {format(event.endDate, "h:mm a")} - {event.employee.names} -{" "}
+                    {event.user.name}
                   </Paper>
                 ))
               ) : (
@@ -208,8 +214,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ appointments }) => {
                       marginTop: "0.5rem",
                     }}
                   >
-                    {event.service} - {format(event.startDate, "HH:mm")} -{" "}
-                    {format(event.endDate, "HH:mm")}
+                    {event.service.name} - {format(event.startDate, "h:mm a")} -{" "}
+                    {format(event.endDate, "h:mm a")} - {event.employee.names} -{" "}
+                    {event.user.name}
                   </Paper>
                 ))
               ) : (
@@ -252,8 +259,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ appointments }) => {
                 marginBottom: "0.5rem",
               }}
             >
-              {event.service} - {format(event.startDate, "HH:mm")} -{" "}
-              {format(event.endDate, "HH:mm")}
+              {event.service.name} - {format(event.startDate, "h:mm a")} -{" "}
+              {format(event.endDate, "h:mm a")} - {event.employee.names} -{" "}
+              {event.user.name}
             </Paper>
           ))
         ) : (

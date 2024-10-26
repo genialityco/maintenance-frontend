@@ -1,5 +1,6 @@
 import { apiEmployee } from "./axiosConfig";
 import { handleAxiosError } from "../utils/handleAxiosError";
+import { Service } from "./serviceService";
 
 // Definir la estructura de un empleado
 export interface Employee {
@@ -8,6 +9,7 @@ export interface Employee {
   position: string;
   email: string;
   phoneNumber: string;
+  services?: string[];
   username: string;
   password?: string;
 }
@@ -17,6 +19,7 @@ interface CreateEmployeePayload {
   position: string;
   email: string;
   phoneNumber: string;
+  services?: string[];
   username: string;
   password: string;
 }

@@ -21,15 +21,8 @@ import {
   deleteEmployee,
 } from "../../../services/employeeService";
 import ModalCreateEdit from "./components/ModalCreateEditEmployee";
-
-interface Employee {
-  _id: string;
-  names: string;
-  position: string;
-  email: string;
-  phoneNumber: string;
-  username: string;
-}
+import { getServices, Service } from "../../../services/serviceService";
+import { Employee } from "../../../services/employeeService";
 
 const AdminEmployees: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -37,9 +30,11 @@ const AdminEmployees: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+  const [services, setServices] = useState<Service[]>([]);
 
   useEffect(() => {
     loadEmployees();
+    fetchServices();
   }, []);
 
   useEffect(() => {
@@ -62,6 +57,23 @@ const AdminEmployees: React.FC = () => {
     }
   };
 
+  const fetchServices = async () => {
+    try {
+      const servicesData = await getServices();
+      setServices(servicesData);
+    } catch (error) {
+      console.error(error);
+      showNotification({
+        title: "Error",
+        message: "Error al cargar los servicios",
+        color: "red",
+        autoClose: 2000,
+        position: "top-right",
+      });
+    }
+  };
+
+  // Funciones para empleado
   const filterEmployees = () => {
     const filtered = employees.filter(
       (employee) =>
@@ -83,7 +95,10 @@ const AdminEmployees: React.FC = () => {
           e._id === employee._id ? updatedEmployee : e
         );
       } else {
-        const createdEmployee = await createEmployee({ ...employee, password: "defaultPassword" });
+        const createdEmployee = await createEmployee({
+          ...employee,
+          password: "defaultPassword",
+        });
         updatedEmployees = [...employees, createdEmployee];
       }
 
@@ -143,7 +158,6 @@ const AdminEmployees: React.FC = () => {
     setIsModalOpen(false);
     setEditingEmployee(null);
   };
-  
 
   return (
     <Box>
@@ -174,6 +188,7 @@ const AdminEmployees: React.FC = () => {
         isOpen={isModalOpen}
         onClose={onCloseModal}
         employee={editingEmployee}
+        services={services}
         onSave={handleSaveEmployee}
       />
 

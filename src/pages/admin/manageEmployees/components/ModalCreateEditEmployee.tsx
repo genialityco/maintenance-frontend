@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Stack, TextInput, Button, Flex } from "@mantine/core";
-
-interface Employee {
-  _id: string;
-  names: string;
-  position: string;
-  email: string;
-  phoneNumber: string;
-  username: string;
-  password?: string;
-}
+import { Modal, Stack, TextInput, Button, Flex, MultiSelect } from "@mantine/core";
+import { Service } from "../../../../services/serviceService";
+import { Employee } from "../../../../services/employeeService";
 
 interface ModalCreateEditEmployeeProps {
   isOpen: boolean;
   onClose: () => void;
   employee: Employee | null;
+  services: Service[];
   onSave: (employee: Employee) => void;
 }
 
@@ -22,6 +15,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
   isOpen,
   onClose,
   employee,
+  services,
   onSave,
 }) => {
   const [editingEmployee, setEditingEmployee] = useState<Employee>({
@@ -30,13 +24,18 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
     position: "",
     email: "",
     phoneNumber: "",
+    services: [],
     username: "",
     password: "",
   });
 
   useEffect(() => {
     if (employee) {
-      setEditingEmployee(employee);
+      // Ajuste para cargar solo los IDs de los servicios
+      setEditingEmployee({
+        ...employee,
+        services: employee.services || [],
+      });
     } else {
       setEditingEmployee({
         _id: "",
@@ -44,6 +43,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
         position: "",
         email: "",
         phoneNumber: "",
+        services: [],
         username: "",
         password: "",
       });
@@ -51,6 +51,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
   }, [employee]);
 
   const handleSave = () => {
+    // Guardar el empleado con servicios como IDs
     onSave(editingEmployee);
     handleClose();
   };
@@ -60,7 +61,6 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
     onClose();
   };
 
-  // Función para restablecer los campos del formulario
   const resetForm = () => {
     setEditingEmployee({
       _id: "",
@@ -68,6 +68,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
       position: "",
       email: "",
       phoneNumber: "",
+      services: [],
       username: "",
       password: "",
     });
@@ -86,20 +87,14 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
           label="Nombre completo"
           value={editingEmployee.names}
           onChange={(e) =>
-            setEditingEmployee({
-              ...editingEmployee,
-              names: e.currentTarget.value,
-            })
+            setEditingEmployee({ ...editingEmployee, names: e.currentTarget.value })
           }
         />
         <TextInput
           label="Posición"
           value={editingEmployee.position}
           onChange={(e) =>
-            setEditingEmployee({
-              ...editingEmployee,
-              position: e.currentTarget.value,
-            })
+            setEditingEmployee({ ...editingEmployee, position: e.currentTarget.value })
           }
         />
         <TextInput
@@ -107,30 +102,38 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
           type="email"
           value={editingEmployee.email}
           onChange={(e) =>
-            setEditingEmployee({
-              ...editingEmployee,
-              email: e.currentTarget.value,
-            })
+            setEditingEmployee({ ...editingEmployee, email: e.currentTarget.value })
           }
         />
         <TextInput
           label="Número de teléfono"
           value={editingEmployee.phoneNumber}
           onChange={(e) =>
-            setEditingEmployee({
-              ...editingEmployee,
-              phoneNumber: e.currentTarget.value,
-            })
+            setEditingEmployee({ ...editingEmployee, phoneNumber: e.currentTarget.value })
           }
         />
+
+        <MultiSelect
+          label="Servicios"
+          placeholder="Selecciona los servicios"
+          data={services.map((service) => ({
+            value: service._id,
+            label: service.name,
+          }))}
+          // Almacenar solo los IDs de los servicios seleccionados
+          value={editingEmployee.services}
+          onChange={(selectedServiceIds) => {
+            setEditingEmployee({ ...editingEmployee, services: selectedServiceIds });
+          }}
+          searchable
+          clearable
+        />
+
         <TextInput
           label="Nombre de usuario"
           value={editingEmployee.username}
           onChange={(e) =>
-            setEditingEmployee({
-              ...editingEmployee,
-              username: e.currentTarget.value,
-            })
+            setEditingEmployee({ ...editingEmployee, username: e.currentTarget.value })
           }
         />
         {!employee && (
@@ -139,10 +142,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
             type="password"
             value={editingEmployee.password}
             onChange={(e) =>
-              setEditingEmployee({
-                ...editingEmployee,
-                password: e.currentTarget.value,
-              })
+              setEditingEmployee({ ...editingEmployee, password: e.currentTarget.value })
             }
           />
         )}

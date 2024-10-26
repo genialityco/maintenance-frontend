@@ -61,7 +61,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           placeholder="Selecciona un usuario"
           data={users.map((user) => ({
             value: user._id,
-            label: user.name,
+            label: `${user.name} - ${user.phoneNumber}`,
           }))}
           value={newAppointment.user?._id || ""}
           onChange={(value) => {

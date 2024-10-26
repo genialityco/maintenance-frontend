@@ -30,7 +30,7 @@ interface ServiceItemProps {
   name: string;
   price: string;
   description?: string;
-  images?: string[]; // Propiedad para las imágenes del servicio
+  images?: string[];
 }
 
 interface ServiceCategoryProps {
@@ -143,6 +143,7 @@ const ServiceCategory: React.FC<ServiceCategoryProps> = ({
 const ServicesAndPrices: React.FC = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [serviceTypes, setServiceTypes] = useState<string[]>([]);
 
   // Obtener servicios desde la API
   useEffect(() => {
@@ -150,6 +151,11 @@ const ServicesAndPrices: React.FC = () => {
       setIsLoading(true);
       const data = await getServices();
       setServices(data);
+
+      // Extraer los tipos de servicios de forma única
+      const types = Array.from(new Set(data.map((service) => service.type)));
+      setServiceTypes(types);
+
       setIsLoading(false);
     };
 
@@ -180,18 +186,13 @@ const ServicesAndPrices: React.FC = () => {
 
       <Group justify="center" grow>
         <Flex direction="column">
-          <ServiceCategory
-            title="Pestañas Clásicas"
-            services={filterServicesByType("Pestañas Clásicas")}
-          />
-          <ServiceCategory
-            title="Pestañas Fibras Tecnológicas"
-            services={filterServicesByType("Pestañas Fibras Tecnológicas")}
-          />
-          <ServiceCategory
-            title="Retoques pestañas"
-            services={filterServicesByType("Retoques pestañas")}
-          />
+          {serviceTypes.map((type) => (
+            <ServiceCategory
+              key={type}
+              title={type}
+              services={filterServicesByType(type)}
+            />
+          ))}
           <ServiceCategory
             title="Insumos para cejas y pestañas"
             services={[

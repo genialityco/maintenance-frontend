@@ -7,10 +7,10 @@ import {
   createAppointment,
   getAppointments,
 } from "../../../services/appointmentService";
-import { Service, getServices } from "../../../services/serviceService";
 import AppointmentModal from "./components/AppointmentModal";
 import { Employee, getEmployees } from "../../../services/employeeService";
 import { getUsers, User } from "../../../services/userService";
+import { Service } from "../../../services/serviceService";
 
 interface CreateAppointmentPayload {
   service: Service;
@@ -24,15 +24,14 @@ const ScheduleView: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [newAppointment, setNewAppointment] = useState<Partial<CreateAppointmentPayload>>({});
   const [modalOpenedAppointment, setModalOpenedAppointment] = useState(false);
-  const [services, setServices] = useState<Service[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [filteredServices, setFilteredServices] = useState<Service[]>([]);
 
   useEffect(() => {
     fetchUsers();
     fetchEmployees();
     fetchAppointments();
-    fetchServices();
   }, []);
 
   const fetchUsers = async () => {
@@ -62,23 +61,21 @@ const ScheduleView: React.FC = () => {
     }
   };
 
-  const fetchServices = async () => {
-    try {
-      const response = await getServices();
-      setServices(response);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleServiceChange = (serviceId: string | null) => {
-    const selectedService = services.find((service) => service._id === serviceId);
+    const selectedService = filteredServices.find((service) => service._id === serviceId);
     setNewAppointment({ ...newAppointment, service: selectedService });
   };
 
   const handleEmployeeChange = (employeeId: string | null) => {
     const selectedEmployee = employees.find((employee) => employee._id === employeeId);
-    setNewAppointment({ ...newAppointment, employee: selectedEmployee });
+    if (selectedEmployee) {
+      setNewAppointment({ ...newAppointment, employee: selectedEmployee });
+      // Filtrar servicios según los que ofrece el empleado seleccionado
+      const availableServices = selectedEmployee.services || [];
+      setFilteredServices(availableServices as unknown as Service[]);
+    } else {
+      setFilteredServices([]);
+    }
   };
 
   const handleUserChange = (userId: string | null) => {
@@ -96,6 +93,7 @@ const ScheduleView: React.FC = () => {
   const closeModal = () => {
     setNewAppointment({});
     setModalOpenedAppointment(false);
+    setFilteredServices([]);
   };
 
   const addAppointment = async () => {
@@ -134,7 +132,7 @@ const ScheduleView: React.FC = () => {
         onClose={closeModal}
         newAppointment={newAppointment}
         setNewAppointment={setNewAppointment}
-        services={services}
+        services={filteredServices} 
         employees={employees}
         users={users}
         onServiceChange={handleServiceChange}

@@ -6,11 +6,14 @@ import {
   Appointment,
   createAppointment,
   getAppointments,
+  updateAppointment,
 } from "../../../services/appointmentService";
 import AppointmentModal from "./components/AppointmentModal";
 import { Employee, getEmployees } from "../../../services/employeeService";
 import { getUsers, User } from "../../../services/userService";
 import { Service } from "../../../services/serviceService";
+import { showNotification } from "@mantine/notifications";
+import { openConfirmModal } from "@mantine/modals";
 
 interface CreateAppointmentPayload {
   service: Service;
@@ -18,21 +21,39 @@ interface CreateAppointmentPayload {
   employee: Employee;
   startDate: Date;
   endDate: Date;
+  status: string;
 }
 
 const ScheduleView: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [newAppointment, setNewAppointment] = useState<Partial<CreateAppointmentPayload>>({});
+  const [newAppointment, setNewAppointment] = useState<
+    Partial<CreateAppointmentPayload>
+  >({});
   const [modalOpenedAppointment, setModalOpenedAppointment] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
 
   useEffect(() => {
     fetchUsers();
     fetchEmployees();
     fetchAppointments();
   }, []);
+
+  useEffect(() => {
+    if (newAppointment.employee) {
+      const selectedEmployee = employees.find(
+        (employee) => employee._id === newAppointment.employee?._id
+      );
+      if (selectedEmployee) {
+        setFilteredServices(selectedEmployee.services as unknown as Service[]);
+      }
+    } else {
+      setFilteredServices([]);
+    }
+  }, [newAppointment.employee, employees, setFilteredServices]);
 
   const fetchUsers = async () => {
     try {
@@ -62,18 +83,19 @@ const ScheduleView: React.FC = () => {
   };
 
   const handleServiceChange = (serviceId: string | null) => {
-    const selectedService = filteredServices.find((service) => service._id === serviceId);
+    const selectedService = filteredServices.find(
+      (service) => service._id === serviceId
+    );
     setNewAppointment({ ...newAppointment, service: selectedService });
   };
 
-  const handleEmployeeChange = (employeeId: string | null) => {
-    const selectedEmployee = employees.find((employee) => employee._id === employeeId);
+  const handleEmployeeChange = (value: string | null) => {
+    const selectedEmployee = employees.find((emp) => emp._id === value);
     if (selectedEmployee) {
       setNewAppointment({ ...newAppointment, employee: selectedEmployee });
-      // Filtrar servicios según los que ofrece el empleado seleccionado
-      const availableServices = selectedEmployee.services || [];
-      setFilteredServices(availableServices as unknown as Service[]);
+      setFilteredServices(selectedEmployee.services as unknown as Service[]);
     } else {
+      setNewAppointment({ ...newAppointment, employee: undefined });
       setFilteredServices([]);
     }
   };
@@ -84,21 +106,111 @@ const ScheduleView: React.FC = () => {
   };
 
   const openModal = () => {
-    if (!newAppointment.startDate) {
-      setNewAppointment({ ...newAppointment, startDate: new Date() });
+    // Verifica que la data esté disponible antes de abrir el modal
+    if (users.length > 0 && employees.length > 0) {
+      if (!newAppointment.startDate) {
+        setNewAppointment({ ...newAppointment, startDate: new Date() });
+      }
+      setModalOpenedAppointment(true);
+    } else {
+      showNotification({
+        title: "Error",
+        message: "Los datos aún no se han cargado",
+        color: "red",
+        autoClose: 3000,
+        position: "top-right",
+      });
     }
-    setModalOpenedAppointment(true);
   };
 
   const closeModal = () => {
     setNewAppointment({});
     setModalOpenedAppointment(false);
+    setSelectedAppointment(null);
     setFilteredServices([]);
   };
 
-  const addAppointment = async () => {
+  const handleEditAppointment = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setNewAppointment({
+      service: appointment.service,
+      user: appointment.user,
+      employee: appointment.employee,
+      startDate: new Date(appointment.startDate),
+      endDate: new Date(appointment.endDate),
+      status: appointment.status,
+    });
+    setModalOpenedAppointment(true);
+  };
+
+  const handleCancelAppointment = (appointmentId: string) => {
+    openConfirmModal({
+      title: "Cancelar cita",
+      children: <p>¿Estás seguro de que deseas cancelar esta cita?</p>,
+      centered: true,
+      labels: { confirm: "Cancelar", cancel: "Volver" },
+      confirmProps: { color: "red" },
+      onConfirm: async () => {
+        try {
+          await updateAppointment(appointmentId, { status: "cancelled" });
+          showNotification({
+            title: "Éxito",
+            message: "La cita ha sido cancelada.",
+            color: "green",
+            autoClose: 3000,
+            position: "top-right",
+          });
+          fetchAppointments();
+        } catch (error) {
+          showNotification({
+            title: "Error",
+            message: "No se pudo cancelar la cita.",
+            color: "red",
+            autoClose: 3000,
+            position: "top-right",
+          });
+          console.error(error);
+        }
+      },
+    });
+  };
+
+  const handleConfirmAppointment = (appointmentId: string) => {
+    openConfirmModal({
+      title: "Confirmar cita",
+      children: <p>¿Estás seguro de que deseas confirmar esta cita?</p>,
+      centered: true,
+      labels: { confirm: "Confirmar", cancel: "Cancelar" },
+      confirmProps: { color: "green" },
+      onConfirm: async () => {
+        try {
+          await updateAppointment(appointmentId, { status: "confirmed" });
+          showNotification({
+            title: "Éxito",
+            message: "La cita ha sido confirmada.",
+            color: "green",
+            autoClose: 3000,
+            position: "top-right",
+          });
+          fetchAppointments();
+        } catch (error) {
+          showNotification({
+            title: "Error",
+            message: "No se pudo confirmar la cita.",
+            color: "red",
+            autoClose: 3000,
+            position: "top-right",
+          });
+          console.error(error);
+        }
+      },
+    });
+  };
+
+  const addOrUpdateAppointment = async () => {
     try {
-      const { service, employee, user, startDate, endDate } = newAppointment;
+      const { service, employee, user, startDate, endDate, status } =
+        newAppointment;
 
       if (service && employee && user && startDate && endDate) {
         const appointmentPayload: CreateAppointmentPayload = {
@@ -107,13 +219,69 @@ const ScheduleView: React.FC = () => {
           user,
           startDate,
           endDate,
+          status: status || "pending",
         };
 
-        await createAppointment(appointmentPayload);
+        if (selectedAppointment) {
+          try {
+            const response = await updateAppointment(
+              selectedAppointment._id,
+              appointmentPayload
+            );
+            if (response) {
+              showNotification({
+                title: "Éxito",
+                message: "Cita actualizada correctamente",
+                color: "green",
+                autoClose: 3000,
+                position: "top-right",
+              });
+            }
+          } catch (error) {
+            showNotification({
+              title: "Error",
+              message: (error as Error).message,
+              color: "red",
+              autoClose: 3000,
+              position: "top-right",
+            });
+            console.error(error);
+          }
+        } else {
+          try {
+            const response = await createAppointment(appointmentPayload);
+            if (response) {
+              showNotification({
+                title: "Éxito",
+                message: "Cita creada correctamente",
+                color: "green",
+                autoClose: 3000,
+                position: "top-right",
+              });
+            }
+          } catch (error) {
+            showNotification({
+              title: "Error",
+              message: (error as Error).message,
+              color: "red",
+              autoClose: 3000,
+              position: "top-right",
+            });
+            console.error(error);
+          }
+        }
+
         closeModal();
         fetchAppointments();
       }
     } catch (error) {
+      showNotification({
+        title: "Error",
+        message: (error as Error).message,
+        color: "red",
+        autoClose: 3000,
+        position: "top-right",
+      });
       console.error(error);
     }
   };
@@ -126,19 +294,25 @@ const ScheduleView: React.FC = () => {
           Añadir Cita
         </Button>
       </Group>
-      <CustomCalendar appointments={appointments} />
+      <CustomCalendar
+        appointments={appointments}
+        onEditAppointment={handleEditAppointment}
+        onCancelAppointment={handleCancelAppointment}
+        onConfirmAppointment={handleConfirmAppointment}
+      />
       <AppointmentModal
         opened={modalOpenedAppointment}
         onClose={closeModal}
+        appointment={selectedAppointment}
         newAppointment={newAppointment}
         setNewAppointment={setNewAppointment}
-        services={filteredServices} 
+        services={filteredServices}
         employees={employees}
         users={users}
         onServiceChange={handleServiceChange}
         onEmployeeChange={handleEmployeeChange}
         onUserChange={handleUserChange}
-        onSave={addAppointment}
+        onSave={addOrUpdateAppointment}
       />
     </Box>
   );

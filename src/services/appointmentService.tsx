@@ -12,6 +12,7 @@ export interface Appointment {
   employee: Employee;
   startDate: Date;
   endDate: Date;
+  status: string;
 }
 
 interface CreateAppointmentPayload {
@@ -20,6 +21,7 @@ interface CreateAppointmentPayload {
   employee: Employee;
   startDate: Date;
   endDate: Date;
+  status: string;
 }
 
 interface Response<T> {

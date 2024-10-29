@@ -11,6 +11,7 @@ import { Appointment } from "../../../../services/appointmentService";
 interface AppointmentModalProps {
   opened: boolean;
   onClose: () => void;
+  appointment: Appointment | null;
   newAppointment: Partial<Appointment>;
   setNewAppointment: React.Dispatch<React.SetStateAction<Partial<Appointment>>>;
   services: Service[];
@@ -25,6 +26,7 @@ interface AppointmentModalProps {
 const AppointmentModal: React.FC<AppointmentModalProps> = ({
   opened,
   onClose,
+  appointment,
   newAppointment,
   setNewAppointment,
   services,
@@ -36,22 +38,49 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   onSave,
 }) => {
   useEffect(() => {
+    if (appointment) {
+      // Convertir startDate y endDate a instancias de Date para edición
+      setNewAppointment({
+        ...appointment,
+        startDate: new Date(appointment.startDate),
+        endDate: new Date(appointment.endDate),
+      });
+    }
+  }, [appointment, setNewAppointment]);
+
+  // Recalcular la hora de fin al cambiar la hora de inicio o el servicio
+  useEffect(() => {
     if (newAppointment.startDate && newAppointment.service) {
       const selectedService = services.find(
         (s) => s._id === newAppointment.service?._id
       );
+
+      // Recalcular solo si hay un servicio con duración definida
       if (selectedService?.duration) {
-        const endDate = addMinutes(newAppointment.startDate, selectedService.duration);
-        setNewAppointment((prev) => ({ ...prev, endDate }));
+        const endDate = addMinutes(
+          newAppointment.startDate,
+          selectedService.duration
+        );
+
+        setNewAppointment((prev) => ({
+          ...prev,
+          endDate: new Date(endDate),
+        }));
       }
     }
-  }, [newAppointment.startDate, newAppointment.service, services, setNewAppointment]);
+  }, [
+    newAppointment.startDate,
+    newAppointment.service,
+    services,
+    setNewAppointment,
+  ]);
 
   return (
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Añadir nueva cita"
+      title={appointment ? "Editar Cita" : "Añadir nueva cita"}
+      zIndex={1000}
       centered
       size="lg"
     >
@@ -64,11 +93,8 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
             label: `${user.name} - ${user.phoneNumber}`,
           }))}
           value={newAppointment.user?._id || ""}
-          onChange={(value) => {
-            onUserChange(value);
-          }}
+          onChange={(value) => onUserChange(value)}
           searchable
-          required
         />
 
         <Select
@@ -79,9 +105,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
             label: employee.names,
           }))}
           value={newAppointment.employee?._id || ""}
-          onChange={(value) => {
-            onEmployeeChange(value);
-          }}
+          onChange={(value) => onEmployeeChange(value)}
           searchable
           required
         />
@@ -94,9 +118,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
             label: service.name,
           }))}
           value={newAppointment.service?._id || ""}
-          onChange={(value) => {
-            onServiceChange(value);
-          }}
+          onChange={(value) => onServiceChange(value)}
           searchable
           required
         />
@@ -104,10 +126,12 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         {newAppointment.service && (
           <Box mt="sm">
             <Text size="sm" c="dimmed">
-              <strong>Precio:</strong> ${newAppointment.service.price.toLocaleString()}
+              <strong>Precio:</strong> $
+              {newAppointment.service.price.toLocaleString()}
             </Text>
             <Text size="sm" c="dimmed">
-              <strong>Duración:</strong> {newAppointment.service.duration} minutos
+              <strong>Duración:</strong> {newAppointment.service.duration}{" "}
+              minutos
             </Text>
           </Box>
         )}
@@ -124,9 +148,9 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
             <TimeSelector
               label="Hora de inicio"
               date={newAppointment.startDate}
-              onChange={(date) =>
-                setNewAppointment({ ...newAppointment, startDate: date })
-              }
+              onChange={(date) => {
+                setNewAppointment({ ...newAppointment, startDate: date });
+              }}
             />
           </Grid.Col>
 
@@ -152,7 +176,9 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           <Button variant="default" onClick={onClose}>
             Cancelar
           </Button>
-          <Button onClick={onSave}>Añadir Cita</Button>
+          <Button onClick={onSave}>
+            {appointment ? "Actualizar Cita" : "Crear Cita"}
+          </Button>
         </Group>
       </Box>
     </Modal>

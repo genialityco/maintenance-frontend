@@ -1,6 +1,12 @@
 import React from "react";
 import { Paper, Group, Text, Badge, Menu, ActionIcon } from "@mantine/core";
-import { BiDotsVertical, BiEdit, BiTrash, BiCheck } from "react-icons/bi";
+import {
+  BiDotsVertical,
+  BiEdit,
+  BiTrash,
+  BiCheck,
+  BiLock,
+} from "react-icons/bi";
 import { format } from "date-fns";
 import { Appointment } from "../../../services/appointmentService";
 
@@ -44,10 +50,9 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        height: "100%", // Ajuste para llenar el contenedor
-        overflow: "hidden", // Evitar el overflow del contenido
+        height: "100%",
+        overflow: "hidden",
         position: "relative",
-        zIndex: 1,
       }}
     >
       <Group justify="space-between" mb="xs">
@@ -66,14 +71,22 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
         Cliente: {appointment.user.name}
       </Text>
 
-      <Menu position="top-end" withArrow>
+      <Menu
+        disabled={appointment.status === "confirmed"}
+        position="top-end"
+        withArrow
+      >
         <Menu.Target>
           <ActionIcon
             variant="transparent"
             color="dark"
             style={{ position: "absolute", bottom: 5, right: 5, zIndex: 10 }}
           >
-            <BiDotsVertical size={18} />
+            {appointment.status === "confirmed" ? (
+              <BiLock />
+            ) : (
+              <BiDotsVertical />
+            )}
           </ActionIcon>
         </Menu.Target>
         <Menu.Dropdown>

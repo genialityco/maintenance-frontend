@@ -105,7 +105,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         />
       )}
 
-      <Group justify="center" mt="md">
+      <Group justify="center" my="md">
         <Button
           variant="light"
           leftSection={<BiArrowBack />}

@@ -88,6 +88,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         <Select
           label="Usuario"
           placeholder="Selecciona un usuario"
+          comboboxProps={{ zIndex: 1000 }}
           data={users.map((user) => ({
             value: user._id,
             label: `${user.name} - ${user.phoneNumber}`,
@@ -100,6 +101,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         <Select
           label="Empleado"
           placeholder="Selecciona un empleado"
+          comboboxProps={{ zIndex: 1000 }}
           data={employees.map((employee) => ({
             value: employee._id,
             label: employee.names,
@@ -113,6 +115,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         <Select
           label="Servicio"
           placeholder="Selecciona un servicio"
+          comboboxProps={{ zIndex: 1000 }}
           data={services.map((service) => ({
             value: service._id,
             label: service.name,

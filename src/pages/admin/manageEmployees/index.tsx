@@ -154,6 +154,16 @@ const AdminEmployees: React.FC = () => {
     }
   };
 
+  const handleEditEmployee = (employee: Employee) => {
+    if(!employee.services) return;
+    const employeeWithServices = {
+      ...employee,
+      services: employee.services.map((service) => service._id),
+    };
+    setEditingEmployee(employeeWithServices);
+    setIsModalOpen(true);
+  };
+
   const onCloseModal = () => {
     setIsModalOpen(false);
     setEditingEmployee(null);
@@ -208,15 +218,12 @@ const AdminEmployees: React.FC = () => {
                 <Text size="sm" c="dimmed" mt="xs">
                   {employee.phoneNumber}
                 </Text>
-                <Flex justify="space-between" mt="sm">
+                <Flex justify="flex-end" gap="sm" mt="sm">
                   <ActionIcon
                     variant="gradient"
                     radius="lg"
                     gradient={{ from: "blue", to: "cyan", deg: 90 }}
-                    onClick={() => {
-                      setIsModalOpen(true);
-                      setEditingEmployee(employee);
-                    }}
+                    onClick={() => handleEditEmployee(employee)}
                   >
                     <BsPencil />
                   </ActionIcon>

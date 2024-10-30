@@ -5,6 +5,7 @@ import CustomCalendar from "../../../components/customCalendar/CustomCalendar";
 import {
   Appointment,
   createAppointment,
+  deleteAppointment,
   getAppointments,
   updateAppointment,
 } from "../../../services/appointmentService";
@@ -146,21 +147,31 @@ const ScheduleView: React.FC = () => {
   const handleCancelAppointment = (appointmentId: string) => {
     openConfirmModal({
       title: "Cancelar cita",
-      children: <p>¿Estás seguro de que deseas cancelar esta cita?</p>,
+      children: (
+        <p>
+          Al cancelar se <strong>elimina</strong> el registro de la cita ¿Estás
+          seguro de que deseas cancelar esta cita?
+        </p>
+      ),
       centered: true,
-      labels: { confirm: "Cancelar", cancel: "Volver" },
+      labels: { confirm: "Cancelar y eliminar", cancel: "Volver" },
       confirmProps: { color: "red" },
       onConfirm: async () => {
         try {
-          await updateAppointment(appointmentId, { status: "cancelled" });
-          showNotification({
-            title: "Éxito",
-            message: "La cita ha sido cancelada.",
-            color: "green",
-            autoClose: 3000,
-            position: "top-right",
+          const response = await updateAppointment(appointmentId, {
+            status: "cancelled",
           });
-          fetchAppointments();
+          if (response && response.status === "cancelled") {
+            await deleteAppointment(appointmentId);
+            showNotification({
+              title: "Éxito",
+              message: "La cita ha sido cancelada y eliminada.",
+              color: "green",
+              autoClose: 3000,
+              position: "top-right",
+            });
+            fetchAppointments();
+          }
         } catch (error) {
           showNotification({
             title: "Error",

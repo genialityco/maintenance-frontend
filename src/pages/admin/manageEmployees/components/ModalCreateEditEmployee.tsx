@@ -121,9 +121,12 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
             label: service.name,
           }))}
           // Almacenar solo los IDs de los servicios seleccionados
-          value={editingEmployee.services}
+          value={(editingEmployee.services || []).map(service => service._id)}
           onChange={(selectedServiceIds) => {
-            setEditingEmployee({ ...editingEmployee, services: selectedServiceIds });
+            setEditingEmployee({ 
+              ...editingEmployee, 
+              services: selectedServiceIds.map(id => services.find(service => service._id === id)!)
+            });
           }}
           searchable
           clearable

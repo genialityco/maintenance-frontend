@@ -47,10 +47,24 @@ export const getAppointmentById = async (
   appointmentId: string
 ): Promise<Appointment | undefined> => {
   try {
-    const response = await apiAppointment.get<Response<Appointment>>(`/${appointmentId}`);
+    const response = await apiAppointment.get<Response<Appointment>>(
+      `/${appointmentId}`
+    );
     return response.data.data;
   } catch (error) {
     handleAxiosError(error, "Error al obtener la cita");
+  }
+};
+
+export const getAppointmentsByEmployee = async (employeeId: string) => {
+  try {
+    const response = await apiAppointment.get<Response<Appointment[]>>(
+      `/employee/${employeeId}`
+    );
+    return response.data.data;
+  } catch (error) {
+    handleAxiosError(error, "Error al obtener las citas");
+    return [];
   }
 };
 
@@ -59,7 +73,10 @@ export const createAppointment = async (
   appointmentData: CreateAppointmentPayload
 ): Promise<Appointment | undefined> => {
   try {
-    const response = await apiAppointment.post<Response<Appointment>>("/", appointmentData);
+    const response = await apiAppointment.post<Response<Appointment>>(
+      "/",
+      appointmentData
+    );
     return response.data.data;
   } catch (error) {
     handleAxiosError(error, "Error al crear la cita");
@@ -83,7 +100,9 @@ export const updateAppointment = async (
 };
 
 // Eliminar una cita
-export const deleteAppointment = async (appointmentId: string): Promise<void> => {
+export const deleteAppointment = async (
+  appointmentId: string
+): Promise<void> => {
   try {
     await apiAppointment.delete<Response<void>>(`/${appointmentId}`);
   } catch (error) {

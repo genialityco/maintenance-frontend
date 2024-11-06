@@ -12,6 +12,7 @@ export interface Employee {
   services?: Service[];
   username: string;
   password?: string;
+  isActive: boolean;
 }
 
 interface CreateEmployeePayload {
@@ -22,6 +23,7 @@ interface CreateEmployeePayload {
   services?: Partial<Service>[];
   username: string;
   password: string;
+  isActive: boolean;
 }
 
 interface Response<T> {

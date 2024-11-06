@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Stack, TextInput, Button, Flex, MultiSelect } from "@mantine/core";
+import {
+  Modal,
+  Stack,
+  TextInput,
+  Button,
+  Flex,
+  MultiSelect,
+  ActionIcon,
+} from "@mantine/core";
 import { Service } from "../../../../services/serviceService";
 import { Employee } from "../../../../services/employeeService";
+import { IoEyeOff } from "react-icons/io5";
+import { FaEye } from "react-icons/fa";
 
 interface ModalCreateEditEmployeeProps {
   isOpen: boolean;
@@ -28,6 +38,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
     username: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (employee) {
@@ -87,14 +98,20 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
           label="Nombre completo"
           value={editingEmployee.names}
           onChange={(e) =>
-            setEditingEmployee({ ...editingEmployee, names: e.currentTarget.value })
+            setEditingEmployee({
+              ...editingEmployee,
+              names: e.currentTarget.value,
+            })
           }
         />
         <TextInput
           label="Posición"
           value={editingEmployee.position}
           onChange={(e) =>
-            setEditingEmployee({ ...editingEmployee, position: e.currentTarget.value })
+            setEditingEmployee({
+              ...editingEmployee,
+              position: e.currentTarget.value,
+            })
           }
         />
         <TextInput
@@ -102,14 +119,20 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
           type="email"
           value={editingEmployee.email}
           onChange={(e) =>
-            setEditingEmployee({ ...editingEmployee, email: e.currentTarget.value })
+            setEditingEmployee({
+              ...editingEmployee,
+              email: e.currentTarget.value,
+            })
           }
         />
         <TextInput
           label="Número de teléfono"
           value={editingEmployee.phoneNumber}
           onChange={(e) =>
-            setEditingEmployee({ ...editingEmployee, phoneNumber: e.currentTarget.value })
+            setEditingEmployee({
+              ...editingEmployee,
+              phoneNumber: e.currentTarget.value,
+            })
           }
         />
 
@@ -121,11 +144,13 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
             label: service.name,
           }))}
           // Almacenar solo los IDs de los servicios seleccionados
-          value={(editingEmployee.services || []).map(service => service._id)}
+          value={(editingEmployee.services || []).map((service) => service._id)}
           onChange={(selectedServiceIds) => {
-            setEditingEmployee({ 
-              ...editingEmployee, 
-              services: selectedServiceIds.map(id => services.find(service => service._id === id)!)
+            setEditingEmployee({
+              ...editingEmployee,
+              services: selectedServiceIds.map(
+                (id) => services.find((service) => service._id === id)!
+              ),
             });
           }}
           searchable
@@ -136,19 +161,33 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
           label="Nombre de usuario"
           value={editingEmployee.username}
           onChange={(e) =>
-            setEditingEmployee({ ...editingEmployee, username: e.currentTarget.value })
+            setEditingEmployee({
+              ...editingEmployee,
+              username: e.currentTarget.value,
+            })
           }
         />
-        {!employee && (
-          <TextInput
-            label="Contraseña"
-            type="password"
-            value={editingEmployee.password}
-            onChange={(e) =>
-              setEditingEmployee({ ...editingEmployee, password: e.currentTarget.value })
-            }
-          />
-        )}
+
+        <TextInput
+          label="Contraseña"
+          type={showPassword ? "text" : "password"}
+          value={editingEmployee.password}
+          onChange={(e) =>
+            setEditingEmployee({
+              ...editingEmployee,
+              password: e.currentTarget.value,
+            })
+          }
+          rightSection={
+            <ActionIcon
+              variant="transparent"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? <IoEyeOff size={16} /> : <FaEye size={16} />}
+            </ActionIcon>
+          }
+        />
+
         <Flex justify="end">
           <Button onClick={handleSave}>
             {employee ? "Guardar Cambios" : "Agregar Empleado"}

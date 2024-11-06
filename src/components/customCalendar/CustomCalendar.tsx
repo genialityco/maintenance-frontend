@@ -20,6 +20,7 @@ import { useMediaQuery } from "@mantine/hooks";
 
 interface CustomCalendarProps {
   appointments: Appointment[];
+  onOpenModal: () => void;
   onEditAppointment: (appointment: Appointment) => void;
   onCancelAppointment: (appointmentId: string) => void;
   onConfirmAppointment: (appointmentId: string) => void;
@@ -27,6 +28,7 @@ interface CustomCalendarProps {
 
 const CustomCalendar: React.FC<CustomCalendarProps> = ({
   appointments,
+  onOpenModal,
   onEditAppointment,
   onCancelAppointment,
   onConfirmAppointment,
@@ -88,6 +90,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         <WeekView
           currentDate={currentDate}
           isMobile={isMobile}
+          onOpenModal={onOpenModal}
           getAppointmentsForDay={getAppointmentsForDay}
           onEditAppointment={onEditAppointment}
           onCancelAppointment={onCancelAppointment}
@@ -98,6 +101,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         <DayView
           currentDate={currentDate}
           isMobile={isMobile}
+          onOpenModal={onOpenModal}
           getAppointmentsForDay={getAppointmentsForDay}
           onEditAppointment={onEditAppointment}
           onCancelAppointment={onCancelAppointment}
@@ -134,6 +138,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         opened={modalOpened}
         selectedDay={selectedDay}
         onClose={() => setModalOpened(false)}
+        onOpenModal={onOpenModal}
         getAppointmentsForDay={getAppointmentsForDay}
         onEditAppointment={onEditAppointment}
         onCancelAppointment={onCancelAppointment}

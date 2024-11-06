@@ -22,6 +22,7 @@ import { useExpandAppointment } from "../hooks/useExpandAppointment";
 interface WeekViewProps {
   currentDate: Date;
   isMobile: boolean;
+  onOpenModal: () => void;
   getAppointmentsForDay: (day: Date) => Appointment[];
   onEditAppointment: (appointment: Appointment) => void;
   onCancelAppointment: (appointmentId: string) => void;
@@ -31,6 +32,7 @@ interface WeekViewProps {
 const WeekView: React.FC<WeekViewProps> = ({
   currentDate,
   isMobile,
+  onOpenModal,
   getAppointmentsForDay,
   onEditAppointment,
   onCancelAppointment,
@@ -129,6 +131,7 @@ const WeekView: React.FC<WeekViewProps> = ({
                           display: "flex",
                           alignItems: "center",
                         }}
+                        onClick={() => onOpenModal()}
                       >
                         <Text
                           size="sm"

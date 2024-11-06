@@ -1,6 +1,12 @@
 import React from "react";
 import { Grid, Box, Paper, Text } from "@mantine/core";
-import { eachDayOfInterval, startOfMonth, endOfMonth, format } from "date-fns";
+import {
+  eachDayOfInterval,
+  startOfMonth,
+  endOfMonth,
+  format,
+  isSameDay,
+} from "date-fns";
 import {
   startOfWeek as startOfCalendarWeek,
   endOfWeek as endOfCalendarWeek,
@@ -61,6 +67,13 @@ const MonthView: React.FC<MonthViewProps> = ({
                 cursor: "pointer",
                 position: "relative",
                 height: "100%",
+                backgroundColor: isSameDay(day, currentDate)
+                  ? "#f0f8ff"
+                  : "white",
+                borderColor: isSameDay(day, currentDate)
+                  ? "#007bff"
+                  : undefined,
+                borderWidth: isSameDay(day, currentDate) ? 2 : 1,
               }}
             >
               <Text size={isMobile ? "xs" : "sm"} mb="xs" ta="center" fw={500}>

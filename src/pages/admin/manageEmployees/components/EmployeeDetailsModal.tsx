@@ -10,7 +10,7 @@ import {
   Button,
   Group,
   Loader,
-  NumberInput,
+  Flex,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import {
@@ -18,19 +18,22 @@ import {
   getAppointmentsByEmployee,
 } from "../../../../services/appointmentService";
 import { Employee } from "../../../../services/employeeService";
+import {
+  Advance,
+  getAdvancesByEmployee,
+} from "../../../../services/advanceService";
 
-// Interfaz para el modal de detalles del empleado
 interface EmployeeDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   employee: Employee | null;
 }
 
-// Interfaz para la nómina
 interface PayrollSummary {
   totalAppointments: number;
   totalEarnings: number;
-  finalEarnings: number; // Nómina ajustada con adelantos
+  totalAdvances: number;
+  finalEarnings: number;
 }
 
 const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
@@ -39,37 +42,37 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
   employee,
 }) => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [advances, setAdvances] = useState<Advance[]>([]);
   const [payroll, setPayroll] = useState<PayrollSummary | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingAdvances, setLoadingAdvances] = useState<boolean>(false);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [advanceFactor, setAdvanceFactor] = useState<number>(0);
 
   useEffect(() => {
     if (employee && isOpen) {
       fetchAppointments();
+      fetchAdvances();
     }
   }, [employee, isOpen, startDate, endDate]);
 
-  // Obtener las citas del empleado dentro del rango seleccionado
   const fetchAppointments = async () => {
     if (!employee || !startDate || !endDate) return;
 
     setLoading(true);
     try {
-      const employeeAppointments = await getAppointmentsByEmployee(employee._id);
-
-      // Filtrar citas por rango de fechas
-      const filteredAppointments = employeeAppointments.filter((appointment) => {
-        const appointmentDate = new Date(appointment.startDate);
-        return (
-          appointmentDate >= startDate &&
-          appointmentDate <= endDate
-        );
-      });
+      const employeeAppointments = await getAppointmentsByEmployee(
+        employee._id
+      );
+      const filteredAppointments = employeeAppointments.filter(
+        (appointment) => {
+          const appointmentDate = new Date(appointment.startDate);
+          return appointmentDate >= startDate && appointmentDate <= endDate;
+        }
+      );
 
       setAppointments(filteredAppointments);
-      calculatePayroll(filteredAppointments);
+      calculatePayroll(filteredAppointments, advances);
     } catch (error) {
       console.error("Error al cargar citas del empleado", error);
     } finally {
@@ -77,25 +80,58 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
     }
   };
 
-  // Calcular la nómina del empleado con el factor de adelantos
-  const calculatePayroll = (appointments: Appointment[]) => {
+  const fetchAdvances = async () => {
+    if (!employee || !startDate || !endDate) return;
+
+    setLoadingAdvances(true);
+    try {
+      const employeeId = employee?._id;
+      const response = await getAdvancesByEmployee(employeeId);
+      const filteredAdvances = response.filter((advance: Advance) => {
+        const advanceDate = new Date(advance.date);
+        return advanceDate >= startDate && advanceDate <= endDate;
+      });
+
+      setAdvances(filteredAdvances);
+      calculatePayroll(appointments, filteredAdvances);
+    } catch (error) {
+      console.error("Error al cargar avances del empleado", error);
+    } finally {
+      setLoadingAdvances(false);
+    }
+  };
+
+  const calculatePayroll = (
+    appointments: Appointment[],
+    advances: Advance[]
+  ) => {
     const totalEarnings = appointments.reduce((total, appointment) => {
       return total + (appointment.service?.price || 0);
     }, 0);
 
-    // Ajustar el cálculo de la nómina con adelantos
-    const finalEarnings = totalEarnings - advanceFactor;
+    const totalAdvances = advances.reduce((total, advance) => {
+      return total + advance.amount;
+    }, 0);
+
+    const finalEarnings = totalEarnings - totalAdvances;
 
     const payrollSummary: PayrollSummary = {
       totalAppointments: appointments.length,
       totalEarnings,
+      totalAdvances,
       finalEarnings,
     };
 
     setPayroll(payrollSummary);
   };
 
-  // Formatear la moneda para la nómina
+  const handleOnClose = () => {
+    setAppointments([]);
+    setAdvances([]);
+    setPayroll(null);
+    onClose();
+  };
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("es-CO", {
       style: "currency",
@@ -103,36 +139,35 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
     }).format(value);
   };
 
-  // Estilo para resaltar citas según el estado
-  const getRowStyle = (status: string) => {
+  const getStatusStyles = (status: string) => {
     switch (status) {
       case "confirmed":
-        return { backgroundColor: "#e0f7e9" };
+        return {
+          label: "Confirmado",
+          styles: { backgroundColor: "#d4edda", borderColor: "#28a745" },
+        };
       case "pending":
-        return { backgroundColor: "#fff8e1" };
-      default:
-        return {};
-    }
-  };
-
-  // Función para convertir texto inglés a español
-  const translateStatus = (status: string) => {
-    switch (status) {
-      case "confirmed":
-        return "Confirmada";
-      case "pending":
-        return "Pendiente";
+        return {
+          label: "Pendiente",
+          styles: { backgroundColor: "#fff3cd", borderColor: "#ffc107" },
+        };
       case "cancelled":
-        return "Cancelada";
+        return {
+          label: "Cancelado",
+          styles: { backgroundColor: "#f8d7da", borderColor: "#dc3545" },
+        };
       default:
-        return status;
+        return {
+          label: "Sin estado",
+          styles: { backgroundColor: "#f0f4f8", borderColor: "#007bff" },
+        };
     }
   };
 
   return (
     <Modal
       opened={isOpen}
-      onClose={onClose}
+      onClose={handleOnClose}
       title="Detalles del Empleado"
       size="xl"
       centered
@@ -142,7 +177,6 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
         <Text c="dimmed">{employee?.position}</Text>
         <Divider my="sm" />
 
-        {/* Selección de rango de fechas */}
         <Group justify="space-around" mt="md" mb="sm">
           <DatePickerInput
             label="Fecha de inicio del corte"
@@ -156,18 +190,17 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
             value={endDate}
             onChange={setEndDate}
           />
-          <NumberInput
-            label="Adelantos"
-            value={advanceFactor}
-            onChange={(value) => setAdvanceFactor(Number(value) || 0)}
-            min={0}
-          />
         </Group>
 
         {/* Contenedor de citas */}
-        <ScrollArea style={{ height: "300px" }} scrollbarSize={10}>
+        <Divider my="sm" />
+        <Title order={3}>Citas agendadas</Title>
+        <ScrollArea style={{ height: "200px" }} scrollbarSize={10}>
           {loading ? (
-            <Loader size="md" mt="md" />
+            <Flex justify="center" align="center" direction="column">
+              <Loader size={40} />
+              <Text mt="xl">Cargando citas...</Text>
+            </Flex>
           ) : (
             <Table highlightOnHover>
               <Table.Thead>
@@ -184,7 +217,7 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
                   appointments.map((appointment) => (
                     <Table.Tr
                       key={appointment._id}
-                      style={getRowStyle(appointment.status)}
+                      style={getStatusStyles(appointment.status).styles}
                     >
                       <Table.Td>
                         {new Date(appointment.startDate).toLocaleDateString()}
@@ -194,7 +227,9 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
                       <Table.Td>
                         {formatCurrency(appointment.service?.price || 0)}
                       </Table.Td>
-                      <Table.Td>{translateStatus(appointment.status)}</Table.Td>
+                      <Table.Td>
+                        {getStatusStyles(appointment.status).label}
+                      </Table.Td>
                     </Table.Tr>
                   ))
                 ) : (
@@ -209,14 +244,64 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
           )}
         </ScrollArea>
 
-        {/* Resumen de nómina */}
+        {/* Contenedor de avances */}
+        <Divider my="sm" />
+        <Title order={3}>Avances / Descuentos</Title>
+        <ScrollArea style={{ height: "150px" }} scrollbarSize={10}>
+          {loadingAdvances ? (
+            <Flex justify="center" align="center" direction="column">
+              <Loader size={40} />
+              <Text mt="xl">Cargando avances y descuentos...</Text>
+            </Flex>
+          ) : (
+            <Table highlightOnHover>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Fecha</Table.Th>
+                  <Table.Th>Monto</Table.Th>
+                  <Table.Th>Descripción</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {advances.length > 0 ? (
+                  advances.map((advance) => (
+                    <Table.Tr key={advance._id}>
+                      <Table.Td>
+                        {new Date(advance.date).toLocaleDateString()}
+                      </Table.Td>
+                      <Table.Td>{formatCurrency(advance.amount)}</Table.Td>
+                      <Table.Td>
+                        {advance.description || "Sin descripción"}
+                      </Table.Td>
+                    </Table.Tr>
+                  ))
+                ) : (
+                  <Table.Tr>
+                    <Table.Td colSpan={3}>
+                      <Text ta="center">No hay avances registrados</Text>
+                    </Table.Td>
+                  </Table.Tr>
+                )}
+              </Table.Tbody>
+            </Table>
+          )}
+        </ScrollArea>
+
+        {/* Resumen de nómina con detalle vertical */}
         <Divider my="sm" />
         <Title order={3}>Resumen de Nómina</Title>
-        <Group mt="sm" justify="space-between">
-          <Text>Total de Citas: {payroll?.totalAppointments || 0}</Text>
-          <Text>Total Ganado: {formatCurrency(payroll?.totalEarnings || 0)}</Text>
-          <Text>Total Ajustado: {formatCurrency(payroll?.finalEarnings || 0)}</Text>
-        </Group>
+        <Box mt="sm">
+          <Text>
+            Total Ganado: {formatCurrency(payroll?.totalEarnings || 0)}
+          </Text>
+          <Text>
+            Total Restado (Avances):{" "}
+            {formatCurrency(payroll?.totalAdvances || 0)}
+          </Text>
+          <Text>
+            Total a Recibir: {formatCurrency(payroll?.finalEarnings || 0)}
+          </Text>
+        </Box>
 
         <Group mt="md" justify="flex-end">
           <Button variant="default" onClick={onClose}>

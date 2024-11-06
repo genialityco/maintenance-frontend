@@ -21,5 +21,6 @@ const apiAppointment: AxiosInstance = createAxiosInstance(`${API_BASE_URL}/appoi
 const apiService: AxiosInstance = createAxiosInstance(`${API_BASE_URL}/service`);
 const apiImage: AxiosInstance = createAxiosInstance(`${API_BASE_URL}/image`);
 const apiEmployee: AxiosInstance = createAxiosInstance(`${API_BASE_URL}/employees`);
+const apiAdvance: AxiosInstance = createAxiosInstance(`${API_BASE_URL}/advance`);
 
-export { apiUser, apiAppointment, apiService, apiImage, apiEmployee };
+export { apiUser, apiAppointment, apiService, apiImage, apiEmployee, apiAdvance };

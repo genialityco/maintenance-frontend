@@ -247,6 +247,7 @@ const ScheduleView: React.FC = () => {
                 autoClose: 3000,
                 position: "top-right",
               });
+              closeModal();
             }
           } catch (error) {
             showNotification({
@@ -269,6 +270,7 @@ const ScheduleView: React.FC = () => {
                 autoClose: 3000,
                 position: "top-right",
               });
+              closeModal();
             }
           } catch (error) {
             showNotification({
@@ -281,8 +283,6 @@ const ScheduleView: React.FC = () => {
             console.error(error);
           }
         }
-
-        closeModal();
         fetchAppointments();
       }
     } catch (error) {
@@ -307,6 +307,7 @@ const ScheduleView: React.FC = () => {
       </Group>
       <CustomCalendar
         appointments={appointments}
+        onOpenModal={openModal}
         onEditAppointment={handleEditAppointment}
         onCancelAppointment={handleCancelAppointment}
         onConfirmAppointment={handleConfirmAppointment}

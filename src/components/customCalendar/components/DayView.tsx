@@ -14,6 +14,7 @@ import { useExpandAppointment } from "../hooks/useExpandAppointment";
 interface DayViewProps {
   currentDate: Date;
   isMobile: boolean;
+  onOpenModal: () => void;
   getAppointmentsForDay: (day: Date) => Appointment[];
   onEditAppointment: (appointment: Appointment) => void;
   onCancelAppointment: (appointmentId: string) => void;
@@ -23,6 +24,7 @@ interface DayViewProps {
 const DayView: React.FC<DayViewProps> = ({
   currentDate,
   isMobile,
+  onOpenModal,
   getAppointmentsForDay,
   onEditAppointment,
   onCancelAppointment,
@@ -94,6 +96,7 @@ const DayView: React.FC<DayViewProps> = ({
                     display: "flex",
                     alignItems: "center",
                   }}
+                  onClick={() => onOpenModal()}
                 >
                   <Text
                     size="sm"

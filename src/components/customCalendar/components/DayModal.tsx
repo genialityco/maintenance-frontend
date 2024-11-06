@@ -15,6 +15,7 @@ interface DayModalProps {
   opened: boolean;
   selectedDay: Date | null;
   onClose: () => void;
+  onOpenModal: () => void;
   getAppointmentsForDay: (day: Date) => Appointment[];
   onEditAppointment: (appointment: Appointment) => void;
   onCancelAppointment: (appointmentId: string) => void;
@@ -25,6 +26,7 @@ const DayModal: React.FC<DayModalProps> = ({
   opened,
   selectedDay,
   onClose,
+  onOpenModal,
   getAppointmentsForDay,
   onEditAppointment,
   onCancelAppointment,
@@ -93,6 +95,7 @@ const DayModal: React.FC<DayModalProps> = ({
                 display: "flex",
                 alignItems: "center",
               }}
+              onClick={() => onOpenModal()}
             >
               <Text size="sm" style={{ minWidth: "60px", marginLeft: "10px" }}>
                 {format(interval, "h a")}

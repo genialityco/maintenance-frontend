@@ -80,7 +80,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
       opened={opened}
       onClose={onClose}
       title={appointment ? "Editar Cita" : "Añadir nueva cita"}
-      zIndex={1000}
+      zIndex={300}
       centered
       size="lg"
     >
@@ -88,7 +88,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         <Select
           label="Usuario"
           placeholder="Selecciona un usuario"
-          comboboxProps={{ zIndex: 1000 }}
+          comboboxProps={{ zIndex: 300 }}
           data={users.map((user) => ({
             value: user._id,
             label: `${user.name} - ${user.phoneNumber}`,
@@ -101,7 +101,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         <Select
           label="Empleado"
           placeholder="Selecciona un empleado"
-          comboboxProps={{ zIndex: 1000 }}
+          comboboxProps={{ zIndex: 300 }}
           data={employees.map((employee) => ({
             value: employee._id,
             label: employee.names,
@@ -115,7 +115,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         <Select
           label="Servicio"
           placeholder="Selecciona un servicio"
-          comboboxProps={{ zIndex: 1000 }}
+          comboboxProps={{ zIndex: 300 }}
           data={services.map((service) => ({
             value: service._id,
             label: service.name,

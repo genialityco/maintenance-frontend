@@ -37,6 +37,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
     services: [],
     username: "",
     password: "",
+    isActive: true,
   });
   const [showPassword, setShowPassword] = useState(false);
 
@@ -57,6 +58,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
         services: [],
         username: "",
         password: "",
+        isActive: true,
       });
     }
   }, [employee]);
@@ -82,6 +84,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
       services: [],
       username: "",
       password: "",
+      isActive: true,
     });
   };
 

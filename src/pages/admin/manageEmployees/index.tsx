@@ -49,7 +49,7 @@ const AdminEmployees: React.FC = () => {
   const loadEmployees = async () => {
     try {
       const employeesData = await getEmployees();
-      const sortedEmployees = employeesData.sort((a, b) => (b.isActive ? 1 : -1));
+      const sortedEmployees = employeesData.sort((_a, b) => (b.isActive ? 1 : -1));
       setEmployees(sortedEmployees);
     } catch (error) {
       console.error(error);

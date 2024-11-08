@@ -68,7 +68,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
         Empleado: {appointment.employee.names}
       </Text>
       <Text size="xs" c="dimmed" truncate>
-        Cliente: {appointment.user.name}
+        Cliente: {appointment.client.name}
       </Text>
 
       <Menu

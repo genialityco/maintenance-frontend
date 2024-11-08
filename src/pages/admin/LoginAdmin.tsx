@@ -19,10 +19,13 @@ const LoginAdmin: React.FC = () => {
   const dispatch = useDispatch();
 
   const handleLogin = () => {
-    if (username === "natysipq" && password === "0714") {
+    const adminUser = import.meta.env.VITE_APP_USER_ADMIN;
+    const adminPassword = import.meta.env.VITE_APP_PASSWORD_ADMIN;
+
+    if (username === adminUser && password === adminPassword) {
       const data: LoginResponse = {
-        user: "natysipq",
-        token: "0714",
+        user: adminUser,
+        token: "authToken",
         role: "admin",
       };
       dispatch(

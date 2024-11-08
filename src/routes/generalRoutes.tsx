@@ -1,7 +1,7 @@
 import PlanViewer from "../pages/loyalty/PlanViewer";
 import ServicesAndPrices from "../components/ServicesAndPrices";
 import LoginAdmin from "../pages/admin/LoginAdmin";
-import UserManagement from "../pages/admin/manageUsers";
+import ClientManagement from "../pages/admin/manageClients";
 import ScheduleView from "../pages/admin/manageAgenda";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { JSX } from "react/jsx-runtime";
@@ -37,10 +37,10 @@ const generalRoutes = [
     },
   },
   {
-    path: "/gestionar-usuarios",
+    path: "/gestionar-clientes",
     component: (props: JSX.IntrinsicAttributes) => (
       <ProtectedRoute>
-        <UserManagement {...props} />
+        <ClientManagement {...props} />
       </ProtectedRoute>
     ),
     MediaMetadata: {

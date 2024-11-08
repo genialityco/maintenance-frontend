@@ -8,30 +8,29 @@ import {
   Flex,
   Badge,
 } from "@mantine/core";
-import { User as UserType } from "../../../services/userService";
+import { Client as ClientType } from "../../../services/clientService";
 import { BiTrash } from "react-icons/bi";
 import { CgAdd, CgUserAdd } from "react-icons/cg";
 
-interface UserTableProps {
-  users: UserType[];
-  fetchUsers: () => void;
-  handleDeleteUser: (id: string) => void;
-  handleRegisterService: (userId: string) => void;
-  handleReferal: (userId: string) => void;
+interface ClientTableProps {
+  clients: ClientType[];
+  handleDeleteClient: (id: string) => void;
+  handleRegisterService: (clientId: string) => void;
+  handleReferral: (clientId: string) => void;
   error: string | null;
 }
 
-const UserTable: React.FC<UserTableProps> = ({
-  users,
-  handleDeleteUser,
+const ClientTable: React.FC<ClientTableProps> = ({
+  clients,
+  handleDeleteClient,
   handleRegisterService,
-  handleReferal,
+  handleReferral,
   error,
 }) => {
   return (
     <Box m="auto">
       {error && (
-        <Text mt="md" c="red">
+        <Text mt="md" color="red">
           {error}
         </Text>
       )}
@@ -50,38 +49,38 @@ const UserTable: React.FC<UserTableProps> = ({
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {users.map((user) => (
-            <Table.Tr key={user._id}>
+          {clients.map((client) => (
+            <Table.Tr key={client._id}>
               <Table.Td>
                 <Text ta="center" tt="capitalize" fw={500}>
-                  {user.name}
+                  {client.name}
                 </Text>
               </Table.Td>
               <Table.Td style={{ textAlign: "center" }}>
-                {user.phoneNumber}
+                {client.phoneNumber}
               </Table.Td>
               <Table.Td>
                 <Badge fullWidth variant="light" color="dark" size="lg">
-                  {user.servicesTaken}
+                  {client.servicesTaken}
                 </Badge>
               </Table.Td>
               <Table.Td style={{ textAlign: "center" }}>
                 <Badge fullWidth variant="light" color="dark" size="lg">
-                  {user.referralsMade}
+                  {client.referralsMade}
                 </Badge>
               </Table.Td>
               <Table.Td style={{ textAlign: "center" }}>
                 <Group justify="center">
                   <Flex justify="center" align="center" gap="xs">
-                    <ActionIcon onClick={() => handleRegisterService(user._id)}>
+                    <ActionIcon
+                      onClick={() => handleRegisterService(client._id)}
+                    >
                       <CgAdd />
                     </ActionIcon>
-                    <ActionIcon
-                      onClick={() => handleReferal(user._id)}
-                    >
+                    <ActionIcon onClick={() => handleReferral(client._id)}>
                       <CgUserAdd />
                     </ActionIcon>
-                    <ActionIcon onClick={() => handleDeleteUser(user._id)}>
+                    <ActionIcon onClick={() => handleDeleteClient(client._id)}>
                       <BiTrash />
                     </ActionIcon>
                   </Flex>
@@ -95,4 +94,4 @@ const UserTable: React.FC<UserTableProps> = ({
   );
 };
 
-export default UserTable;
+export default ClientTable;

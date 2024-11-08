@@ -1,65 +1,62 @@
 import React, { useState, useEffect } from "react";
-import SearchUser from "./SearchUser.tsx";
 import PlanInfo from "./PlanInfo.tsx";
 import { Box } from "@mantine/core";
-import { getUserByPhoneNumber } from "../../services/userService";
-import { User as UserType } from "../../services/userService";
+import { getClientByPhoneNumber } from "../../services/clientService.ts";
+import { Client as ClientType } from "../../services/clientService.ts";
+import SearchClient from "./SearchClient.tsx";
 
 const PlanViewer: React.FC = () => {
-  const [user, setUser] = useState<UserType | null>(null);
+  const [client, setClient] = useState<ClientType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  // const [error, setError] = useState<string>('');
 
-  // Efecto para verificar si hay un usuario guardado en el localStorage y actualizar su información
+  // Efecto para verificar si hay un cliente guardado en el localStorage y actualizar su información
   useEffect(() => {
-    const fetchUpdatedUser = async (phoneNumber: string) => {
+    const fetchUpdatedClient = async (phoneNumber: string) => {
       try {
-        const updatedUser = (await getUserByPhoneNumber(
-          phoneNumber
-        )) as UserType;
-        if (updatedUser) {
-          const validUser = {
-            ...updatedUser,
-            servicesTaken: updatedUser.servicesTaken || 0,
-            referralsMade: updatedUser.referralsMade || 0,
+        const updatedClient = await getClientByPhoneNumber(phoneNumber);
+        if (updatedClient) {
+          const validClient = {
+            ...updatedClient,
+            servicesTaken: updatedClient.servicesTaken || 0,
+            referralsMade: updatedClient.referralsMade || 0,
           };
-          setUser(validUser);
-          // localStorage.setItem("savedUser", JSON.stringify(validUser));
+          setClient(validClient);
+          // localStorage.setItem("savedClient", JSON.stringify(validClient));
         }
       } catch (err) {
-        console.error("Error fetching updated user:", err);
+        console.error("Error fetching updated client:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    const savedUser = localStorage.getItem("savedUser");
-    if (savedUser) {
-      const parsedUser: UserType = JSON.parse(savedUser);
-      const validUser = {
-        ...parsedUser,
-        servicesTaken: parsedUser.servicesTaken || 0,
-        referralsMade: parsedUser.referralsMade || 0,
+    const savedClient = localStorage.getItem("savedClient");
+    if (savedClient) {
+      const parsedClient: ClientType = JSON.parse(savedClient);
+      const validClient = {
+        ...parsedClient,
+        servicesTaken: parsedClient.servicesTaken || 0,
+        referralsMade: parsedClient.referralsMade || 0,
       };
-      setUser(validUser);
-      fetchUpdatedUser(parsedUser.phoneNumber);
+      setClient(validClient);
+      fetchUpdatedClient(parsedClient.phoneNumber);
     } else {
       setLoading(false);
     }
   }, []);
 
-  const handleUserFound = (user: UserType) => {
-    const validUser = {
-      ...user,
-      servicesTaken: user.servicesTaken || 0,
-      referralsMade: user.referralsMade || 0,
+  const handleClientFound = (client: ClientType) => {
+    const validClient = {
+      ...client,
+      servicesTaken: client.servicesTaken || 0,
+      referralsMade: client.referralsMade || 0,
     };
-    setUser(validUser);
-    // localStorage.setItem("savedUser", JSON.stringify(validUser));
+    setClient(validClient);
+    // localStorage.setItem("savedClient", JSON.stringify(validClient));
   };
 
   const handleLogout = () => {
-    setUser(null);
+    setClient(null);
     localStorage.clear();
   };
 
@@ -69,10 +66,10 @@ const PlanViewer: React.FC = () => {
 
   return (
     <Box style={{ margin: "auto" }}>
-      {!user ? (
-        <SearchUser onUserFound={handleUserFound} />
+      {!client ? (
+        <SearchClient onClientFound={handleClientFound} />
       ) : (
-        <PlanInfo user={user} onLogout={handleLogout} />
+        <PlanInfo client={client} onLogout={handleLogout} />
       )}
     </Box>
   );

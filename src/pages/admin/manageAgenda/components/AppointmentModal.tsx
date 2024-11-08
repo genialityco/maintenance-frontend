@@ -5,7 +5,7 @@ import TimeSelector from "./TimeSelector";
 import { addMinutes } from "date-fns";
 import { Service } from "../../../../services/serviceService";
 import { Employee } from "../../../../services/employeeService";
-import { User } from "../../../../services/userService";
+import { Client } from "../../../../services/clientService";
 import { Appointment } from "../../../../services/appointmentService";
 
 interface AppointmentModalProps {
@@ -16,10 +16,10 @@ interface AppointmentModalProps {
   setNewAppointment: React.Dispatch<React.SetStateAction<Partial<Appointment>>>;
   services: Service[];
   employees: Employee[];
-  users: User[];
+  clients: Client[];
   onServiceChange: (value: string | null) => void;
   onEmployeeChange: (value: string | null) => void;
-  onUserChange: (value: string | null) => void;
+  onClientChange: (value: string | null) => void;
   onSave: () => void;
 }
 
@@ -31,10 +31,10 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   setNewAppointment,
   services,
   employees,
-  users,
+  clients,
   onServiceChange,
   onEmployeeChange,
-  onUserChange,
+  onClientChange,
   onSave,
 }) => {
   useEffect(() => {
@@ -89,12 +89,12 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           label="Usuario"
           placeholder="Selecciona un usuario"
           comboboxProps={{ zIndex: 300 }}
-          data={users.map((user) => ({
-            value: user._id,
-            label: `${user.name} - ${user.phoneNumber}`,
+          data={clients.map((client) => ({
+            value: client._id,
+            label: `${client.name} - ${client.phoneNumber}`,
           }))}
-          value={newAppointment.user?._id || ""}
-          onChange={(value) => onUserChange(value)}
+          value={newAppointment.client?._id || ""}
+          onChange={(value) => onClientChange(value)}
           searchable
         />
 

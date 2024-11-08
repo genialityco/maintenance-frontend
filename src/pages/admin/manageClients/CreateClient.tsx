@@ -1,28 +1,32 @@
 import React, { useState, ChangeEvent } from "react";
 import { TextInput, Button, Box, Modal } from "@mantine/core";
-import { createUser } from "../../../services/userService";
-import { showNotification } from "@mantine/notifications"; // Para mostrar notificación flotante
+import { createClient } from "../../../services/clientService";
+import { showNotification } from "@mantine/notifications";
 
-interface CreateUserProps {
+interface CreateClientProps {
   opened: boolean;
   onClose: () => void;
-  fetchUsers: () => void; // Nueva prop para actualizar la tabla de usuarios
+  fetchClients: () => void; // Prop para actualizar la tabla de clientes
 }
 
-const CreateUser: React.FC<CreateUserProps> = ({ opened, onClose, fetchUsers }) => {
+const CreateClient: React.FC<CreateClientProps> = ({
+  opened,
+  onClose,
+  fetchClients,
+}) => {
   const [name, setName] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [email, setEmail] = useState<string>("");
 
-  const handleCreateUser = async (): Promise<void> => {
+  const handleCreateClient = async (): Promise<void> => {
     try {
-      const newUser = { name, phoneNumber, email };
-      await createUser(newUser);
+      const newClient = { name, phoneNumber, email };
+      await createClient(newClient);
 
       // Mostrar notificación flotante de éxito
       showNotification({
         title: "Éxito",
-        message: "Usuario creado con éxito",
+        message: "Cliente creado con éxito",
         color: "green",
         autoClose: 1000,
         position: "top-right",
@@ -33,18 +37,18 @@ const CreateUser: React.FC<CreateUserProps> = ({ opened, onClose, fetchUsers }) 
       setPhoneNumber("");
       setEmail("");
 
-      // Refrescar la lista de usuarios
-      fetchUsers();
+      // Refrescar la lista de clientes
+      fetchClients();
 
       // Cerrar el modal
       onClose();
     } catch (err) {
-      console.log(err);
+      console.error(err);
 
       // Mostrar notificación de error
       showNotification({
         title: "Error",
-        message: "Error al crear el usuario",
+        message: "Error al crear el cliente",
         color: "red",
         autoClose: 3000,
       });
@@ -58,7 +62,7 @@ const CreateUser: React.FC<CreateUserProps> = ({ opened, onClose, fetchUsers }) 
     };
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Crear Usuario">
+    <Modal opened={opened} onClose={onClose} title="Crear Cliente">
       <Box>
         <TextInput
           mt="md"
@@ -80,12 +84,12 @@ const CreateUser: React.FC<CreateUserProps> = ({ opened, onClose, fetchUsers }) 
           value={email}
           onChange={handleInputChange(setEmail)}
         />
-        <Button mt="md" color="blue" onClick={handleCreateUser}>
-          Crear Usuario
+        <Button mt="md" color="blue" onClick={handleCreateClient}>
+          Crear Cliente
         </Button>
       </Box>
     </Modal>
   );
 };
 
-export default CreateUser;
+export default CreateClient;

@@ -66,7 +66,7 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ isAdmin, closeNavbar }) => {
       {isAdmin && (
         <Flex direction="column" align="center" justify="center">
           <NavLink
-            to="/gestionar-usuarios"
+            to="/gestionar-clientes"
             onClick={closeNavbar}
             style={{ textDecoration: "none" }}
           >

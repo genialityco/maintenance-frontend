@@ -8,23 +8,23 @@ import {
   Button,
 } from "@mantine/core";
 import { useState, useEffect } from "react";
-import CreateUser from "./CreateUser";
-import UserTable from "./UserTable";
+import CreateClient from "./CreateClient";
+import ClientTable from "./ClientTable";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { BsSearch } from "react-icons/bs";
 import {
-  deleteUser,
-  getUsers,
+  deleteClient,
+  getClients,
   registerReferral,
   registerService,
-  User,
-} from "../../../services/userService";
+  Client,
+} from "../../../services/clientService";
 import { showNotification } from "@mantine/notifications";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -36,38 +36,38 @@ const Dashboard = () => {
     setOpenModal(false);
   };
 
-  // Función para obtener usuarios
-  const fetchUsers = async () => {
+  // Función para obtener clientes
+  const fetchClients = async () => {
     try {
-      const response = await getUsers();
-      setUsers(response);
+      const response = await getClients();
+      setClients(response);
       setError(null);
     } catch (err) {
       console.log(err);
-      setError("Error al obtener la lista de usuarios");
+      setError("Error al obtener la lista de clientes");
     }
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchClients();
   }, []);
 
   useEffect(() => {
-    filterUsers();
-  }, [searchTerm, users]);
+    filterClients();
+  }, [searchTerm, clients]);
 
-  const filterUsers = () => {
-    const filtered = users.filter(
-      (user) =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase())
+  const filterClients = () => {
+    const filtered = clients.filter(
+      (client) =>
+        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setFilteredUsers(filtered);
+    setFilteredClients(filtered);
   };
 
-  const handleRegisterService = async (userId: string) => {
+  const handleRegisterService = async (clientId: string) => {
     try {
-      await registerService(userId);
+      await registerService(clientId);
       showNotification({
         title: "Servicio registrado",
         message: "El servicio ha sido registrado correctamente",
@@ -75,15 +75,15 @@ const Dashboard = () => {
         autoClose: 1000,
         position: "top-right",
       });
-      fetchUsers();
+      fetchClients();
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleReferal = async (userId: string) => {
+  const handleReferral = async (clientId: string) => {
     try {
-      await registerReferral(userId);
+      await registerReferral(clientId);
       showNotification({
         title: "Referido registrado",
         message: "El referido ha sido registrado correctamente",
@@ -91,24 +91,24 @@ const Dashboard = () => {
         autoClose: 1000,
         position: "top-right",
       });
-      fetchUsers();
+      fetchClients();
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleDeleteUser = async (id: string) => {
+  const handleDeleteClient = async (id: string) => {
     try {
-      await deleteUser(id);
+      await deleteClient(id);
 
       showNotification({
-        title: "Usuario eliminado",
-        message: "El usuario ha sido eliminado correctamente",
+        title: "Cliente eliminado",
+        message: "El cliente ha sido eliminado correctamente",
         color: "blue",
         autoClose: 1000,
         position: "top-right",
       });
-      fetchUsers();
+      fetchClients();
     } catch (error) {
       console.error(error);
     }
@@ -135,25 +135,24 @@ const Dashboard = () => {
       <Group mb="md" justify="space-between">
         <TextInput
           leftSection={<BsSearch />}
-          placeholder="Buscar por nombre o correo..."
+          placeholder="Buscar por nombre o teléfono..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.currentTarget.value)}
           style={{ flexGrow: 1 }}
         />
       </Group>
 
-      <CreateUser
+      <CreateClient
         opened={openModal}
         onClose={handleCloseModal}
-        fetchUsers={fetchUsers}
+        fetchClients={fetchClients}
       />
       <div style={{ overflowX: "auto" }}>
-        <UserTable
-          users={filteredUsers}
-          fetchUsers={fetchUsers}
-          handleDeleteUser={handleDeleteUser}
+        <ClientTable
+          clients={filteredClients}
+          handleDeleteClient={handleDeleteClient}
           handleRegisterService={handleRegisterService}
-          handleReferal={handleReferal}
+          handleReferral={handleReferral}
           error={error}
         />
       </div>

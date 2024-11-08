@@ -222,7 +222,7 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
                       <Table.Td>
                         {new Date(appointment.startDate).toLocaleDateString()}
                       </Table.Td>
-                      <Table.Td>{appointment.user?.name}</Table.Td>
+                      <Table.Td>{appointment.client?.name}</Table.Td>
                       <Table.Td>{appointment.service?.name}</Table.Td>
                       <Table.Td>
                         {formatCurrency(appointment.service?.price || 0)}

@@ -1,34 +1,34 @@
 import { useState } from "react";
 import { TextInput, Button, Checkbox, Box, Text, Flex } from "@mantine/core";
-import { getUserByPhoneNumber } from "../../services/userService";
-import { User as UserType } from "../../services/userService";
+import { getClientByPhoneNumber } from "../../services/clientService";
+import { Client as ClientType } from "../../services/clientService";
 
-interface SearchUserProps {
-  onUserFound: (user: UserType) => void;
+interface SearchClientProps {
+  onClientFound: (client: ClientType) => void;
 }
 
-const SearchUser: React.FC<SearchUserProps> = (props) => {
+const SearchClient: React.FC<SearchClientProps> = (props) => {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
-  const [rememberUser, setRememberUser] = useState<boolean>(false);
+  const [rememberClient, setRememberClient] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
   const handleSearch = async () => {
     setError("");
     try {
-      const user = (await getUserByPhoneNumber(phoneNumber)) as UserType;
+      const client = await getClientByPhoneNumber(phoneNumber);
 
-      if (user) {
-        console.log("User found:", user);
-        if (rememberUser) {
-          localStorage.setItem("savedUser", JSON.stringify(user));
+      if (client) {
+        console.log("Client found:", client);
+        if (rememberClient) {
+          localStorage.setItem("savedClient", JSON.stringify(client));
         }
-        props.onUserFound(user);
+        props.onClientFound(client);
       } else {
-        setError("No se encontró un usuario con este número de teléfono.");
+        setError("No se encontró un cliente con este número de teléfono.");
       }
     } catch (error) {
-      console.error("Error searching user:", error);
-      setError("Hubo un error al buscar el usuario.");
+      console.error("Error searching client:", error);
+      setError("Hubo un error al buscar el cliente.");
     }
   };
 
@@ -57,11 +57,11 @@ const SearchUser: React.FC<SearchUserProps> = (props) => {
         <Checkbox
           mt="md"
           label="Guardar mi información en este dispositivo"
-          checked={rememberUser}
-          onChange={(e) => setRememberUser(e.currentTarget.checked)}
+          checked={rememberClient}
+          onChange={(e) => setRememberClient(e.currentTarget.checked)}
         />
         {error && (
-          <Text mt="md" c="red">
+          <Text mt="md" color="red">
             {error}
           </Text>
         )}
@@ -73,4 +73,4 @@ const SearchUser: React.FC<SearchUserProps> = (props) => {
   );
 };
 
-export default SearchUser;
+export default SearchClient;

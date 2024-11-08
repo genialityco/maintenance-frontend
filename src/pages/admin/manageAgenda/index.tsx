@@ -11,14 +11,14 @@ import {
 } from "../../../services/appointmentService";
 import AppointmentModal from "./components/AppointmentModal";
 import { Employee, getEmployees } from "../../../services/employeeService";
-import { getUsers, User } from "../../../services/userService";
+import { getClients, Client } from "../../../services/clientService";
 import { Service } from "../../../services/serviceService";
 import { showNotification } from "@mantine/notifications";
 import { openConfirmModal } from "@mantine/modals";
 
 interface CreateAppointmentPayload {
   service: Service;
-  user: User;
+  client: Client;
   employee: Employee;
   startDate: Date;
   endDate: Date;
@@ -32,13 +32,13 @@ const ScheduleView: React.FC = () => {
   >({});
   const [modalOpenedAppointment, setModalOpenedAppointment] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
 
   useEffect(() => {
-    fetchUsers();
+    fetchClients();
     fetchEmployees();
     fetchAppointments();
   }, []);
@@ -56,10 +56,10 @@ const ScheduleView: React.FC = () => {
     }
   }, [newAppointment.employee, employees, setFilteredServices]);
 
-  const fetchUsers = async () => {
+  const fetchClients = async () => {
     try {
-      const response = await getUsers();
-      setUsers(response);
+      const response = await getClients();
+      setClients(response);
     } catch (error) {
       console.error(error);
     }
@@ -101,14 +101,14 @@ const ScheduleView: React.FC = () => {
     }
   };
 
-  const handleUserChange = (userId: string | null) => {
-    const selectedUser = users.find((user) => user._id === userId);
-    setNewAppointment({ ...newAppointment, user: selectedUser });
+  const handleClientChange = (clientId: string | null) => {
+    const selectedClient = clients.find((client) => client._id === clientId);
+    setNewAppointment({ ...newAppointment, client: selectedClient });
   };
 
   const openModal = () => {
     // Verifica que la data esté disponible antes de abrir el modal
-    if (users.length > 0 && employees.length > 0) {
+    if (clients.length > 0 && employees.length > 0) {
       if (!newAppointment.startDate) {
         setNewAppointment({ ...newAppointment, startDate: new Date() });
       }
@@ -135,7 +135,7 @@ const ScheduleView: React.FC = () => {
     setSelectedAppointment(appointment);
     setNewAppointment({
       service: appointment.service,
-      user: appointment.user,
+      client: appointment.client,
       employee: appointment.employee,
       startDate: new Date(appointment.startDate),
       endDate: new Date(appointment.endDate),
@@ -220,14 +220,14 @@ const ScheduleView: React.FC = () => {
 
   const addOrUpdateAppointment = async () => {
     try {
-      const { service, employee, user, startDate, endDate, status } =
+      const { service, employee, client, startDate, endDate, status } =
         newAppointment;
 
-      if (service && employee && user && startDate && endDate) {
+      if (service && employee && client && startDate && endDate) {
         const appointmentPayload: CreateAppointmentPayload = {
           service,
           employee,
-          user,
+          client,
           startDate,
           endDate,
           status: status || "pending",
@@ -320,10 +320,10 @@ const ScheduleView: React.FC = () => {
         setNewAppointment={setNewAppointment}
         services={filteredServices}
         employees={employees}
-        users={users}
+        clients={clients}
         onServiceChange={handleServiceChange}
         onEmployeeChange={handleEmployeeChange}
-        onUserChange={handleUserChange}
+        onClientChange={handleClientChange}
         onSave={addOrUpdateAppointment}
       />
     </Box>

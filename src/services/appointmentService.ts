@@ -2,12 +2,12 @@ import { apiAppointment } from "./axiosConfig";
 import { handleAxiosError } from "../utils/handleAxiosError";
 import { Service } from "./serviceService";
 import { Employee } from "./employeeService";
-import { User } from "./userService";
+import { Client } from "./clientService";
 
 // Definir la estructura de una cita
 export interface Appointment {
   _id: string;
-  user: User;
+  client: Client;
   service: Service;
   employee: Employee;
   startDate: Date;
@@ -17,7 +17,7 @@ export interface Appointment {
 
 interface CreateAppointmentPayload {
   service: Service;
-  user: User;
+  client: Client;
   employee: Employee;
   startDate: Date;
   endDate: Date;

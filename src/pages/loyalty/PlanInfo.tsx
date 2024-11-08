@@ -12,14 +12,14 @@ import {
   Badge,
   Button,
 } from "@mantine/core";
-import { User as UserType } from "../../services/userService.tsx";
+import { Client as ClientType } from "../../services/clientService.ts";
 
 interface PlanInfoProps {
-  user: UserType;
+  client: ClientType;
   onLogout: () => void;
 }
 
-const PlanInfo: React.FC<PlanInfoProps> = ({ user, onLogout }) => {
+const PlanInfo: React.FC<PlanInfoProps> = ({ client, onLogout }) => {
   return (
     <Box p="md">
       <Group justify="center" grow>
@@ -40,17 +40,17 @@ const PlanInfo: React.FC<PlanInfoProps> = ({ user, onLogout }) => {
                   color="blue"
                   variant="filled"
                 >
-                  {user.name[0].toUpperCase()}
+                  {client.name[0].toUpperCase()}
                 </Avatar>
                 <Text size="xl" fw={700}>
-                  {user.name}
+                  {client.name}
                 </Text>
                 <Text c="dimmed" size="sm">
-                  {user.phoneNumber}
+                  {client.phoneNumber}
                 </Text>
-                {user.email && (
+                {client.email && (
                   <Text c="dimmed" size="xs" mt="xs">
-                    {user.email}
+                    {client.email}
                   </Text>
                 )}
               </Flex>
@@ -60,11 +60,11 @@ const PlanInfo: React.FC<PlanInfoProps> = ({ user, onLogout }) => {
 
             <Card.Section inheritPadding py="xs">
               <Badge color="teal" variant="light" size="lg">
-                Servicios Tomados: {user.servicesTaken}
+                Servicios Tomados: {client.servicesTaken}
               </Badge>
 
               <LoyaltyPlan
-                servicesTaken={user?.servicesTaken || 0}
+                servicesTaken={client?.servicesTaken || 0}
                 totalServices={7}
               />
             </Card.Section>
@@ -73,10 +73,10 @@ const PlanInfo: React.FC<PlanInfoProps> = ({ user, onLogout }) => {
 
             <Card.Section inheritPadding py="xs">
               <Badge color="indigo" variant="light" size="lg">
-                Referidos Hechos: {user.referralsMade}
+                Referidos Hechos: {client.referralsMade}
               </Badge>
               <ReferredPlan
-                referralsMade={user.referralsMade}
+                referralsMade={client.referralsMade}
                 totalReferrals={5}
               />
             </Card.Section>

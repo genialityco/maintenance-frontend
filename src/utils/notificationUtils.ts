@@ -43,7 +43,7 @@ const subscribeUser = async (
   userType: UserType,
   userId: string
 ): Promise<void> => {
-  if ("serviceWorker" in navigator && "PushManage" in window) {
+  if ("serviceWorker" in navigator && "PushManager" in window) {
     try {
       const registration = await navigator.serviceWorker.register(
         "/custom-sw.js"

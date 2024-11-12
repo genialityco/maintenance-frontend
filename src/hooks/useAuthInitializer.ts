@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setOrganizationId, setPermissions } from "../features/auth/sliceAuth";
 import { getEmployeeById } from "../services/employeeService";
-import { requestNotificationPermission } from "../utils/notificationUtils"; // Importa la función de notificaciones
+import { requestNotificationPermission } from "../utils/notificationUtils";
 import { RootState, AppDispatch } from "../app/store";
 
 const useAuthInitializer = () => {

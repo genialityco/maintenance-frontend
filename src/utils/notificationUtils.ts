@@ -9,8 +9,10 @@ type UserType = "organization" | "employee";
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
+  
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }
@@ -41,7 +43,7 @@ const subscribeUser = async (
   userType: UserType,
   userId: string
 ): Promise<void> => {
-  if ("serviceWorker" in navigator) {
+  if ("serviceWorker" in navigator && "PushManage" in window) {
     try {
       const registration = await navigator.serviceWorker.register(
         "/custom-sw.js"

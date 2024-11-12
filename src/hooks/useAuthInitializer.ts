@@ -27,13 +27,13 @@ const useAuthInitializer = () => {
               dispatch(setOrganizationId(organization._id));
             }
             dispatch(setPermissions(organization.role.permissions));
-            requestNotificationPermission("organization", userId); // Solicita permiso de notificación para la organización
+            requestNotificationPermission("organization", userId);
           } else if (role === "employee" && userId) {
             const employeeData = await getEmployeeById(userId);
             if (employeeData) {
               dispatch(setOrganizationId(employeeData.organizationId));
               dispatch(setPermissions(employeeData.role.permissions));
-              requestNotificationPermission("employee", userId); // Solicita permiso de notificación para el empleado
+              requestNotificationPermission("employee", userId);
             }
           }
         } catch (error) {

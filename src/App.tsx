@@ -24,7 +24,7 @@ function App() {
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
+      navigator.serviceWorker.register('/custom-sw.js')
         .then((registration) => {
           registration.onupdatefound = () => {
             const newWorker = registration.installing;

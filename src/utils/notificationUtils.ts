@@ -12,7 +12,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
-  
+
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }
@@ -22,7 +22,9 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 const publicVapidKey = import.meta.env.VITE_APP_PUBLIC_VAPID_KEY;
 
 if (!publicVapidKey) {
-  throw new Error("La clave pública VAPID no está definida. Verifica tus variables de entorno.");
+  throw new Error(
+    "La clave pública VAPID no está definida. Verifica tus variables de entorno."
+  );
 }
 
 const applicationServerKey = urlBase64ToUint8Array(publicVapidKey);
@@ -39,7 +41,9 @@ export const requestNotificationPermission = async (
     } else if (permission === "denied") {
       console.log("Permiso de notificación denegado por el usuario.");
     } else {
-      console.log("Permiso de notificación no fue concedido ni denegado (probablemente bloqueado).");
+      console.log(
+        "Permiso de notificación no fue concedido ni denegado (probablemente bloqueado)."
+      );
     }
   } catch (error) {
     console.error("Error al solicitar permiso de notificación:", error);
@@ -53,7 +57,9 @@ const subscribeUser = async (
   if ("serviceWorker" in navigator && "PushManager" in window) {
     try {
       // Registrar el Service Worker
-      const registration = await navigator.serviceWorker.register("/service-worker.js");
+      const registration = await navigator.serviceWorker.register(
+        "/custom-sw.js"
+      );
       console.log("Service Worker registrado correctamente.");
 
       // Intentar obtener una suscripción existente
@@ -61,10 +67,12 @@ const subscribeUser = async (
 
       if (!subscription) {
         if (!applicationServerKey) {
-          throw new Error("La clave del servidor de aplicaciones (applicationServerKey) está indefinida.");
+          throw new Error(
+            "La clave del servidor de aplicaciones (applicationServerKey) está indefinida."
+          );
         }
         console.log("Creando nueva suscripción...");
-        
+
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: applicationServerKey,
@@ -93,7 +101,9 @@ const subscribeUser = async (
             await createSubscription(formattedSubscription);
             console.log("Usuario suscrito exitosamente en el backend.");
           } else {
-            console.error("Error: Las claves de la suscripción están indefinidas.");
+            console.error(
+              "Error: Las claves de la suscripción están indefinidas."
+            );
           }
         } else {
           console.log("La suscripción ya existe en el backend.");
@@ -105,6 +115,8 @@ const subscribeUser = async (
       console.error("Error al suscribir al usuario:", error);
     }
   } else {
-    console.warn("Service workers o Push Manager no son compatibles en este navegador.");
+    console.warn(
+      "Service workers o Push Manager no son compatibles en este navegador."
+    );
   }
 };

@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react-swc';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
@@ -12,9 +12,9 @@ export default defineConfig({
         name: 'Galaxia Glamour',
         short_name: 'Galaxia',
         description: 'Galaxia glamour lashes',
-        display: "standalone",
-        start_url: "/",
-        background_color: "#ffffff",
+        display: 'standalone',
+        start_url: '/',
+        background_color: '#ffffff',
         theme_color: '#ffffff',
         icons: [
           {
@@ -38,21 +38,24 @@ export default defineConfig({
       workbox: {
         runtimeCaching: [
           {
-            urlPattern: ({ request }) => request.destination === "image",
-            handler: "CacheFirst",
+            urlPattern: ({ request }) => request.destination === 'image',
+            handler: 'CacheFirst',
             options: {
-              cacheName: "images",
+              cacheName: 'images',
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
-              },
-            },
-          },
-        ],
+                maxAgeSeconds: 60 * 60 * 24 * 30 
+              }
+            }
+          }
+        ]
       },
-      // devOptions: {
-      //   enabled: true,
-      // },
+      devOptions: {
+        enabled: true
+      },
+      // Indica el archivo personalizado del service worker
+      srcDir: 'src',
+      filename: 'custom-sw.js'
     })
   ]
 });

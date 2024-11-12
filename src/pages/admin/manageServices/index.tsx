@@ -16,13 +16,15 @@ import {
 import { BsTrash, BsPencil, BsSearch } from "react-icons/bs";
 import { showNotification } from "@mantine/notifications";
 import {
-  getServices,
   createService,
   updateService,
   deleteService,
+  getServicesByOrganizationId,
 } from "../../../services/serviceService";
 import ModalCreateEdit from "./components/ModalCreateEdit";
 import { uploadImage } from "../../../services/imageService";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
 
 interface Service {
   _id: string;
@@ -41,6 +43,10 @@ const AdminServices: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
 
+  const organizationId = useSelector(
+    (state: RootState) => state.auth.organizationId
+  );
+
   useEffect(() => {
     loadServices();
   }, []);
@@ -51,7 +57,10 @@ const AdminServices: React.FC = () => {
 
   const loadServices = async () => {
     try {
-      const servicesData = await getServices();
+      if (!organizationId) {
+        throw new Error("Organization ID is required");
+      }
+      const servicesData = await getServicesByOrganizationId(organizationId);
       setServices(servicesData);
     } catch (error) {
       console.error(error);
@@ -116,6 +125,7 @@ const AdminServices: React.FC = () => {
           images: service.images?.filter(
             (image): image is string => typeof image === "string"
           ),
+          organizationId: organizationId,
         };
         const createdService = await createService(newService);
         updatedServices = [...services, createdService];

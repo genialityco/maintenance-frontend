@@ -2,6 +2,11 @@ import { apiEmployee } from "./axiosConfig";
 import { handleAxiosError } from "../utils/handleAxiosError";
 import { Service } from "./serviceService";
 
+interface Role {
+  name: string;
+  permissions: string[];
+}
+
 // Definir la estructura de un empleado
 export interface Employee {
   _id: string;
@@ -10,8 +15,9 @@ export interface Employee {
   email: string;
   phoneNumber: string;
   services?: Service[];
-  username: string;
+  organizationId: string;
   password?: string;
+  role: Role;
   isActive: boolean;
 }
 
@@ -21,7 +27,7 @@ interface CreateEmployeePayload {
   email: string;
   phoneNumber: string;
   services?: Partial<Service>[];
-  username: string;
+  organizationId: string;
   password: string;
   isActive: boolean;
 }
@@ -36,10 +42,25 @@ interface Response<T> {
 // Obtener todos los empleados
 export const getEmployees = async (): Promise<Employee[]> => {
   try {
-    const response = await apiEmployee.get<Response<Employee[]>>('/');
+    const response = await apiEmployee.get<Response<Employee[]>>("/");
     return response.data.data;
   } catch (error) {
     handleAxiosError(error, "Error al obtener los empleados");
+    return [];
+  }
+};
+
+// Obtener empleados por organizationId
+export const getEmployeesByOrganizationId = async (
+  organizationId: string
+): Promise<Employee[]> => {
+  try {
+    const response = await apiEmployee.get<Response<Employee[]>>(
+      `/organization/${organizationId}`
+    );
+    return response.data.data;
+  } catch (error) {
+    handleAxiosError(error, "Error al obtener los empleados por organización");
     return [];
   }
 };
@@ -49,7 +70,9 @@ export const getEmployeeById = async (
   employeeId: string
 ): Promise<Employee | undefined> => {
   try {
-    const response = await apiEmployee.get<Response<Employee>>(`/${employeeId}`);
+    const response = await apiEmployee.get<Response<Employee>>(
+      `/${employeeId}`
+    );
     return response.data.data;
   } catch (error) {
     handleAxiosError(error, "Error al obtener el empleado");
@@ -61,7 +84,10 @@ export const createEmployee = async (
   employeeData: CreateEmployeePayload
 ): Promise<Employee | undefined> => {
   try {
-    const response = await apiEmployee.post<Response<Employee>>('/', employeeData);
+    const response = await apiEmployee.post<Response<Employee>>(
+      "/",
+      employeeData
+    );
     return response.data.data;
   } catch (error) {
     handleAxiosError(error, "Error al crear el empleado");

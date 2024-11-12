@@ -11,11 +11,17 @@ export const uploadImage = async (file: File): Promise<string | undefined> => {
     formData.append("file", file);
     formData.append("fileName", file.name);
 
-    const response = await apiImage.post<UploadImageResponse>("/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const folder = `${import.meta.env.VITE_FOLDER_IMAGES}`;
+
+    const response = await apiImage.post<UploadImageResponse>(
+      `/upload/${folder}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
     return response.data.imageUrl;
   } catch (error) {

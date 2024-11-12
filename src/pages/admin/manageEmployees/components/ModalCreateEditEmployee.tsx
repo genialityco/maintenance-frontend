@@ -32,34 +32,38 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
     _id: "",
     names: "",
     position: "",
-    email: "",
     phoneNumber: "",
     services: [],
-    username: "",
+    organizationId: "",
+    email: "",
     password: "",
+    role: {
+      name: "",
+      permissions: [],
+    },
     isActive: true,
   });
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (employee) {
-      // Ajuste para cargar solo los IDs de los servicios
       setEditingEmployee({
-        ...employee,
+        _id: employee._id || "",
+        names: employee.names || "",
+        position: employee.position || "",
+        phoneNumber: employee.phoneNumber || "",
         services: employee.services || [],
+        email: employee.email || "",
+        organizationId: employee.organizationId || "",
+        password: employee.password || "",
+        role: {
+          name: employee.role?.name || "",
+          permissions: employee.role?.permissions || [],
+        },
+        isActive: employee.isActive ?? true,
       });
     } else {
-      setEditingEmployee({
-        _id: "",
-        names: "",
-        position: "",
-        email: "",
-        phoneNumber: "",
-        services: [],
-        username: "",
-        password: "",
-        isActive: true,
-      });
+      resetForm();
     }
   }, [employee]);
 
@@ -79,11 +83,15 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
       _id: "",
       names: "",
       position: "",
-      email: "",
       phoneNumber: "",
       services: [],
-      username: "",
+      email: "",
+      organizationId: "",
       password: "",
+      role: {
+        name: "",
+        permissions: [],
+      },
       isActive: true,
     });
   };
@@ -118,17 +126,6 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
           }
         />
         <TextInput
-          label="Correo electrónico"
-          type="email"
-          value={editingEmployee.email}
-          onChange={(e) =>
-            setEditingEmployee({
-              ...editingEmployee,
-              email: e.currentTarget.value,
-            })
-          }
-        />
-        <TextInput
           label="Número de teléfono"
           value={editingEmployee.phoneNumber}
           onChange={(e) =>
@@ -146,7 +143,6 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
             value: service._id,
             label: service.name,
           }))}
-          // Almacenar solo los IDs de los servicios seleccionados
           value={(editingEmployee.services || []).map((service) => service._id)}
           onChange={(selectedServiceIds) => {
             setEditingEmployee({
@@ -161,12 +157,13 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
         />
 
         <TextInput
-          label="Nombre de usuario"
-          value={editingEmployee.username}
+          label="Correo electrónico"
+          type="email"
+          value={editingEmployee.email}
           onChange={(e) =>
             setEditingEmployee({
               ...editingEmployee,
-              username: e.currentTarget.value,
+              email: e.currentTarget.value,
             })
           }
         />

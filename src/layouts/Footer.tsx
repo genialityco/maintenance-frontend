@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Text, Box, Center, ActionIcon, Button } from "@mantine/core";
-import { FaUserShield, FaSignOutAlt } from "react-icons/fa"; // Importa el ícono de cerrar sesión
+import { FaUserShield, FaSignOutAlt } from "react-icons/fa";
 import { MdInstallMobile } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux"; // Importa useDispatch para manejar el logout
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../app/store";
 import { logout } from "../features/auth/sliceAuth"; 
 
@@ -18,6 +18,9 @@ export const Footer = () => {
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const dispatch = useDispatch(); 
+
+  const organization = useSelector((state: RootState) => state.organization.organization);
+  const { name } = organization || {};
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
@@ -93,7 +96,7 @@ export const Footer = () => {
             fontWeight: 500,
           }}
         >
-          © 2024 Galaxia Glamour.
+          © {name}.
         </Text>
       </Center>
 

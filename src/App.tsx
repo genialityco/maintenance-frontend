@@ -1,4 +1,4 @@
-import { AppShell, Burger, Flex } from "@mantine/core";
+import { AppShell, Burger, Center, Flex, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
@@ -7,22 +7,40 @@ import Header from "./layouts/Header";
 import Footer from "./layouts/Footer";
 import NavbarLinks from "./layouts/NavbarLinks";
 import generalRoutes from "./routes/generalRoutes";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "./app/store";
+import useAuthInitializer from "./hooks/useAuthInitializer";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "./app/store";
+import { useEffect } from "react";
+import { fetchOrganization } from "./features/organization/sliceOrganization";
+import { CustomLoader } from "./components/customLoader/CustomLoader";
 
 function App() {
+  const dispatch: AppDispatch = useDispatch();
+  const organizationLoading = useSelector(
+    (state: RootState) => state.organization.loading
+  );
+  const loading = useSelector((state: RootState) => state.organization.loading);
   const [opened, { toggle, close }] = useDisclosure(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const { isAuthenticated, role } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated && role === "admin") {
-      setIsAdmin(true);
-    } else {
-      setIsAdmin(false);
-    }
-  }, [isAuthenticated, role]);
+    const organizationId = import.meta.env.VITE_ORGANIZATION_ID;
+    dispatch(fetchOrganization(organizationId));
+  }, [dispatch]);
+
+  useAuthInitializer();
+
+  if (loading || organizationLoading) {
+    return (
+      <Center style={{ height: "100vh", flexDirection: "column" }}>
+        <Stack align="center" m="md">
+          <CustomLoader />
+          <Text size="xl" fw={700} c="dark">
+            Cargando...
+          </Text>
+        </Stack>
+      </Center>
+    );
+  }
 
   return (
     <Router>
@@ -39,19 +57,14 @@ function App() {
       >
         <AppShell.Header bg="#1A202C">
           <Flex align="center" px="sm">
-            <Burger
-              opened={opened}
-              onClick={toggle}
-              size="sm"
-              color="white"
-            />
+            <Burger opened={opened} onClick={toggle} size="sm" color="white" />
             <Header />
           </Flex>
         </AppShell.Header>
         <AppShell.Navbar p="md" bg="#1A202C">
-          <NavbarLinks isAdmin={isAdmin} closeNavbar={close} />
+          <NavbarLinks closeNavbar={close} />
         </AppShell.Navbar>
-        <AppShell.Main style={{ height: "100vh", overflow: "auto" }} >
+        <AppShell.Main style={{ height: "100vh", overflow: "auto" }}>
           <Routes>
             {generalRoutes.map((route, index) => (
               <Route

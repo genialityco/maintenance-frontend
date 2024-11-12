@@ -1,10 +1,15 @@
 import { Text, Box, Group, ActionIcon } from "@mantine/core";
-import { FaFacebook, FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../app/store";
 
 const Header = () => {
   const [menuOpened] = useState(false);
+
+  const organization = useSelector((state: RootState) => state.organization.organization);
+  const { name, facebookUrl, instagramUrl, whatsappUrl, tiktokUrl } = organization || {};
 
   return (
     <Box
@@ -22,7 +27,7 @@ const Header = () => {
           gradient={{ from: "#FFD700", to: "#7928CA", deg: 182 }}
         >
           <Link to="/" style={{ textDecoration: "none", color: "white" }}>
-            Galaxia Glamour
+            {name}
           </Link>
         </Text>
 
@@ -57,27 +62,34 @@ const Header = () => {
             justifyContent: "center",
           }}
         >
-          <ActionIcon radius="xl" size="md" variant="light" color="blue">
-            <FaFacebook />
-          </ActionIcon>
-          <a
-            href="https://www.instagram.com/galaxia.glamour27/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <ActionIcon radius="xl" size="md" variant="light" color="pink">
-              <FaInstagram />
-            </ActionIcon>
-          </a>
-          <a
-            href="https://wa.me/573218104634"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <ActionIcon radius="xl" size="md" variant="light" color="green">
-              <FaWhatsapp />
-            </ActionIcon>
-          </a>
+          {facebookUrl && (
+            <a href={facebookUrl} target="_blank" rel="noopener noreferrer">
+              <ActionIcon radius="xl" size="md" variant="light" color="blue">
+                <FaFacebook />
+              </ActionIcon>
+            </a>
+          )}
+          {instagramUrl && (
+            <a href={instagramUrl} target="_blank" rel="noopener noreferrer">
+              <ActionIcon radius="xl" size="md" variant="light" color="pink">
+                <FaInstagram />
+              </ActionIcon>
+            </a>
+          )}
+          {whatsappUrl && (
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+              <ActionIcon radius="xl" size="md" variant="light" color="green">
+                <FaWhatsapp />
+              </ActionIcon>
+            </a>
+          )}
+          {tiktokUrl && (
+            <a href={tiktokUrl} target="_blank" rel="noopener noreferrer">
+              <ActionIcon radius="xl" size="md" variant="light" color="teal">
+                <FaTiktok />
+              </ActionIcon>
+            </a>
+          )}
         </Group>
       </Group>
     </Box>

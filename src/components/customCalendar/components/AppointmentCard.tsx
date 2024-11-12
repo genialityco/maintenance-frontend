@@ -9,6 +9,7 @@ import {
 } from "react-icons/bi";
 import { format } from "date-fns";
 import { Appointment } from "../../../services/appointmentService";
+import { usePermissions } from "../../../hooks/usePermissions";
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -37,6 +38,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   onConfirmAppointment,
 }) => {
   const { backgroundColor, borderColor } = getStatusStyles(appointment.status);
+  const { hasPermission } = usePermissions();
 
   return (
     <Paper
@@ -92,12 +94,14 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
         <Menu.Dropdown>
           <Menu.Item
             leftSection={<BiEdit size={16} />}
+            disabled={!hasPermission("appointments:update")}
             onClick={() => onEditAppointment(appointment)}
           >
             Editar Cita
           </Menu.Item>
           <Menu.Item
             leftSection={<BiTrash size={16} />}
+            disabled={!hasPermission("appointments:cancel")}
             onClick={() => onCancelAppointment(appointment._id)}
             color="red"
           >
@@ -105,6 +109,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           </Menu.Item>
           <Menu.Item
             leftSection={<BiCheck size={16} />}
+            disabled={!hasPermission("appointments:confirm")}
             onClick={() => onConfirmAppointment(appointment._id)}
             color="green"
           >

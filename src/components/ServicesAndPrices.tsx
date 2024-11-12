@@ -11,10 +11,18 @@ import {
   ThemeIcon,
   Modal,
   Image,
+  Center,
+  Stack,
 } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import { BsEye } from "react-icons/bs";
-import { getServices, Service } from "../services/serviceService";
+import {
+  getServicesByOrganizationId,
+  Service,
+} from "../services/serviceService";
+import { useSelector } from "react-redux";
+import { RootState } from "../app/store";
+import { CustomLoader } from "./customLoader/CustomLoader";
 
 // Constantes para estilos reutilizables
 const gradientTextStyle: React.CSSProperties = {
@@ -66,9 +74,17 @@ const ServiceItem: React.FC<ServiceItemProps> = ({
           {name}
         </Text>
 
-        <Text size="xl" variant="gradient" gradient={gradientPriceStyle}>
-          {price}
-        </Text>
+        {price === "www.zybizobazar.com" ? (
+          <Text size="xl" variant="gradient" gradient={gradientPriceStyle}>
+            <a href="https://zybizobazar.com" target="_blank" rel="noreferrer">
+              {price}
+            </a>
+          </Text>
+        ) : (
+          <Text size="xl" variant="gradient" gradient={gradientPriceStyle}>
+            {price}
+          </Text>
+        )}
       </List.Item>
 
       <Modal
@@ -100,6 +116,20 @@ const ServiceItem: React.FC<ServiceItemProps> = ({
           <Text size="md" style={{ color: "#2A2E35" }}>
             {description || ""}
           </Text>
+          {price === "www.zybizobazar.com" ? (
+            <Text>
+              <a
+                href="https://zybizobazar.com"
+                target="_blank"
+                rel="noreferrer"
+              >
+                www.zybizobazar.com
+              </a>
+            </Text>
+          ) : (
+            <Text>{price}</Text>
+          )}
+
           <Divider my="sm" />
         </Flex>
       </Modal>
@@ -145,11 +175,16 @@ const ServicesAndPrices: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [serviceTypes, setServiceTypes] = useState<string[]>([]);
 
+  const organization = useSelector(
+    (state: RootState) => state.organization.organization
+  );
+  const { _id } = organization || {};
+
   // Obtener servicios desde la API
   useEffect(() => {
     const fetchServices = async () => {
       setIsLoading(true);
-      const data = await getServices();
+      const data = await getServicesByOrganizationId(_id as string);
       setServices(data);
 
       // Extraer los tipos de servicios de forma única
@@ -175,7 +210,16 @@ const ServicesAndPrices: React.FC = () => {
   };
 
   if (isLoading) {
-    return <Text>Cargando servicios...</Text>;
+    return (
+      <Center style={{ height: "100vh", flexDirection: "column" }}>
+        <Stack align="center" m="md">
+          <CustomLoader />
+          <Text size="xl" fw={700} c="dark">
+            Cargando...
+          </Text>
+        </Stack>
+      </Center>
+    );
   }
 
   return (
@@ -201,7 +245,9 @@ const ServicesAndPrices: React.FC = () => {
                 price: "www.zybizobazar.com",
                 description:
                   "Consulta el catálogo y realiza tu pedido en el enlace siguiente",
-                images: ["https://i.ibb.co/FhpJkcH/Presentaci-n.jpg"],
+                images: [
+                  "https://ik.imagekit.io/6cx9tc1kx/zybizo/android-chrome-512x512.png?updatedAt=1731360674464",
+                ],
               },
             ]}
           />

@@ -2,21 +2,34 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface AuthState {
   isAuthenticated: boolean;
-  user: string | null;
+  userId: string | null;
+  organizationId: string | null;
   token: string | null;
   role: string | null;
+  permissions: string[];
 }
 
+// Utilidades para manejar localStorage
+const storagePrefix = "app_";
+const getStorageItem = (key: string) =>
+  localStorage.getItem(`${storagePrefix}${key}`);
+const setStorageItem = (key: string, value: string) =>
+  localStorage.setItem(`${storagePrefix}${key}`, value);
+const removeStorageItem = (key: string) =>
+  localStorage.removeItem(`${storagePrefix}${key}`);
+
 // Comprueba si hay datos en localStorage
-const storedUser = localStorage.getItem("user");
-const storedToken = localStorage.getItem("token");
-const storedRole = localStorage.getItem("role");
+const storedUserId = getStorageItem("userId");
+const storedToken = getStorageItem("token");
+const storedRole = getStorageItem("role");
 
 const initialState: AuthState = {
   isAuthenticated: !!storedToken,
-  user: storedUser,
+  userId: storedUserId,
+  organizationId: null,
   token: storedToken,
   role: storedRole,
+  permissions: [],
 };
 
 const authSlice = createSlice({
@@ -25,31 +38,47 @@ const authSlice = createSlice({
   reducers: {
     loginSuccess: (
       state,
-      action: PayloadAction<{ user: string; token: string; role: string }>
+      action: PayloadAction<{
+        userId: string;
+        organizationId: string;
+        token: string;
+        role: string;
+        permissions: string[];
+      }>
     ) => {
       state.isAuthenticated = true;
-      state.user = action.payload.user;
+      state.userId = action.payload.userId;
+      state.organizationId = action.payload.organizationId;
       state.token = action.payload.token;
       state.role = action.payload.role;
+      state.permissions = action.payload.permissions;
 
       // Guardar los datos en localStorage
-      localStorage.setItem("user", action.payload.user);
-      localStorage.setItem("token", action.payload.token);
-      localStorage.setItem("role", action.payload.role);
+      setStorageItem("userId", action.payload.userId);
+      setStorageItem("token", action.payload.token);
+      setStorageItem("role", action.payload.role);
+    },
+    setOrganizationId: (state, action: PayloadAction<string>) => {
+      state.organizationId = action.payload;
+    },
+    setPermissions: (state, action: PayloadAction<string[]>) => {
+      state.permissions = action.payload;
     },
     logout: (state) => {
       state.isAuthenticated = false;
-      state.user = null;
+      state.userId = null;
+      state.organizationId = null;
       state.token = null;
       state.role = null;
+      state.permissions = [];
 
       // Eliminar datos de localStorage
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
+      removeStorageItem("userId");
+      removeStorageItem("token");
+      removeStorageItem("role");
     },
   },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { loginSuccess, logout, setOrganizationId, setPermissions } = authSlice.actions;
 export default authSlice.reducer;

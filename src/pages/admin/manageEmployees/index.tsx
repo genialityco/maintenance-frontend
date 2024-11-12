@@ -11,18 +11,23 @@ import {
 import { BsSearch } from "react-icons/bs";
 import { showNotification } from "@mantine/notifications";
 import {
-  getEmployees,
   createEmployee,
   updateEmployee,
   deleteEmployee,
+  getEmployeesByOrganizationId,
 } from "../../../services/employeeService";
 import ModalCreateEdit from "./components/ModalCreateEditEmployee";
-import { getServices, Service } from "../../../services/serviceService";
+import {
+  getServicesByOrganizationId,
+  Service,
+} from "../../../services/serviceService";
 import { Employee } from "../../../services/employeeService";
 import EmployeeCard from "./components/EmployeeCard";
 import EmployeeDetailsModal from "./components/EmployeeDetailsModal";
 import AdvanceModal from "./components/AdvanceModal";
 import { openConfirmModal } from "@mantine/modals";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
 
 const AdminEmployees: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -37,6 +42,10 @@ const AdminEmployees: React.FC = () => {
   );
   const [showAdvanceModal, setShowAdvanceModal] = useState(false);
 
+  const organizationId = useSelector(
+    (state: RootState) => state.auth.organizationId
+  );
+
   useEffect(() => {
     loadEmployees();
     fetchServices();
@@ -48,8 +57,13 @@ const AdminEmployees: React.FC = () => {
 
   const loadEmployees = async () => {
     try {
-      const employeesData = await getEmployees();
-      const sortedEmployees = employeesData.sort((_a, b) => (b.isActive ? 1 : -1));
+      if (!organizationId) {
+        throw new Error("Organization ID is required");
+      }
+      const employeesData = await getEmployeesByOrganizationId(organizationId);
+      const sortedEmployees = employeesData.sort((_a, b) =>
+        b.isActive ? 1 : -1
+      );
       setEmployees(sortedEmployees);
     } catch (error) {
       console.error(error);
@@ -65,7 +79,10 @@ const AdminEmployees: React.FC = () => {
 
   const fetchServices = async () => {
     try {
-      const servicesData = await getServices();
+      if (!organizationId) {
+        throw new Error("Organization ID is required");
+      }
+      const servicesData = await getServicesByOrganizationId(organizationId);
       setServices(servicesData);
     } catch (error) {
       console.error(error);
@@ -96,9 +113,21 @@ const AdminEmployees: React.FC = () => {
       if (employee._id) {
         await updateEmployee(employee._id, employee);
       } else {
+        if (!organizationId) {
+          showNotification({
+            title: "Error",
+            message:
+              "No se ha podido agregar el empleado, la organización no está definida",
+            color: "red",
+            autoClose: 2000,
+            position: "top-right",
+          });
+          return;
+        }
         await createEmployee({
           ...employee,
-          password: "defaultPassword",
+          organizationId: organizationId,
+          password: employee.password || "",
         });
       }
 

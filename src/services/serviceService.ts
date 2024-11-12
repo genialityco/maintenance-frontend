@@ -39,6 +39,21 @@ export const getServices = async (): Promise<Service[]> => {
   }
 };
 
+// Obtener empleados por organizationId
+export const getServicesByOrganizationId = async (
+  organizationId: string
+): Promise<Service[]> => {
+  try {
+    const response = await apiService.get<Response<Service[]>>(
+      `/organization/${organizationId}`
+    );
+    return response.data.data;
+  } catch (error) {
+    handleAxiosError(error, "Error al obtener los servicios por organización");
+    return [];
+  }
+};
+
 // Obtener un servicio por ID
 export const getServiceById = async (
   serviceId: string

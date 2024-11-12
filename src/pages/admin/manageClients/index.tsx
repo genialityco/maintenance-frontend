@@ -14,12 +14,14 @@ import { IoAddCircleOutline } from "react-icons/io5";
 import { BsSearch } from "react-icons/bs";
 import {
   deleteClient,
-  getClients,
   registerReferral,
   registerService,
   Client,
+  getClientsByOrganizationId,
 } from "../../../services/clientService";
 import { showNotification } from "@mantine/notifications";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -27,6 +29,10 @@ const Dashboard = () => {
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  const organizationId = useSelector(
+    (state: RootState) => state.auth.organizationId
+  );
 
   const handleOpenModal = () => {
     setOpenModal(true);
@@ -39,7 +45,10 @@ const Dashboard = () => {
   // Función para obtener clientes
   const fetchClients = async () => {
     try {
-      const response = await getClients();
+      if (!organizationId) {
+        throw new Error("Organization ID is required");
+      }
+      const response = await getClientsByOrganizationId(organizationId);
       setClients(response);
       setError(null);
     } catch (err) {

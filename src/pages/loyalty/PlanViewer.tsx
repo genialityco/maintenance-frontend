@@ -1,19 +1,29 @@
 import React, { useState, useEffect } from "react";
 import PlanInfo from "./PlanInfo.tsx";
 import { Box } from "@mantine/core";
-import { getClientByPhoneNumber } from "../../services/clientService.ts";
+import { getClientByPhoneNumberAndOrganization } from "../../services/clientService.ts";
 import { Client as ClientType } from "../../services/clientService.ts";
 import SearchClient from "./SearchClient.tsx";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store.ts";
 
 const PlanViewer: React.FC = () => {
   const [client, setClient] = useState<ClientType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const organization = useSelector(
+    (state: RootState) => state.organization.organization
+  );
+
   // Efecto para verificar si hay un cliente guardado en el localStorage y actualizar su información
   useEffect(() => {
     const fetchUpdatedClient = async (phoneNumber: string) => {
       try {
-        const updatedClient = await getClientByPhoneNumber(phoneNumber);
+        if (!organization) return;
+        const updatedClient = await getClientByPhoneNumberAndOrganization(
+          phoneNumber,
+          organization._id as string
+        );
         if (updatedClient) {
           const validClient = {
             ...updatedClient,

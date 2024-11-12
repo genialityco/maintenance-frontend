@@ -13,6 +13,7 @@ export interface Appointment {
   startDate: Date;
   endDate: Date;
   status: string;
+  organizationId: string;
 }
 
 interface CreateAppointmentPayload {
@@ -22,6 +23,7 @@ interface CreateAppointmentPayload {
   startDate: Date;
   endDate: Date;
   status: string;
+  organizationId: string;
 }
 
 interface Response<T> {
@@ -42,6 +44,21 @@ export const getAppointments = async (): Promise<Appointment[]> => {
   }
 };
 
+// Obtener citas por organizationId
+export const getAppointmentsByOrganizationId = async (
+  organizationId: string
+): Promise<Appointment[]> => {
+  try {
+    const response = await apiAppointment.get<Response<Appointment[]>>(
+      `/organization/${organizationId}`
+    );
+    return response.data.data;
+  } catch (error) {
+    handleAxiosError(error, "Error al obtener las citas por organización");
+    return [];
+  }
+};
+
 // Obtener una cita por ID
 export const getAppointmentById = async (
   appointmentId: string
@@ -56,7 +73,9 @@ export const getAppointmentById = async (
   }
 };
 
-export const getAppointmentsByEmployee = async (employeeId: string) => {
+export const getAppointmentsByEmployee = async (
+  employeeId: string
+): Promise<Appointment[]> => {
   try {
     const response = await apiAppointment.get<Response<Appointment[]>>(
       `/employee/${employeeId}`

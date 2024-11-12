@@ -6,15 +6,24 @@ import {
   Appointment,
   createAppointment,
   deleteAppointment,
-  getAppointments,
+  getAppointmentsByOrganizationId,
   updateAppointment,
 } from "../../../services/appointmentService";
 import AppointmentModal from "./components/AppointmentModal";
-import { Employee, getEmployees } from "../../../services/employeeService";
-import { getClients, Client } from "../../../services/clientService";
+import {
+  Employee,
+  getEmployeesByOrganizationId,
+} from "../../../services/employeeService";
+import {
+  Client,
+  getClientsByOrganizationId,
+} from "../../../services/clientService";
 import { Service } from "../../../services/serviceService";
 import { showNotification } from "@mantine/notifications";
 import { openConfirmModal } from "@mantine/modals";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
+import { usePermissions } from "../../../hooks/usePermissions";
 
 interface CreateAppointmentPayload {
   service: Service;
@@ -23,6 +32,7 @@ interface CreateAppointmentPayload {
   startDate: Date;
   endDate: Date;
   status: string;
+  organizationId: string;
 }
 
 const ScheduleView: React.FC = () => {
@@ -36,6 +46,14 @@ const ScheduleView: React.FC = () => {
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
+
+  const userId = useSelector((state: RootState) => state.auth.userId);
+  const organization = useSelector(
+    (state: RootState) => state.organization.organization
+  );
+  const organizationId = organization?._id;
+
+  const { hasPermission } = usePermissions();
 
   useEffect(() => {
     fetchClients();
@@ -58,7 +76,9 @@ const ScheduleView: React.FC = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await getClients();
+      const response = await getClientsByOrganizationId(
+        organizationId as string
+      );
       setClients(response);
     } catch (error) {
       console.error(error);
@@ -67,7 +87,9 @@ const ScheduleView: React.FC = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await getEmployees();
+      const response = await getEmployeesByOrganizationId(
+        organizationId as string
+      );
       setEmployees(response);
     } catch (error) {
       console.error(error);
@@ -76,8 +98,17 @@ const ScheduleView: React.FC = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await getAppointments();
-      setAppointments(response);
+      const response = await getAppointmentsByOrganizationId(
+        organizationId as string
+      );
+      if (hasPermission("appointments:view_all")) {
+        setAppointments(response);
+      } else {
+        const filteredAppointments = response.filter(
+          (appointment) => appointment.employee._id === userId
+        );
+        setAppointments(filteredAppointments);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -231,6 +262,7 @@ const ScheduleView: React.FC = () => {
           startDate,
           endDate,
           status: status || "pending",
+          organizationId: organizationId as string,
         };
 
         if (selectedAppointment) {
@@ -301,9 +333,11 @@ const ScheduleView: React.FC = () => {
     <Box>
       <Group justify="space-between" mb="md">
         <Title order={2}>Gestionar Agenda</Title>
-        <Button color="blue" onClick={openModal}>
-          Añadir Cita
-        </Button>
+        {hasPermission("appointments:create") && (
+          <Button color="blue" onClick={openModal}>
+            Añadir Cita
+          </Button>
+        )}
       </Group>
       <CustomCalendar
         appointments={appointments}

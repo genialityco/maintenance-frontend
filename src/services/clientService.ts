@@ -9,12 +9,14 @@ export interface Client {
   email?: string;
   servicesTaken: number;
   referralsMade: number;
+  organizationId: string;
 }
 
 interface CreateClientPayload {
   name: string;
   phoneNumber: string;
   email?: string;
+  organizationId: string;
 }
 
 interface Response<T> {
@@ -31,6 +33,21 @@ export const getClients = async (): Promise<Client[]> => {
     return response.data.data;
   } catch (error) {
     handleAxiosError(error, "Error al obtener los clientes");
+    return [];
+  }
+};
+
+// Obtener clientes por organizationId
+export const getClientsByOrganizationId = async (
+  organizationId: string
+): Promise<Client[]> => {
+  try {
+    const response = await apiClient.get<Response<Client[]>>(
+      `/organization/${organizationId}`
+    );
+    return response.data.data;
+  } catch (error) {
+    handleAxiosError(error, "Error al obtener los clientes por organización");
     return [];
   }
 };
@@ -85,12 +102,13 @@ export const deleteClient = async (clientId: string): Promise<void> => {
 };
 
 // Obtener un cliente por número de teléfono
-export const getClientByPhoneNumber = async (
-  phoneNumber: string
+export const getClientByPhoneNumberAndOrganization = async (
+  phoneNumber: string,
+  organizationId: string
 ): Promise<Client | undefined> => {
   try {
     const response = await apiClient.get<Response<Client>>(
-      `/phone/${phoneNumber}`
+      `/phone/${phoneNumber}/organization/${organizationId}`
     );
     return response.data.data;
   } catch (error) {
@@ -101,7 +119,7 @@ export const getClientByPhoneNumber = async (
 // Registrar un servicio tomado por el cliente
 export const registerService = async (clientId: string): Promise<void> => {
   try {
-    await apiClient.post<Response<void>>(`/service/${clientId}`);
+    await apiClient.post<Response<void>>(`/${clientId}/register-service`);
   } catch (error) {
     handleAxiosError(error, "Error al registrar el servicio");
   }
@@ -110,7 +128,7 @@ export const registerService = async (clientId: string): Promise<void> => {
 // Registrar un referido hecho por el cliente
 export const registerReferral = async (clientId: string): Promise<void> => {
   try {
-    await apiClient.post<Response<void>>(`/referral/${clientId}`);
+    await apiClient.post<Response<void>>(`/${clientId}/register-referral`);
   } catch (error) {
     handleAxiosError(error, "Error al registrar el referido");
   }

@@ -1,47 +1,67 @@
-import React, { useState } from "react";
-import { TextInput, Button, Text, Card, Flex } from "@mantine/core";
+import React, { useState, useEffect } from "react";
+import { TextInput, Button, Text, Card, Flex, Checkbox } from "@mantine/core";
 import colors from "../../theme/colores";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../features/auth/sliceAuth";
-
-interface LoginResponse {
-  user: string;
-  token: string;
-  role: string;
-}
+import { login } from "../../services/authService";
 
 const LoginAdmin: React.FC = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const navigation = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogin = () => {
-    const adminUser = import.meta.env.VITE_APP_USER_ADMIN;
-    const adminPassword = import.meta.env.VITE_APP_PASSWORD_ADMIN;
+  useEffect(() => {
+    // Cargar el email guardado en localStorage al cargar el componente
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
-    if (username === adminUser && password === adminPassword) {
-      const data: LoginResponse = {
-        user: adminUser,
-        token: "authToken",
-        role: "admin",
-      };
-      dispatch(
-        loginSuccess({ user: data.user, token: data.token, role: data.role })
-      );
-      navigation("/gestionar-usuarios");
-    } else {
-      setError("Credenciales incorrectas");
+  const handleLogin = async () => {
+    try {
+      const data = await login(email, password);
+      if (data) {
+        const organizationId =
+          data.userType === "admin" ? data.userId : data.organizationId;
+        console.log(organizationId);
+        // Autenticación exitosa
+        dispatch(
+          loginSuccess({
+            userId: data.userId,
+            organizationId,
+            token: data.token,
+            role: data.userType,
+            permissions: data.userPermissions,
+          })
+        );
+        navigation("/gestionar-agenda");
+
+        // Guardar o eliminar el email de localStorage según el estado de rememberMe
+        if (rememberMe) {
+          localStorage.setItem("rememberedEmail", email);
+        } else {
+          localStorage.removeItem("rememberedEmail");
+        }
+      } else {
+        setError("Credenciales incorrectas");
+      }
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      setError("Error al iniciar sesión. Intenta nuevamente.");
     }
   };
 
   return (
     <Flex justify="center" align="center" style={{ height: "100%" }}>
       <Card
+        w={{ xs: "70%", sm: "60%", md: "50%", lg: "40%" }}
         style={{
-          maxWidth: "80%",
           margin: "auto",
           padding: "2rem",
           backgroundColor: colors.cardBackground,
@@ -54,9 +74,9 @@ const LoginAdmin: React.FC = () => {
           ¡Bienvenido!
         </Text>
         <TextInput
-          placeholder="Ingresa tu usuario *"
-          value={username}
-          onChange={(event) => setUsername(event.currentTarget.value)}
+          placeholder="Ingresa tu correo *"
+          value={email}
+          onChange={(event) => setEmail(event.currentTarget.value)}
           required
           mb="md"
         />
@@ -68,8 +88,14 @@ const LoginAdmin: React.FC = () => {
           required
           mb="md"
         />
+        <Checkbox
+          label="Recordar mis datos"
+          checked={rememberMe}
+          onChange={(event) => setRememberMe(event.currentTarget.checked)}
+          mb="md"
+        />
         {error && (
-          <Text c={colors.errorText} mb="md">
+          <Text color={colors.errorText} mb="md">
             {error}
           </Text>
         )}

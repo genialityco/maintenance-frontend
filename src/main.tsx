@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+// import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import { createTheme, MantineProvider } from "@mantine/core";
@@ -20,7 +20,7 @@ const theme = createTheme({
 });
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  // <StrictMode>
     <Provider store={store}>
       <MantineProvider theme={theme}>
         <ModalsProvider>
@@ -29,5 +29,5 @@ createRoot(document.getElementById("root")!).render(
         </ModalsProvider>
       </MantineProvider>
     </Provider>
-  </StrictMode>
+  // </StrictMode>
 );

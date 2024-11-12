@@ -7,6 +7,8 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import { JSX } from "react/jsx-runtime";
 import AdminServices from "../pages/admin/manageServices";
 import AdminEmployees from "../pages/admin/manageEmployees";
+import OrganizationInfo from "../pages/account/OrganizationInfo";
+import EmployeeInfo from "../pages/account/EmployeeInfo";
 
 const generalRoutes = [
   {
@@ -87,6 +89,22 @@ const generalRoutes = [
       description: "Gestiona los empleados de Galaxia Glamour.",
       image: "/galaxia_glamour.png",
     },
+  },
+  {
+    path: "/informacion-negocio",
+    component: (props: JSX.IntrinsicAttributes) => (
+      <ProtectedRoute>
+        <OrganizationInfo {...props} />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/informacion-empleado",
+    component: (props: JSX.IntrinsicAttributes) => (
+      <ProtectedRoute>
+        <EmployeeInfo {...props} />
+      </ProtectedRoute>
+    )
   }
 ];
 

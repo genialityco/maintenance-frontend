@@ -1,34 +1,46 @@
 import { useState } from "react";
 import { TextInput, Button, Checkbox, Box, Text, Flex } from "@mantine/core";
-import { getClientByPhoneNumber } from "../../services/clientService";
+import { getClientByPhoneNumberAndOrganization } from "../../services/clientService";
 import { Client as ClientType } from "../../services/clientService";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 
 interface SearchClientProps {
   onClientFound: (client: ClientType) => void;
 }
 
-const SearchClient: React.FC<SearchClientProps> = (props) => {
+const SearchClient: React.FC<SearchClientProps> = () => {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [rememberClient, setRememberClient] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
+  const organization = useSelector(
+    (state: RootState) => state.organization.organization
+  );
+
   const handleSearch = async () => {
     setError("");
+    if (!organization) {
+      setError("Organización no encontrada.");
+      return;
+    }
     try {
-      const client = await getClientByPhoneNumber(phoneNumber);
-
+      const client = await getClientByPhoneNumberAndOrganization(
+        phoneNumber,
+        organization._id as string
+      );
       if (client) {
-        console.log("Client found:", client);
         if (rememberClient) {
           localStorage.setItem("savedClient", JSON.stringify(client));
         }
-        props.onClientFound(client);
-      } else {
-        setError("No se encontró un cliente con este número de teléfono.");
       }
     } catch (error) {
       console.error("Error searching client:", error);
-      setError("Hubo un error al buscar el cliente.");
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unknown error occurred.");
+      }
     }
   };
 
@@ -61,7 +73,7 @@ const SearchClient: React.FC<SearchClientProps> = (props) => {
           onChange={(e) => setRememberClient(e.currentTarget.checked)}
         />
         {error && (
-          <Text mt="md" color="red">
+          <Text mt="md" c="red">
             {error}
           </Text>
         )}

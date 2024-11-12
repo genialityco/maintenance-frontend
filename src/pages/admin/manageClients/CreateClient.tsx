@@ -2,6 +2,8 @@ import React, { useState, ChangeEvent } from "react";
 import { TextInput, Button, Box, Modal } from "@mantine/core";
 import { createClient } from "../../../services/clientService";
 import { showNotification } from "@mantine/notifications";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
 
 interface CreateClientProps {
   opened: boolean;
@@ -18,9 +20,17 @@ const CreateClient: React.FC<CreateClientProps> = ({
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [email, setEmail] = useState<string>("");
 
+  
+  const organizationId = useSelector(
+    (state: RootState) => state.auth.organizationId
+  );
+
   const handleCreateClient = async (): Promise<void> => {
     try {
-      const newClient = { name, phoneNumber, email };
+      if (!organizationId) {
+        throw new Error("Organization ID is required");
+      }
+      const newClient = { name, phoneNumber, email, organizationId: organizationId as string };
       await createClient(newClient);
 
       // Mostrar notificación flotante de éxito

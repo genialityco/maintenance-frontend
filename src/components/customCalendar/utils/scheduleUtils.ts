@@ -62,3 +62,19 @@ export const calculateAppointmentPosition = (
     height: duration * MINUTE_HEIGHT,
   };
 };
+
+// Agrupar citas por empleado
+export const organizeAppointmentsByEmployee = (appointments: Appointment[]) => {
+  const appointmentsByEmployee: { [employeeId: string]: Appointment[] } = {};
+
+  appointments.forEach((appointment) => {
+    const employeeId = appointment.employee._id;
+    if (!appointmentsByEmployee[employeeId]) {
+      appointmentsByEmployee[employeeId] = [];
+    }
+    appointmentsByEmployee[employeeId].push(appointment);
+  });
+
+  return appointmentsByEmployee;
+};
+

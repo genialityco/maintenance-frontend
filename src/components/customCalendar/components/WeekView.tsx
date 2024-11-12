@@ -7,6 +7,7 @@ import {
   Button,
   Collapse,
   ScrollArea,
+  Card,
 } from "@mantine/core";
 import { startOfWeek, addDays, format, getHours, isSameDay } from "date-fns";
 import { es } from "date-fns/locale";
@@ -14,10 +15,11 @@ import { Appointment } from "../../../services/appointmentService";
 import AppointmentCard from "./AppointmentCard";
 import {
   generateTimeIntervals,
-  organizeAppointmentsInLayers,
+  organizeAppointmentsByEmployee,
   calculateAppointmentPosition,
 } from "../utils/scheduleUtils";
 import { useExpandAppointment } from "../hooks/useExpandAppointment";
+import { usePermissions } from "../../../hooks/usePermissions";
 
 interface WeekViewProps {
   currentDate: Date;
@@ -47,10 +49,10 @@ const WeekView: React.FC<WeekViewProps> = ({
   );
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { hasPermission } = usePermissions();
 
   useEffect(() => {
     if (expandedDay && scrollAreaRef.current) {
-      // Desplazar automáticamente al día expandido
       scrollAreaRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
@@ -72,6 +74,19 @@ const WeekView: React.FC<WeekViewProps> = ({
         const dayKey = day.toISOString();
         const appointments = getAppointmentsForDay(day);
 
+        // Extraer empleados únicos de las citas
+        const employees = Array.from(
+          new Set(appointments.map((appointment) => appointment.employee._id))
+        ).map((id) => {
+          const employee = appointments.find(
+            (appointment) => appointment.employee._id === id
+          )?.employee;
+          return { id, name: employee?.names || "Desconocido" };
+        });
+
+        const appointmentsByEmployee =
+          organizeAppointmentsByEmployee(appointments);
+
         const earliestAppointment = Math.min(
           ...appointments.map((app) => getHours(new Date(app.startDate)))
         );
@@ -82,8 +97,6 @@ const WeekView: React.FC<WeekViewProps> = ({
         const startHour = Math.min(earliestAppointment, 5);
         const endHour = Math.max(22, latestAppointment);
         const timeIntervals = generateTimeIntervals(startHour, endHour, day);
-
-        const layers = organizeAppointmentsInLayers(appointments);
 
         return (
           <Grid.Col span={12} key={dayKey}>
@@ -112,78 +125,144 @@ const WeekView: React.FC<WeekViewProps> = ({
                   scrollbarSize={10}
                   offsetScrollbars
                 >
+                  {/* Cabecera fija con los nombres de empleados */}
                   <Box
                     style={{
-                      position: "relative",
-                      minHeight: `${(endHour - startHour + 1) * HOUR_HEIGHT}px`,
-                      width: `${CARD_WIDTH * (layers.length + 1)}px`,
+                      display: "flex",
+                      position: "sticky",
+                      top: 0,
+                      backgroundColor: "white",
+                      zIndex: 2,
+                      borderBottom: "1px solid #e0e0e0",
                     }}
                   >
-                    {timeIntervals.map((interval, index) => (
-                      <Box
-                        key={index}
+                    <Box style={{ width: "80px" }} />
+                    {employees.map((employee) => (
+                      <Card
+                        withBorder
+                        key={employee.id}
                         style={{
-                          position: "absolute",
-                          top: `${index * HOUR_HEIGHT}px`,
-                          height: `${HOUR_HEIGHT}px`,
-                          width: "100%",
-                          borderTop: "1px solid #ccc",
-                          display: "flex",
-                          alignItems: "center",
+                          width: `${CARD_WIDTH}px`,
+                          textAlign: "center",
+                          marginLeft: "10px",
+                          backgroundColor: "#E3F2FD",
                         }}
-                        onClick={() => onOpenModal()}
                       >
-                        <Text
-                          size="sm"
-                          style={{ minWidth: "60px", marginLeft: "10px" }}
-                        >
-                          {format(interval, "h a")}
-                        </Text>
-                      </Box>
+                        <Text size="sm">{employee.name}</Text>
+                      </Card>
                     ))}
+                  </Box>
 
-                    <Box style={{ marginLeft: "70px", position: "relative" }}>
-                      {layers.map((layer, layerIndex) =>
-                        layer.map((appointment, index) => {
-                          const { top, height } = calculateAppointmentPosition(
-                            appointment,
-                            startHour,
-                            day,
-                            MINUTE_HEIGHT
-                          );
+                  {/* Contenedor de la línea de tiempo y citas */}
+                  <Box style={{ display: "flex", position: "relative" }}>
+                    {/* Columna de Intervalos de Tiempo */}
+                    <Box
+                      style={{ width: "80px", backgroundColor: "white" }}
+                      onClick={() =>
+                        hasPermission("appointments:create") && onOpenModal()
+                      }
+                    >
+                      {timeIntervals.map((interval, index) => (
+                        <Box
+                          key={index}
+                          style={{
+                            height: `${HOUR_HEIGHT}px`,
+                            borderTop: "1px solid #ccc",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRight: "1px solid #e0e0e0",
+                          }}
+                        >
+                          <Text size="sm">{format(interval, "h a")}</Text>
+                        </Box>
+                      ))}
+                    </Box>
 
-                          return (
+                    {/* Fondo de líneas de separación */}
+                    <Box style={{ flex: 1, position: "relative" }}>
+                      {timeIntervals.map((_, index) => (
+                        <Box
+                          key={index}
+                          style={{
+                            position: "absolute",
+                            top: `${index * HOUR_HEIGHT}px`,
+                            left: 0,
+                            right: 0,
+                            borderTop: "1px solid #e0e0e0",
+                          }}
+                        />
+                      ))}
+
+                      {/* Columnas de Empleados con citas */}
+                      <Box style={{ display: "flex", position: "relative" }}>
+                        {employees.map((employee) => (
+                          <Box
+                            key={employee.id}
+                            style={{
+                              width: `${CARD_WIDTH}px`,
+                              marginLeft: "10px",
+                              borderRight: "1px solid #e0e0e0",
+                            }}
+                          >
                             <Box
-                              key={index}
                               style={{
-                                position: "absolute",
-                                top: `${top}px`,
-                                left: `${layerIndex * (CARD_WIDTH + 10)}px`,
-                                width: `${CARD_WIDTH}px`,
-                                height: isExpanded(appointment)
-                                  ? "auto"
-                                  : `${height}px`,
-                                zIndex: isExpanded(appointment) ? 1 : 0,
-                                backgroundColor: "#e0f7fa",
-                                border: "1px solid #00acc1",
-                                borderRadius: "4px",
-                                overflow: "hidden",
-                                cursor: "pointer",
+                                position: "relative",
+                                minHeight: `${
+                                  (endHour - startHour + 1) * HOUR_HEIGHT
+                                }px`,
                               }}
-                              onClick={() =>
-                                handleToggleExpand(appointment._id)
-                              }
                             >
-                              <AppointmentCard
-                                appointment={appointment}
-                                onEditAppointment={onEditAppointment}
-                                onCancelAppointment={onCancelAppointment}
-                                onConfirmAppointment={onConfirmAppointment}
-                              />
+                              {appointmentsByEmployee[employee.id]?.map(
+                                (appointment, index) => {
+                                  const { top, height } =
+                                    calculateAppointmentPosition(
+                                      appointment,
+                                      startHour,
+                                      day,
+                                      MINUTE_HEIGHT
+                                    );
+
+                                  return (
+                                    <Box
+                                      key={index}
+                                      style={{
+                                        position: "absolute",
+                                        top: `${top}px`,
+                                        width: "100%",
+                                        height: isExpanded(appointment)
+                                          ? "auto"
+                                          : `${height}px`,
+                                        zIndex: isExpanded(appointment) ? 1 : 0,
+                                        border: "1px solid #00acc1",
+                                        boxShadow:
+                                          "0 0 10px rgba(0, 0, 0, 0.5)",
+                                        borderRadius: "4px",
+                                        overflow: "hidden",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() =>
+                                        handleToggleExpand(appointment._id)
+                                      }
+                                    >
+                                      <AppointmentCard
+                                        appointment={appointment}
+                                        onEditAppointment={onEditAppointment}
+                                        onCancelAppointment={
+                                          onCancelAppointment
+                                        }
+                                        onConfirmAppointment={
+                                          onConfirmAppointment
+                                        }
+                                      />
+                                    </Box>
+                                  );
+                                }
+                              )}
                             </Box>
-                          );
-                        })
-                      )}
+                          </Box>
+                        ))}
+                      </Box>
                     </Box>
                   </Box>
                 </ScrollArea>

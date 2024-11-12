@@ -23,6 +23,30 @@ function App() {
   const [opened, { toggle, close }] = useDisclosure(false);
 
   useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then((registration) => {
+          registration.onupdatefound = () => {
+            const newWorker = registration.installing;
+            if (newWorker) {
+              newWorker.onstatechange = () => {
+                if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                // Recarga la página automáticamente cuando se detecta una nueva versión del SW
+                console.log("Nueva versión del Service Worker disponible. Recargando...");
+                window.location.reload();
+              };
+            }
+            };
+          };
+        })
+        .catch((error) => {
+          console.error('Error al registrar el Service Worker:', error);
+        });
+    }
+    
+  } , []);
+
+  useEffect(() => {
     const organizationId = import.meta.env.VITE_ORGANIZATION_ID;
     dispatch(fetchOrganization(organizationId));
   }, [dispatch]);

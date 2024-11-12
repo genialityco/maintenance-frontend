@@ -1,59 +1,55 @@
-// Instala y fuerza el Service Worker para activarse de inmediato
+// public/service-worker.js
+
 self.addEventListener("install", (event) => {
   console.log("Service Worker installing.");
-  self.skipWaiting(); // Fuerza que el nuevo SW se active de inmediato
+  // Fuerza la activación del nuevo Service Worker inmediatamente después de la instalación
+  self.skipWaiting();
 });
 
-// Activa el nuevo Service Worker y toma el control de todas las pestañas
 self.addEventListener("activate", (event) => {
   console.log("Service Worker activating.");
-  event.waitUntil(clients.claim()); // Toma control de todos los clientes activos (pestañas)
+  // Toma control de todas las páginas bajo el scope sin esperar a que las páginas se recarguen
+  event.waitUntil(clients.claim());
 });
 
-// Maneja las notificaciones push
 self.addEventListener("push", (event) => {
   console.log("Push notification received", event);
+  let data = { title: "Nueva Notificación", body: "Tienes una nueva actualización!" }; // Valores predeterminados
 
-  let data = {
-    title: "Nueva Notificación",
-    body: "Tienes una nueva actualización!",
-  };
   if (event.data) {
-    data = { ...data, ...event.data.json() };
+    data = { ...data, ...event.data.json() }; // Combina datos predeterminados con los datos recibidos
   }
 
   const options = {
     body: data.body,
-    icon: data.icon || "/galaxia_glamour.png", // Ruta al ícono en public/
+    icon: data.icon || "/galaxia_glamour.png", // Asegúrate de que este archivo esté en `public`
     badge: data.badge || "/galaxia_glamour.png",
-    data: { url: data.url || "/" }, // Asegura que `url` esté siempre definido
+    data: { url: data.url || "/" } // Proporciona una URL por defecto en `data` para evitar errores
   };
 
-  event.waitUntil(self.registration.showNotification(data.title, options));
-});
-
-// Maneja el clic en la notificación y abre la URL asociada
-self.addEventListener("notificationclick", (event) => {
-  event.notification.close();
-  const url = event.notification.data.url || "/"; // Redirige a la raíz si `url` no está definido
-
   event.waitUntil(
-    clients
-      .matchAll({ type: "window", includeUncontrolled: true })
-      .then((clientList) => {
-        for (const client of clientList) {
-          if (client.url === url && "focus" in client) {
-            return client.focus();
-          }
-        }
-        if (clients.openWindow) {
-          return clients.openWindow(url);
-        }
-      })
+    self.registration.showNotification(data.title, options)
   );
 });
 
-// Opcional: Maneja el cierre de la notificación
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data.url || "/"; // Predeterminado a la raíz si `url` está indefinido
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url === url && "focus" in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(url);
+      }
+    })
+  );
+});
+
 self.addEventListener("notificationclose", (event) => {
   console.log("Notification was closed", event);
 });

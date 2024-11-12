@@ -11,6 +11,7 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("push", (event) => {
+  console.log("Push notification received", event);
   let data = {};
   if (event.data) {
     data = event.data.json();

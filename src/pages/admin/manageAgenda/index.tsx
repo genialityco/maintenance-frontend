@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Group, Title } from "@mantine/core";
+import { Box, Button, Center, Group, Stack, Text, Title } from "@mantine/core";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import CustomCalendar from "../../../components/customCalendar/CustomCalendar";
 import {
@@ -24,6 +24,7 @@ import { openConfirmModal } from "@mantine/modals";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { CustomLoader } from "../../../components/customLoader/CustomLoader";
 
 interface CreateAppointmentPayload {
   service: Service;
@@ -46,6 +47,7 @@ const ScheduleView: React.FC = () => {
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
+  const [loadingAgenda, setLoadingAgenda] = useState(false);
 
   const userId = useSelector((state: RootState) => state.auth.userId);
   const organization = useSelector(
@@ -75,6 +77,7 @@ const ScheduleView: React.FC = () => {
   }, [newAppointment.employee, employees, setFilteredServices]);
 
   const fetchClients = async () => {
+    setLoadingAgenda(true);
     try {
       const response = await getClientsByOrganizationId(
         organizationId as string
@@ -82,10 +85,13 @@ const ScheduleView: React.FC = () => {
       setClients(response);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoadingAgenda(false);
     }
   };
 
   const fetchEmployees = async () => {
+    setLoadingAgenda(true);
     try {
       const response = await getEmployeesByOrganizationId(
         organizationId as string
@@ -93,10 +99,13 @@ const ScheduleView: React.FC = () => {
       setEmployees(response);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoadingAgenda(false);
     }
   };
 
   const fetchAppointments = async () => {
+    setLoadingAgenda(true);
     try {
       const response = await getAppointmentsByOrganizationId(
         organizationId as string
@@ -111,6 +120,8 @@ const ScheduleView: React.FC = () => {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoadingAgenda(false);
     }
   };
 
@@ -137,11 +148,31 @@ const ScheduleView: React.FC = () => {
     setNewAppointment({ ...newAppointment, client: selectedClient });
   };
 
-  const openModal = () => {
+  const combineDateAndTime = (
+    dateDay: Date | null,
+    dateHour: Date
+  ): Date | null => {
+    if (!dateDay) return null;
+
+    const combinedDate = new Date(dateDay);
+    combinedDate.setHours(dateHour.getHours());
+    combinedDate.setMinutes(dateHour.getMinutes());
+    combinedDate.setSeconds(dateHour.getSeconds());
+    combinedDate.setMilliseconds(dateHour.getMilliseconds());
+
+    return combinedDate;
+  };
+
+  const openModal = (selectedDay: Date | null, interval: Date) => {
+    const startDate = combineDateAndTime(selectedDay, interval);
+
     // Verifica que la data esté disponible antes de abrir el modal
     if (clients.length > 0 && employees.length > 0) {
       if (!newAppointment.startDate) {
-        setNewAppointment({ ...newAppointment, startDate: new Date() });
+        setNewAppointment({
+          ...newAppointment,
+          startDate: startDate ?? new Date(),
+        });
       }
       setModalOpenedAppointment(true);
     } else {
@@ -329,15 +360,33 @@ const ScheduleView: React.FC = () => {
     }
   };
 
+  if (loadingAgenda) {
+    return (
+      <Center style={{ height: "100vh", flexDirection: "column" }}>
+        <Stack align="center" m="md">
+          <CustomLoader />
+          <Text size="xl" fw={700} c="dark">
+            Cargando agenda...
+          </Text>
+        </Stack>
+      </Center>
+    );
+  }
+
   return (
     <Box>
       <Group justify="space-between" mb="md">
         <Title order={2}>Gestionar Agenda</Title>
-        {hasPermission("appointments:create") && (
-          <Button color="blue" onClick={openModal}>
-            Añadir Cita
+        <Group align="center">
+          <Button variant="outline" color="blue" onClick={fetchAppointments}>
+            Actualizar agenda
           </Button>
-        )}
+          {hasPermission("appointments:create") && (
+            <Button color="blue" onClick={() => openModal}>
+              Añadir Cita
+            </Button>
+          )}
+        </Group>
       </Group>
       <CustomCalendar
         appointments={appointments}

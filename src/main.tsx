@@ -17,6 +17,14 @@ const theme = createTheme({
   fontFamily: "Playfair Display, serif",
   fontFamilyMonospace: "Monaco, Courier, monospace",
   headings: { fontFamily: "Playfair Display, serif" },
+  fontSizes: {
+    xs: "16px",
+    sm: "16px",
+    md: "16px",
+    lg: "18px",
+    xl: "20px",
+    xxl: "24px",
+  }
 });
 
 createRoot(document.getElementById("root")!).render(

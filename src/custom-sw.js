@@ -1,8 +1,14 @@
-import { precacheAndRoute } from "workbox-precaching";
+import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { NavigationRoute, registerRoute } from "workbox-routing";
 import { createHandlerBoundToURL } from "workbox-precaching";
 import { CacheFirst } from "workbox-strategies";
 import { ExpirationPlugin } from "workbox-expiration";
+import { clientsClaim } from 'workbox-core';
+
+self.skipWaiting();
+clientsClaim();
+
+cleanupOutdatedCaches();
 
 // Inyección de manifiesto
 precacheAndRoute(self.__WB_MANIFEST);

@@ -15,7 +15,7 @@ import { usePermissions } from "../../../hooks/usePermissions";
 interface DayViewProps {
   currentDate: Date;
   isMobile: boolean;
-  onOpenModal: () => void;
+  onOpenModal: (selectedDay: Date | null, interval: Date) => void;
   getAppointmentsForDay: (day: Date) => Appointment[];
   onEditAppointment: (appointment: Appointment) => void;
   onCancelAppointment: (appointmentId: string) => void;
@@ -121,12 +121,7 @@ const DayView: React.FC<DayViewProps> = ({
             {/* Contenedor de la línea de tiempo y citas */}
             <Box style={{ display: "flex", position: "relative" }}>
               {/* Columna de Intervalos de Tiempo ocupando todo el alto */}
-              <Box
-                style={{ width: "80px", backgroundColor: "white" }}
-                onClick={() =>
-                  hasPermission("appointments:create") && onOpenModal()
-                }
-              >
+              <Box style={{ width: "80px", backgroundColor: "white" }}>
                 {timeIntervals.map((interval, index) => (
                   <Box
                     key={index}
@@ -138,6 +133,10 @@ const DayView: React.FC<DayViewProps> = ({
                       justifyContent: "center",
                       borderRight: "1px solid #e0e0e0",
                     }}
+                    onClick={() =>
+                      hasPermission("appointments:create") &&
+                      onOpenModal(currentDate, interval)
+                    }
                   >
                     <Text size="sm">{format(interval, "h a")}</Text>
                   </Box>

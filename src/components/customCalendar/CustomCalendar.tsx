@@ -20,7 +20,7 @@ import { useMediaQuery } from "@mantine/hooks";
 
 interface CustomCalendarProps {
   appointments: Appointment[];
-  onOpenModal: () => void;
+  onOpenModal: (selectedDay: Date | null, interval: Date) => void;
   onEditAppointment: (appointment: Appointment) => void;
   onCancelAppointment: (appointmentId: string) => void;
   onConfirmAppointment: (appointmentId: string) => void;

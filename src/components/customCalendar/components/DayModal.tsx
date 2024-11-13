@@ -16,7 +16,7 @@ interface DayModalProps {
   opened: boolean;
   selectedDay: Date | null;
   onClose: () => void;
-  onOpenModal: () => void;
+  onOpenModal: (selectedDay: Date, interval: Date) => void;
   getAppointmentsForDay: (day: Date) => Appointment[];
   onEditAppointment: (appointment: Appointment) => void;
   onCancelAppointment: (appointmentId: string) => void;
@@ -122,9 +122,6 @@ const DayModal: React.FC<DayModalProps> = ({
           {/* Columna de Intervalos de Tiempo ocupando todo el alto */}
           <Box
             style={{ width: "80px", backgroundColor: "white" }}
-            onClick={() =>
-              hasPermission("appointments:create") && onOpenModal()
-            }
           >
             {timeIntervals.map((interval, index) => (
               <Box
@@ -137,6 +134,9 @@ const DayModal: React.FC<DayModalProps> = ({
                   justifyContent: "center",
                   borderRight: "1px solid #e0e0e0",
                 }}
+                onClick={() =>
+                  hasPermission("appointments:create") && onOpenModal(selectedDay, interval)
+                }
               >
                 <Text size="sm">{format(interval, "h a")}</Text>
               </Box>

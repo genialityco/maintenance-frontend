@@ -17,7 +17,9 @@ import { createSubscription } from "./services/subscriptionService";
 
 function App() {
   const dispatch: AppDispatch = useDispatch();
-  const { userId, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { userId, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth
+  );
   const organizationLoading = useSelector(
     (state: RootState) => state.organization.loading
   );
@@ -30,7 +32,7 @@ function App() {
   }, [dispatch]);
 
   useAuthInitializer();
-  
+
   useEffect(() => {
     const requestNotificationPermission = async () => {
       if (isAuthenticated && userId) {
@@ -41,23 +43,31 @@ function App() {
             userVisibleOnly: true,
             applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
           });
-  
+
           // Enviar la suscripción al backend
           await createSubscription({
             endpoint: subscription.endpoint,
             keys: {
-              p256dh: subscription.toJSON().keys?.p256dh ?? '',
-              auth: subscription.toJSON().keys?.auth ?? '',
+              p256dh: subscription.toJSON().keys?.p256dh ?? "",
+              auth: subscription.toJSON().keys?.auth ?? "",
             },
             userId,
           });
         }
       }
     };
-  
+
     requestNotificationPermission();
   }, [isAuthenticated, userId]);
-  
+
+  // Recarga automática cuando haya un nuevo service worker activo
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        window.location.reload();
+      });
+    }
+  }, []);
 
   if (loading || organizationLoading) {
     return (

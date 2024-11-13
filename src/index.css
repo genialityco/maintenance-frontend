@@ -2,7 +2,6 @@
   
   /* Opcional: Asegurar que todos los elementos respeten el box-sizing */
 
-
   @media (min-width: $mantine-breakpoint-xs) {
     .burger-menu {
       display: none;

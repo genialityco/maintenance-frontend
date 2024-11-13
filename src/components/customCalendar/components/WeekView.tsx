@@ -24,7 +24,7 @@ import { usePermissions } from "../../../hooks/usePermissions";
 interface WeekViewProps {
   currentDate: Date;
   isMobile: boolean;
-  onOpenModal: () => void;
+  onOpenModal: (selectedDay: Date | null, interval: Date) => void;
   getAppointmentsForDay: (day: Date) => Appointment[];
   onEditAppointment: (appointment: Appointment) => void;
   onCancelAppointment: (appointmentId: string) => void;
@@ -158,9 +158,6 @@ const WeekView: React.FC<WeekViewProps> = ({
                     {/* Columna de Intervalos de Tiempo */}
                     <Box
                       style={{ width: "80px", backgroundColor: "white" }}
-                      onClick={() =>
-                        hasPermission("appointments:create") && onOpenModal()
-                      }
                     >
                       {timeIntervals.map((interval, index) => (
                         <Box
@@ -173,6 +170,10 @@ const WeekView: React.FC<WeekViewProps> = ({
                             justifyContent: "center",
                             borderRight: "1px solid #e0e0e0",
                           }}
+                          onClick={() =>
+                            hasPermission("appointments:create") &&
+                            onOpenModal(new Date(day), interval)
+                          }
                         >
                           <Text size="sm">{format(interval, "h a")}</Text>
                         </Box>

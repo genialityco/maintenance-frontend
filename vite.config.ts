@@ -8,8 +8,8 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       strategies: 'injectManifest',
-      srcDir: 'src',                 // Indica la carpeta donde está el archivo personalizado
-      filename: 'custom-sw.js',       // Nombre del archivo service worker personalizado
+      srcDir: 'src',
+      filename: 'custom-sw.js',
       includeAssets: [
         "favicon.svg",
         "favicon.ico",
@@ -59,7 +59,7 @@ export default defineConfig({
         ],
       },
       devOptions: {
-        enabled: true,
+        enabled: false,
       },
     }),
   ],

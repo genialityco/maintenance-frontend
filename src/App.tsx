@@ -39,30 +39,20 @@ function App() {
         const permission = await Notification.requestPermission();
         if (permission === "granted") {
           const registration = await navigator.serviceWorker.ready;
+          const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+          });
 
-          // Verificar si ya existe una suscripción
-          const existingSubscription =
-            await registration.pushManager.getSubscription();
-
-          if (!existingSubscription) {
-            // Crear nueva suscripción solo si no existe una previa
-            const newSubscription = await registration.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
-            });
-
-            // Enviar la nueva suscripción al backend
-            await createSubscription({
-              endpoint: newSubscription.endpoint,
-              keys: {
-                p256dh: newSubscription.toJSON().keys?.p256dh ?? "",
-                auth: newSubscription.toJSON().keys?.auth ?? "",
-              },
-              userId,
-            });
-          } else {
-            console.log("Ya existe una suscripción activa.");
-          }
+          // Enviar la suscripción al backend
+          await createSubscription({
+            endpoint: subscription.endpoint,
+            keys: {
+              p256dh: subscription.toJSON().keys?.p256dh ?? "",
+              auth: subscription.toJSON().keys?.auth ?? "",
+            },
+            userId,
+          });
         }
       }
     };

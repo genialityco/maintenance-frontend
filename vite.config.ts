@@ -54,8 +54,8 @@ export default defineConfig({
         enabled: true
       },
       // Indica el archivo personalizado del service worker
-      srcDir: 'src',
-      filename: 'custom-sw.js'
+      // srcDir: 'src',
+      // filename: 'custom-sw.js'
     })
   ]
 });

@@ -13,9 +13,11 @@ import { AppDispatch, RootState } from "./app/store";
 import { useEffect } from "react";
 import { fetchOrganization } from "./features/organization/sliceOrganization";
 import { CustomLoader } from "./components/customLoader/CustomLoader";
+import { createSubscription } from "./services/subscriptionService";
 
 function App() {
   const dispatch: AppDispatch = useDispatch();
+  const { userId, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const organizationLoading = useSelector(
     (state: RootState) => state.organization.loading
   );
@@ -23,35 +25,40 @@ function App() {
   const [opened, { toggle, close }] = useDisclosure(false);
 
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/custom-sw.js')
-        .then((registration) => {
-          registration.onupdatefound = () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.onstatechange = () => {
-                if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                // Recarga la página automáticamente cuando se detecta una nueva versión del SW
-                console.log("Nueva versión del Service Worker disponible. Recargando...");
-                window.location.reload();
-              };
-            }
-            };
-          };
-        })
-        .catch((error) => {
-          console.error('Error al registrar el Service Worker:', error);
-        });
-    }
-    
-  } , []);
-
-  useEffect(() => {
     const organizationId = import.meta.env.VITE_ORGANIZATION_ID;
     dispatch(fetchOrganization(organizationId));
   }, [dispatch]);
 
   useAuthInitializer();
+
+  useEffect(() => {
+    const requestNotificationPermission = async () => {
+      // Verifica si el usuario está autenticado antes de crear la suscripción
+      if (isAuthenticated && userId) {
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+          // Crea la suscripción
+          const registration = await navigator.serviceWorker.register("/service-worker.js");
+          const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+          });
+
+          // Enviar la suscripción al backend
+          await createSubscription({
+            endpoint: subscription.endpoint,
+            keys: {
+              p256dh: subscription.toJSON().keys?.p256dh ?? '',
+              auth: subscription.toJSON().keys?.auth ?? '',
+            },
+            userId,
+          });
+        }
+      }
+    };
+
+    requestNotificationPermission();
+  }, [isAuthenticated, userId]);
 
   if (loading || organizationLoading) {
     return (

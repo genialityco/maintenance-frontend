@@ -32,8 +32,8 @@ const apiAuth: AxiosInstance = createAxiosInstance(`${API_BASE_URL}/login`);
 const apiOrganization: AxiosInstance = createAxiosInstance(
   `${API_BASE_URL}/organizations`
 );
-const apiNotification: AxiosInstance = createAxiosInstance(
-  `${API_BASE_URL}/notifications`
+const apiSubscribe: AxiosInstance = createAxiosInstance(
+  `${API_BASE_URL}/subscribe`
 );
 
 export {
@@ -45,5 +45,5 @@ export {
   apiAdvance,
   apiAuth,
   apiOrganization,
-  apiNotification,
+  apiSubscribe,
 };

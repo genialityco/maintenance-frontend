@@ -12,12 +12,13 @@ export interface Employee {
   _id: string;
   names: string;
   position: string;
-  email: string;
-  phoneNumber: string;
   services?: Service[];
-  organizationId: string;
+  email: string;
   password?: string;
+  phoneNumber: string;
+  organizationId: string;
   role: Role;
+  customPermissions: string[];
   isActive: boolean;
 }
 

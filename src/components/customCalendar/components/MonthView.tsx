@@ -6,6 +6,7 @@ import {
   endOfMonth,
   format,
   isSameDay,
+  formatDate,
 } from "date-fns";
 import {
   startOfWeek as startOfCalendarWeek,
@@ -45,10 +46,30 @@ const MonthView: React.FC<MonthViewProps> = ({
 
   return (
     <Box>
-      <Grid>
+      <Paper bg="#e0e0e0">
+        <Text
+          ta="center"
+          style={{
+            fontSize: isMobile ? 16 : 24,
+            marginBottom: "2px",
+            textTransform: "uppercase",
+          }}
+        >
+          {formatDate(currentDate, "MMMM", { locale: es })}
+        </Text>
+      </Paper>
+      <Grid
+        mb="xs"
+        style={{
+          border: "1px solid #e0e0e0",
+          borderRadius: "5px",
+          padding: "2px",
+          paddingBlock: "10px",
+        }}
+      >
         {daysOfWeek.map((day, index) => (
           <Grid.Col span={1.7} key={index}>
-            <Text ta="center" fw={500} size={isMobile ? "xs" : "md"}>
+            <Text ta="center" fw={500} style={{ fontSize: isMobile ? 11 : 16 }}>
               {day}
             </Text>
           </Grid.Col>
@@ -82,13 +103,13 @@ const MonthView: React.FC<MonthViewProps> = ({
               {getAppointmentsForDay(day).length > 0 && (
                 <Text
                   ta="center"
-                  size="xs"
                   c="dimmed"
                   style={{
                     position: "absolute",
                     bottom: 0,
                     left: 0,
                     width: "100%",
+                    fontSize: isMobile ? 10 : 12,
                   }}
                 >
                   {getAppointmentsForDay(day).length} citas

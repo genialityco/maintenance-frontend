@@ -29,8 +29,12 @@ const useAuthInitializer = () => {
           } else if (role === "employee" && userId) {
             const employeeData = await getEmployeeById(userId);
             if (employeeData) {
+              const permissions = [
+                ...employeeData.role.permissions,
+                ...employeeData.customPermissions,
+              ];
               dispatch(setOrganizationId(employeeData.organizationId));
-              dispatch(setPermissions(employeeData.role.permissions));
+              dispatch(setPermissions(permissions));
             }
           }
         } catch (error) {

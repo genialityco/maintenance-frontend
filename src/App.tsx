@@ -30,20 +30,18 @@ function App() {
   }, [dispatch]);
 
   useAuthInitializer();
-
+  
   useEffect(() => {
     const requestNotificationPermission = async () => {
-      // Verifica si el usuario está autenticado antes de crear la suscripción
       if (isAuthenticated && userId) {
         const permission = await Notification.requestPermission();
         if (permission === "granted") {
-          // Crea la suscripción
-          const registration = await navigator.serviceWorker.register("./custom-sw.js");
+          const registration = await navigator.serviceWorker.ready;
           const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
           });
-
+  
           // Enviar la suscripción al backend
           await createSubscription({
             endpoint: subscription.endpoint,
@@ -56,9 +54,10 @@ function App() {
         }
       }
     };
-
+  
     requestNotificationPermission();
   }, [isAuthenticated, userId]);
+  
 
   if (loading || organizationLoading) {
     return (

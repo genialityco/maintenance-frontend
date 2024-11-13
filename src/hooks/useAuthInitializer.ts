@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setOrganizationId, setPermissions } from "../features/auth/sliceAuth";
 import { getEmployeeById } from "../services/employeeService";
-import { requestNotificationPermission } from "../utils/notificationUtils";
 import { RootState, AppDispatch } from "../app/store";
 
 const useAuthInitializer = () => {
@@ -27,13 +26,11 @@ const useAuthInitializer = () => {
               dispatch(setOrganizationId(organization._id));
             }
             dispatch(setPermissions(organization.role.permissions));
-            requestNotificationPermission("organization", userId);
           } else if (role === "employee" && userId) {
             const employeeData = await getEmployeeById(userId);
             if (employeeData) {
               dispatch(setOrganizationId(employeeData.organizationId));
               dispatch(setPermissions(employeeData.role.permissions));
-              requestNotificationPermission("employee", userId);
             }
           }
         } catch (error) {

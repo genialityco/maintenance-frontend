@@ -41,6 +41,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
       name: "",
       permissions: [],
     },
+    customPermissions: [],
     isActive: true,
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -60,6 +61,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
           name: employee.role?.name || "",
           permissions: employee.role?.permissions || [],
         },
+        customPermissions: employee.customPermissions || [],
         isActive: employee.isActive ?? true,
       });
     } else {
@@ -92,6 +94,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
         name: "",
         permissions: [],
       },
+      customPermissions: [],
       isActive: true,
     });
   };

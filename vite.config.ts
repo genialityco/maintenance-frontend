@@ -7,6 +7,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      srcDir: 'public',
+      filename: 'service-worker.js',
+      strategies: 'injectManifest',
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
         name: 'Galaxia Glamour',
@@ -53,9 +56,6 @@ export default defineConfig({
       devOptions: {
         enabled: true
       },
-      // Indica el archivo personalizado del service worker
-      // srcDir: 'src',
-      // filename: 'custom-sw.js'
     })
   ]
 });

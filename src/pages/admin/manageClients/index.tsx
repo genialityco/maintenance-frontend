@@ -22,6 +22,7 @@ import {
 import { showNotification } from "@mantine/notifications";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
+import CustomLoader from "../../../components/customLoader/CustomLoader";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -29,6 +30,7 @@ const Dashboard = () => {
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const organizationId = useSelector(
     (state: RootState) => state.auth.organizationId
@@ -44,6 +46,7 @@ const Dashboard = () => {
 
   // Función para obtener clientes
   const fetchClients = async () => {
+    setIsLoading(true);
     try {
       if (!organizationId) {
         throw new Error("Organization ID is required");
@@ -54,12 +57,16 @@ const Dashboard = () => {
     } catch (err) {
       console.log(err);
       setError("Error al obtener la lista de clientes");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchClients();
-  }, []);
+    if(organizationId) {
+      fetchClients();
+    }
+  }, [organizationId]);
 
   useEffect(() => {
     filterClients();
@@ -122,6 +129,10 @@ const Dashboard = () => {
       console.error(error);
     }
   };
+
+  if (!organizationId || isLoading) {
+    return <CustomLoader />;
+  }
 
   return (
     <Box>

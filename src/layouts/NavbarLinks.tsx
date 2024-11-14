@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { Box, Text, Flex, Divider, ScrollArea } from "@mantine/core";
 import { MdOutlineLoyalty, MdPriceCheck } from "react-icons/md";
-import { RiReservedLine } from "react-icons/ri";
+// import { RiReservedLine } from "react-icons/ri";
 import { GrUserSettings } from "react-icons/gr";
 import { BiCalendarCheck } from "react-icons/bi";
 import { GiClawSlashes } from "react-icons/gi";
@@ -46,7 +46,7 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ closeNavbar }) => {
             </Flex>
           </NavLink>
 
-          <NavLink
+          {/* <NavLink
             to="/reservar"
             onClick={closeNavbar}
             style={{ textDecoration: "none" }}
@@ -57,7 +57,7 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ closeNavbar }) => {
                 Reserva en linea
               </Text>
             </Flex>
-          </NavLink>
+          </NavLink> */}
         </Flex>
 
         {(hasPermission("clients:read") ||

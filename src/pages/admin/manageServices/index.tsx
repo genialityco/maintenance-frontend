@@ -13,7 +13,7 @@ import {
   Grid,
   TextInput,
 } from "@mantine/core";
-import { BsTrash, BsPencil, BsSearch } from "react-icons/bs";
+import { BsTrash, BsPencil, BsSearch, BsToggleOn, BsToggleOff } from "react-icons/bs";
 import { showNotification } from "@mantine/notifications";
 import {
   createService,
@@ -25,6 +25,7 @@ import ModalCreateEdit from "./components/ModalCreateEdit";
 import { uploadImage } from "../../../services/imageService";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
+import CustomLoader from "../../../components/customLoader/CustomLoader";
 
 interface Service {
   _id: string;
@@ -34,6 +35,7 @@ interface Service {
   description?: string;
   price: number;
   duration: number;
+  isActive?: boolean;
 }
 
 const AdminServices: React.FC = () => {
@@ -42,6 +44,8 @@ const AdminServices: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
+  const [isInitialLoadingExec, setIsInitialLoadingExec] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const organizationId = useSelector(
     (state: RootState) => state.auth.organizationId
@@ -49,13 +53,14 @@ const AdminServices: React.FC = () => {
 
   useEffect(() => {
     loadServices();
-  }, []);
+  }, [organizationId]);
 
   useEffect(() => {
     filterServices();
   }, [searchTerm, services]);
 
   const loadServices = async () => {
+    setIsLoading(true);
     try {
       if (!organizationId) {
         throw new Error("Organization ID is required");
@@ -71,6 +76,9 @@ const AdminServices: React.FC = () => {
         autoClose: 2000,
         position: "top-right",
       });
+    } finally {
+      setIsLoading(false);
+      setIsInitialLoadingExec(true);
     }
   };
 
@@ -82,7 +90,9 @@ const AdminServices: React.FC = () => {
         (service.description &&
           service.description.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-    setFilteredServices(filtered);
+    setFilteredServices(
+      filtered.sort((a, b) => Number(b.isActive) - Number(a.isActive))
+    );
   };
 
   const handleSaveService = async (service: Service) => {
@@ -188,6 +198,43 @@ const AdminServices: React.FC = () => {
     setEditingService(null);
   };
 
+  const handleToggleServiceStatus = async (serviceId: string) => {
+    try {
+      const service = services.find((s) => s._id === serviceId);
+      if (!service) {
+        throw new Error("Service not found");
+      }
+      await updateService(serviceId, {
+        ...service,
+        images: service.images?.filter(
+          (image): image is string => typeof image === "string"
+        ),
+        isActive: !service.isActive,
+      });
+      loadServices();
+      showNotification({
+        title: "Estado actualizado",
+        message: "El estado del servicio ha sido actualizado correctamente",
+        color: "green",
+        autoClose: 2000,
+        position: "top-right",
+      });
+    } catch (error) {
+      console.error(error);
+      showNotification({
+        title: "Error",
+        message: "Error al actualizar el estado del servicio",
+        color: "red",
+        autoClose: 2000,
+        position: "top-right",
+      });
+    }
+  };
+
+  if (isLoading && !isInitialLoadingExec) {
+    return <CustomLoader />;
+  }
+
   return (
     <Box>
       <Group justify="space-between" mt="xl">
@@ -222,12 +269,15 @@ const AdminServices: React.FC = () => {
 
       <Grid>
         {filteredServices.map((service, index) => (
-          <Grid.Col span={{ base: 12, md: 6, lg: 3 }} key={service._id}>
+          <Grid.Col span={{ base: 12, xs: 6, md: 6, lg: 3 }} key={service._id}>
             <Card
               shadow="md"
               radius="md"
               withBorder
-              style={{ position: "relative" }}
+              style={{
+                position: "relative",
+                opacity: service.isActive ? 1 : 0.5,
+              }}
             >
               {service.images &&
                 service.images.length > 0 &&
@@ -270,6 +320,18 @@ const AdminServices: React.FC = () => {
                   onClick={() => handleDeleteService(service._id, index)}
                 >
                   <BsTrash />
+                </ActionIcon>
+                <ActionIcon
+                  variant="gradient"
+                  radius="lg"
+                  gradient={
+                    service.isActive
+                      ? { from: "green", to: "lime", deg: 90 }
+                      : { from: "gray", to: "dark", deg: 90 }
+                  }
+                  onClick={() => handleToggleServiceStatus(service._id)}
+                >
+                  {service.isActive ? <BsToggleOn /> : <BsToggleOff />}
                 </ActionIcon>
               </Box>
 

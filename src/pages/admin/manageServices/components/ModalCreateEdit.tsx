@@ -18,7 +18,7 @@ import { BiImageAdd, BiSolidXCircle } from "react-icons/bi";
 
 interface Service {
   _id: string;
-  images?: (File | string)[]; // Puede ser un array de Files o URLs
+  images?: (File | string)[]; 
   name: string;
   type: string;
   description?: string;

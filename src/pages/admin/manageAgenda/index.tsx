@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Center, Group, Stack, Text, Title } from "@mantine/core";
+import { Box, Button, Group, Title } from "@mantine/core";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import CustomCalendar from "../../../components/customCalendar/CustomCalendar";
 import {
@@ -96,7 +96,11 @@ const ScheduleView: React.FC = () => {
       const response = await getEmployeesByOrganizationId(
         organizationId as string
       );
-      setEmployees(response);
+
+      // Filtrar los empleados que tengan isActive: true
+      const activeEmployees = response.filter((employee) => employee.isActive);
+
+      setEmployees(activeEmployees);
     } catch (error) {
       console.error(error);
     } finally {
@@ -220,20 +224,20 @@ const ScheduleView: React.FC = () => {
       confirmProps: { color: "red" },
       onConfirm: async () => {
         try {
-          const response = await updateAppointment(appointmentId, {
-            status: "cancelled",
+          // const response = await updateAppointment(appointmentId, {
+          //   status: "cancelled",
+          // });
+          // if (response && response.status === "cancelled") {
+          await deleteAppointment(appointmentId);
+          showNotification({
+            title: "Éxito",
+            message: "La cita ha sido cancelada y eliminada.",
+            color: "green",
+            autoClose: 3000,
+            position: "top-right",
           });
-          if (response && response.status === "cancelled") {
-            await deleteAppointment(appointmentId);
-            showNotification({
-              title: "Éxito",
-              message: "La cita ha sido cancelada y eliminada.",
-              color: "green",
-              autoClose: 3000,
-              position: "top-right",
-            });
-            fetchAppointments();
-          }
+          fetchAppointments();
+          // }
         } catch (error) {
           showNotification({
             title: "Error",
@@ -361,16 +365,7 @@ const ScheduleView: React.FC = () => {
   };
 
   if (loadingAgenda) {
-    return (
-      <Center style={{ height: "100vh", flexDirection: "column" }}>
-        <Stack align="center" m="md">
-          <CustomLoader />
-          <Text size="xl" fw={700} c="dark">
-            Cargando agenda...
-          </Text>
-        </Stack>
-      </Center>
-    );
+    return <CustomLoader />;
   }
 
   return (

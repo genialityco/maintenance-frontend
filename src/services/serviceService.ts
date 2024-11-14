@@ -10,6 +10,7 @@ export interface Service {
   description?: string;
   price: number;
   duration: number;
+  isActive?: boolean;
 }
 
 interface CreateServicePayload {

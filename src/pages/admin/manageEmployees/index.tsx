@@ -28,6 +28,7 @@ import AdvanceModal from "./components/AdvanceModal";
 import { openConfirmModal } from "@mantine/modals";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
+import CustomLoader from "../../../components/customLoader/CustomLoader";
 
 const AdminEmployees: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -41,6 +42,7 @@ const AdminEmployees: React.FC = () => {
     null
   );
   const [showAdvanceModal, setShowAdvanceModal] = useState(false);
+  const [ isLoading, setIsLoading ] = useState(false);
 
   const organizationId = useSelector(
     (state: RootState) => state.auth.organizationId
@@ -49,13 +51,14 @@ const AdminEmployees: React.FC = () => {
   useEffect(() => {
     loadEmployees();
     fetchServices();
-  }, []);
+  }, [organizationId]);
 
   useEffect(() => {
     filterEmployees();
   }, [searchTerm, employees]);
 
   const loadEmployees = async () => {
+    setIsLoading(true);
     try {
       if (!organizationId) {
         throw new Error("Organization ID is required");
@@ -74,10 +77,13 @@ const AdminEmployees: React.FC = () => {
         autoClose: 2000,
         position: "top-right",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const fetchServices = async () => {
+    setIsLoading(true);
     try {
       if (!organizationId) {
         throw new Error("Organization ID is required");
@@ -93,6 +99,8 @@ const AdminEmployees: React.FC = () => {
         autoClose: 2000,
         position: "top-right",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -311,6 +319,12 @@ const AdminEmployees: React.FC = () => {
   const onCloseAdvanceModal = () => {
     setShowAdvanceModal(false);
   };
+
+  if( isLoading ) {
+    return (
+      <CustomLoader />
+    )
+  }
 
   return (
     <Box>

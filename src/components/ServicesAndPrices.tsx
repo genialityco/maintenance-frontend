@@ -11,8 +11,6 @@ import {
   ThemeIcon,
   Modal,
   Image,
-  Center,
-  Stack,
 } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import { BsEye } from "react-icons/bs";
@@ -182,20 +180,24 @@ const ServicesAndPrices: React.FC = () => {
 
   // Obtener servicios desde la API
   useEffect(() => {
-    const fetchServices = async () => {
-      setIsLoading(true);
-      const data = await getServicesByOrganizationId(_id as string);
-      setServices(data);
-
-      // Extraer los tipos de servicios de forma única
-      const types = Array.from(new Set(data.map((service) => service.type)));
-      setServiceTypes(types);
-
-      setIsLoading(false);
-    };
-
     fetchServices();
   }, []);
+
+  const fetchServices = async () => {
+    setIsLoading(true);
+    const data = await getServicesByOrganizationId(_id as string);
+  
+    // Filtrar los servicios que tengan isActive: true
+    const activeServices = data.filter((service) => service.isActive);
+  
+    setServices(activeServices);
+  
+    // Extraer los tipos de servicios de forma única
+    const types = Array.from(new Set(activeServices.map((service) => service.type)));
+    setServiceTypes(types);
+  
+    setIsLoading(false);
+  };
 
   // Filtrar los servicios por tipo
   const filterServicesByType = (type: string) => {
@@ -210,16 +212,7 @@ const ServicesAndPrices: React.FC = () => {
   };
 
   if (isLoading) {
-    return (
-      <Center style={{ height: "100vh", flexDirection: "column" }}>
-        <Stack align="center" m="md">
-          <CustomLoader />
-          <Text size="xl" fw={700} c="dark">
-            Cargando...
-          </Text>
-        </Stack>
-      </Center>
-    );
+    return <CustomLoader />;
   }
 
   return (

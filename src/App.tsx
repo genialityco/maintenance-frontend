@@ -1,4 +1,4 @@
-import { AppShell, Burger, Center, Flex, Stack, Text } from "@mantine/core";
+import { AppShell, Burger, Flex } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
@@ -24,6 +24,11 @@ function App() {
     (state: RootState) => state.organization.loading
   );
   const loading = useSelector((state: RootState) => state.organization.loading);
+
+  const organizationId = useSelector(
+    (state: RootState) => state.auth.organizationId
+  );
+
   const [opened, { toggle, close }] = useDisclosure(false);
 
   useEffect(() => {
@@ -69,17 +74,8 @@ function App() {
     }
   }, []);
 
-  if (loading || organizationLoading) {
-    return (
-      <Center style={{ height: "100vh", flexDirection: "column" }}>
-        <Stack align="center" m="md">
-          <CustomLoader />
-          <Text size="xl" fw={700} c="dark">
-            Cargando...
-          </Text>
-        </Stack>
-      </Center>
-    );
+  if (loading || organizationLoading || organizationId === null) {
+    return <CustomLoader />;
   }
 
   return (

@@ -19,6 +19,7 @@ import {
 } from "../../services/organizationService";
 import { showNotification } from "@mantine/notifications";
 import { IoAlertCircle } from "react-icons/io5";
+import CustomLoader from "../../components/customLoader/CustomLoader";
 
 const OrganizationInfo = () => {
   const [organization, setOrganization] = useState<Organization>(
@@ -49,16 +50,7 @@ const OrganizationInfo = () => {
               icon: <IoAlertCircle size={16} />,
             });
           }
-        } else {
-          setError(true);
-          showNotification({
-            title: "Error",
-            message: "ID de organización no disponible",
-            color: "red",
-            position: "top-right",
-            icon: <IoAlertCircle size={16} />,
-          });
-        }
+        } 
       } catch (error) {
         console.error(
           "Error al cargar la información de la organización:",
@@ -77,7 +69,9 @@ const OrganizationInfo = () => {
       }
     };
 
-    fetchOrganization();
+    if(organizationId){
+      fetchOrganization();
+    }
   }, [organizationId]);
 
   const handleInputChange = (field: keyof Organization, value: string) => {
@@ -89,18 +83,10 @@ const OrganizationInfo = () => {
       if (organizationId) {
         const updatedOrganization = { ...organization };
         if (!updatedOrganization.password) {
-          delete updatedOrganization.password; 
+          delete updatedOrganization.password;
         }
         await updateOrganization(organizationId, updatedOrganization);
-      } else {
-        showNotification({
-          title: "Error",
-          message: "ID de organización no disponible",
-          color: "red",
-          position: "top-right",
-          icon: <IoAlertCircle size={16} />,
-        });
-      }
+      } 
       showNotification({
         title: "Éxito",
         message: "Información actualizada correctamente",
@@ -121,11 +107,11 @@ const OrganizationInfo = () => {
     }
   };
 
-  if (loading) return <Text>Cargando...</Text>;
+  if (loading) return <CustomLoader />;
   if (error)
     return (
       <Center style={{ height: "100vh" }}>
-        <Text color="red" size="xl">
+        <Text className="red" size="xl">
           Error al cargar la información de la organización
         </Text>
       </Center>

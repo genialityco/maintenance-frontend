@@ -74,7 +74,7 @@ function App() {
     }
   }, []);
 
-  if (loading || organizationLoading || organizationId === null) {
+  if (loading || organizationLoading) {
     return <CustomLoader />;
   }
 

@@ -25,10 +25,6 @@ function App() {
   );
   const loading = useSelector((state: RootState) => state.organization.loading);
 
-  const organizationId = useSelector(
-    (state: RootState) => state.auth.organizationId
-  );
-
   const [opened, { toggle, close }] = useDisclosure(false);
 
   useEffect(() => {

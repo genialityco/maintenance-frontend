@@ -25,6 +25,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 import { usePermissions } from "../../../hooks/usePermissions";
 import { CustomLoader } from "../../../components/customLoader/CustomLoader";
+import { runDailyReminder } from "../../../services/cronService";
 
 interface CreateAppointmentPayload {
   service: Service;
@@ -373,6 +374,9 @@ const ScheduleView: React.FC = () => {
       <Group justify="space-between" mb="md">
         <Title order={2}>Gestionar Agenda</Title>
         <Group align="center">
+          <Button variant="outline" color="blue" onClick={runDailyReminder}>
+            Enviar recordatorios
+          </Button>
           <Button variant="outline" color="blue" onClick={fetchAppointments}>
             Actualizar agenda
           </Button>

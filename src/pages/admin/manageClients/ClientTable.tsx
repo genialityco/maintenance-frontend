@@ -28,13 +28,13 @@ const ClientTable: React.FC<ClientTableProps> = ({
   error,
 }) => {
   return (
-    <Box m="auto">
+    <Box m="auto" mb="lg">
       {error && (
-        <Text mt="md" color="red">
+        <Text mt="md" c="red">
           {error}
         </Text>
       )}
-      <Table mt="md" withTableBorder withColumnBorders striped>
+      <Table mt="md" withTableBorder withColumnBorders striped style={{ overflowX: "auto" }}>
         <Table.Thead>
           <Table.Tr>
             <Table.Th style={{ textAlign: "center" }}>Nombre</Table.Th>

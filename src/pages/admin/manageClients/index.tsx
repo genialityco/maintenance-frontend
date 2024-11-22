@@ -167,7 +167,7 @@ const Dashboard = () => {
         onClose={handleCloseModal}
         fetchClients={fetchClients}
       />
-      <div style={{ overflowX: "auto" }}>
+      <div>
         <ClientTable
           clients={filteredClients}
           handleDeleteClient={handleDeleteClient}

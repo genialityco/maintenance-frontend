@@ -35,6 +35,9 @@ const apiOrganization: AxiosInstance = createAxiosInstance(
 const apiSubscribe: AxiosInstance = createAxiosInstance(
   `${API_BASE_URL}/subscribe`
 );
+const apiCron: AxiosInstance = createAxiosInstance(
+  `${API_BASE_URL}/cron`
+);
 
 export {
   apiClient,
@@ -46,4 +49,5 @@ export {
   apiAuth,
   apiOrganization,
   apiSubscribe,
+  apiCron
 };

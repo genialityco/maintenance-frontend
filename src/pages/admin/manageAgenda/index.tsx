@@ -25,12 +25,12 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 import { usePermissions } from "../../../hooks/usePermissions";
 import { CustomLoader } from "../../../components/customLoader/CustomLoader";
-import { runDailyReminder } from "../../../services/cronService";
 
 interface CreateAppointmentPayload {
   service: Service;
   client: Client;
   employee: Employee;
+  employeeRequestedByClient: boolean,
   startDate: Date;
   endDate: Date;
   status: string;
@@ -168,15 +168,15 @@ const ScheduleView: React.FC = () => {
     return combinedDate;
   };
 
-  const openModal = (selectedDay: Date | null, interval: Date) => {
-    const startDate = combineDateAndTime(selectedDay, interval);
+  const openModal = (selectedDay: Date | null, interval?: Date) => {
+    const startDate =
+      combineDateAndTime(selectedDay, interval || new Date()) || new Date();
 
-    // Verifica que la data esté disponible antes de abrir el modal
     if (clients.length > 0 && employees.length > 0) {
       if (!newAppointment.startDate) {
         setNewAppointment({
           ...newAppointment,
-          startDate: startDate ?? new Date(),
+          startDate,
         });
       }
       setModalOpenedAppointment(true);
@@ -287,14 +287,29 @@ const ScheduleView: React.FC = () => {
 
   const addOrUpdateAppointment = async () => {
     try {
-      const { service, employee, client, startDate, endDate, status } =
-        newAppointment;
+      const {
+        service,
+        employee,
+        employeeRequestedByClient,
+        client,
+        startDate,
+        endDate,
+        status,
+      } = newAppointment;
 
-      if (service && employee && client && startDate && endDate) {
+      if (
+        service &&
+        employee &&
+        employeeRequestedByClient &&
+        client &&
+        startDate &&
+        endDate
+      ) {
         const appointmentPayload: CreateAppointmentPayload = {
           service,
           employee,
           client,
+          employeeRequestedByClient,
           startDate,
           endDate,
           status: status || "pending",
@@ -374,14 +389,14 @@ const ScheduleView: React.FC = () => {
       <Group justify="space-between" mb="md">
         <Title order={2}>Gestionar Agenda</Title>
         <Group align="center">
-          <Button variant="outline" color="blue" onClick={runDailyReminder}>
-            Enviar recordatorios
-          </Button>
           <Button variant="outline" color="blue" onClick={fetchAppointments}>
             Actualizar agenda
           </Button>
           {hasPermission("appointments:create") && (
-            <Button color="blue" onClick={() => openModal}>
+            <Button
+              color="blue"
+              onClick={() => openModal(new Date(), new Date())}
+            >
               Añadir Cita
             </Button>
           )}

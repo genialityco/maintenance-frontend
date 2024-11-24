@@ -10,6 +10,7 @@ export interface Appointment {
   client: Client;
   service: Service;
   employee: Employee;
+  employeeRequestedByClient: boolean;
   startDate: Date;
   endDate: Date;
   status: string;
@@ -44,14 +45,24 @@ export const getAppointments = async (): Promise<Appointment[]> => {
   }
 };
 
-// Obtener citas por organizationId
+// Obtener citas por organizationId con rango de fechas opcional
 export const getAppointmentsByOrganizationId = async (
-  organizationId: string
+  organizationId: string,
+  startDate?: string, // Fecha de inicio opcional
+  endDate?: string // Fecha de fin opcional
 ): Promise<Appointment[]> => {
   try {
-    const response = await apiAppointment.get<Response<Appointment[]>>(
-      `/organization/${organizationId}`
-    );
+    // Construir los parámetros de consulta si las fechas están definidas
+    const queryParams = new URLSearchParams();
+    if (startDate) queryParams.append("startDate", startDate);
+    if (endDate) queryParams.append("endDate", endDate);
+
+    // Construir la URL con los parámetros de consulta
+    const url = `/organization/${organizationId}/dates${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
+
+    const response = await apiAppointment.get<Response<Appointment[]>>(url);
     return response.data.data;
   } catch (error) {
     handleAxiosError(error, "Error al obtener las citas por organización");

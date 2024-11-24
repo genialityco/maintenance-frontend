@@ -1,5 +1,16 @@
 import React, { useEffect } from "react";
-import { Box, Button, Modal, Grid, Select, Text, Group } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Modal,
+  Grid,
+  Select,
+  Text,
+  Group,
+  Checkbox,
+  ComboboxItem,
+  OptionsFilter,
+} from "@mantine/core";
 import DateSelector from "./DateSelector";
 import TimeSelector from "./TimeSelector";
 import { addMinutes } from "date-fns";
@@ -21,6 +32,10 @@ interface AppointmentModalProps {
   onEmployeeChange: (value: string | null) => void;
   onClientChange: (value: string | null) => void;
   onSave: () => void;
+}
+
+interface CustomComboboxItem extends ComboboxItem {
+  searchValue: string;
 }
 
 const AppointmentModal: React.FC<AppointmentModalProps> = ({
@@ -75,6 +90,16 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setNewAppointment,
   ]);
 
+  const optionsFilter: OptionsFilter = ({ options, search }) => {
+    const splittedSearch = search.toLowerCase().trim().split(" ");
+    return (options as CustomComboboxItem[]).filter((option) => {
+      const words = option.searchValue.toLowerCase().trim().split(" ");
+      return splittedSearch.every((searchWord) =>
+        words.some((word: string | string[]) => word.includes(searchWord))
+      );
+    });
+  };
+
   return (
     <Modal
       opened={opened}
@@ -86,16 +111,18 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     >
       <Box>
         <Select
-          label="Usuario"
-          placeholder="Selecciona un usuario"
-          comboboxProps={{ zIndex: 300 }}
+          label="Cliente"
+          placeholder="Selecciona un cliente"
+          searchable
+          filter={optionsFilter}
           data={clients.map((client) => ({
             value: client._id,
-            label: `${client.name} - ${client.phoneNumber}`,
+            label: client.name,
+            searchValue: `${client.name} ${client.phoneNumber}`,
           }))}
           value={newAppointment.client?._id || ""}
           onChange={(value) => onClientChange(value)}
-          searchable
+          nothingFoundMessage="No se encontraron clientes"
         />
 
         <Select
@@ -110,6 +137,21 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           onChange={(value) => onEmployeeChange(value)}
           searchable
           required
+          nothingFoundMessage="No se encontraron empleados"
+        />
+
+        <Checkbox
+          size="xs"
+          my="xs"
+          mb="md"
+          label="Empleado solicitado por el cliente"
+          checked={!!newAppointment.employeeRequestedByClient}
+          onChange={(event) =>
+            setNewAppointment({
+              ...newAppointment,
+              employeeRequestedByClient: event.currentTarget.checked,
+            })
+          }
         />
 
         <Select
@@ -124,6 +166,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           onChange={(value) => onServiceChange(value)}
           searchable
           required
+          nothingFoundMessage="No se encontraron servicios"
         />
 
         {newAppointment.service && (

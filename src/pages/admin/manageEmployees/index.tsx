@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
   Title,
   Group,
   Divider,
   Button,
   Grid,
   TextInput,
+  Container,
 } from "@mantine/core";
 import { BsSearch } from "react-icons/bs";
 import { showNotification } from "@mantine/notifications";
@@ -327,7 +327,7 @@ const AdminEmployees: React.FC = () => {
   }
 
   return (
-    <Box>
+    <Container>
       <Group justify="space-between" mt="xl">
         <Title order={1}>Administrar Empleados</Title>
 
@@ -386,7 +386,7 @@ const AdminEmployees: React.FC = () => {
         onClose={onCloseAdvanceModal}
         employee={selectedEmployee}
       />
-    </Box>
+    </Container>
   );
 };
 

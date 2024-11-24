@@ -9,6 +9,9 @@ import {
   Button,
   Stack,
   Flex,
+  Container,
+  Divider,
+  Group,
 } from "@mantine/core";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
@@ -50,7 +53,7 @@ const OrganizationInfo = () => {
               icon: <IoAlertCircle size={16} />,
             });
           }
-        } 
+        }
       } catch (error) {
         console.error(
           "Error al cargar la información de la organización:",
@@ -69,7 +72,7 @@ const OrganizationInfo = () => {
       }
     };
 
-    if(organizationId){
+    if (organizationId) {
       fetchOrganization();
     }
   }, [organizationId]);
@@ -86,7 +89,7 @@ const OrganizationInfo = () => {
           delete updatedOrganization.password;
         }
         await updateOrganization(organizationId, updatedOrganization);
-      } 
+      }
       showNotification({
         title: "Éxito",
         message: "Información actualizada correctamente",
@@ -111,80 +114,84 @@ const OrganizationInfo = () => {
   if (error)
     return (
       <Center style={{ height: "100vh" }}>
-        <Text className="red" size="xl">
+        <Text c="red" size="xl">
           Error al cargar la información de la organización
         </Text>
       </Center>
     );
 
   return (
-    <Card shadow="sm" padding="lg">
-      <Flex justify="space-between" align="center" mb="md">
-        <Title order={2}>Información de la Organización</Title>
-        {isEditing ? (
-          <Button color="green" onClick={handleSave}>
-            Guardar cambios
+    <Container>
+      <Card shadow="sm" radius="md" m="md" withBorder>
+        <Flex justify="space-between" align="center" mb="md">
+          <Group mt="lg" justify="space-between" align="center">
+            <Title order={2} ta="center">
+              Información de la Organización
+            </Title>
+            <Text>
+              {organization.isActive ? (
+                <Badge color="green">Activa</Badge>
+              ) : (
+                <Badge color="red">Inactiva</Badge>
+              )}
+            </Text>
+          </Group>
+          <Button
+            color={isEditing ? "green" : "blue"}
+            onClick={isEditing ? handleSave : () => setIsEditing(true)}
+          >
+            {isEditing ? "Guardar Cambios" : "Editar Información"}
           </Button>
-        ) : (
-          <Button color="blue" onClick={() => setIsEditing(true)}>
-            Editar información
-          </Button>
-        )}
-      </Flex>
+        </Flex>
 
-      <Stack m="xs" mt="md">
-        <TextInput
-          label="Nombre"
-          value={organization.name || ""}
-          disabled={!isEditing}
-          onChange={(e) => handleInputChange("name", e.target.value)}
-        />
-        <TextInput
-          label="Email"
-          value={organization.email || ""}
-          disabled={!isEditing}
-          onChange={(e) => handleInputChange("email", e.target.value)}
-        />
-        <TextInput
-          label="Teléfono"
-          value={organization.phoneNumber || ""}
-          disabled={!isEditing}
-          onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
-        />
-        <TextInput
-          label="Instagram URL"
-          value={organization.instagramUrl || ""}
-          disabled={!isEditing}
-          onChange={(e) => handleInputChange("instagramUrl", e.target.value)}
-        />
-        <TextInput
-          label="Facebook URL"
-          value={organization.facebookUrl || ""}
-          disabled={!isEditing}
-          onChange={(e) => handleInputChange("facebookUrl", e.target.value)}
-        />
-        <TextInput
-          label="WhatsApp URL"
-          value={organization.whatsappUrl || ""}
-          disabled={!isEditing}
-          onChange={(e) => handleInputChange("whatsappUrl", e.target.value)}
-        />
-        <TextInput
-          label="TikTok URL"
-          value={organization.tiktokUrl || ""}
-          disabled={!isEditing}
-          onChange={(e) => handleInputChange("tiktokUrl", e.target.value)}
-        />
-        <Text>
-          Estado:{" "}
-          {organization.isActive ? (
-            <Badge color="green">Activo</Badge>
-          ) : (
-            <Badge color="red">Inactivo</Badge>
-          )}
-        </Text>
-      </Stack>
-    </Card>
+        <Divider my="lg" />
+
+        <Stack m="lg">
+          <TextInput
+            label="Nombre"
+            value={organization.name || ""}
+            disabled={!isEditing}
+            onChange={(e) => handleInputChange("name", e.target.value)}
+          />
+          <TextInput
+            label="Email"
+            value={organization.email || ""}
+            disabled={!isEditing}
+            onChange={(e) => handleInputChange("email", e.target.value)}
+          />
+          <TextInput
+            label="Teléfono"
+            value={organization.phoneNumber || ""}
+            disabled={!isEditing}
+            onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+          />
+          <TextInput
+            label="Instagram URL"
+            value={organization.instagramUrl || ""}
+            disabled={!isEditing}
+            onChange={(e) => handleInputChange("instagramUrl", e.target.value)}
+          />
+          <TextInput
+            label="Facebook URL"
+            value={organization.facebookUrl || ""}
+            disabled={!isEditing}
+            onChange={(e) => handleInputChange("facebookUrl", e.target.value)}
+          />
+          <TextInput
+            label="WhatsApp URL"
+            value={organization.whatsappUrl || ""}
+            disabled={!isEditing}
+            onChange={(e) => handleInputChange("whatsappUrl", e.target.value)}
+          />
+          <TextInput
+            label="TikTok URL"
+            value={organization.tiktokUrl || ""}
+            disabled={!isEditing}
+            onChange={(e) => handleInputChange("tiktokUrl", e.target.value)}
+          />
+        </Stack>
+      </Card>
+    </Container>
   );
 };
 

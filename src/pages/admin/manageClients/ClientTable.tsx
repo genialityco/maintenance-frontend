@@ -1,22 +1,17 @@
 import React from "react";
-import {
-  Box,
-  Text,
-  Table,
-  Group,
-  ActionIcon,
-  Flex,
-  Badge,
-} from "@mantine/core";
+import { Box, Text, Table, Badge, Menu, ActionIcon } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
 import { Client as ClientType } from "../../../services/clientService";
 import { BiTrash } from "react-icons/bi";
-import { CgAdd, CgUserAdd } from "react-icons/cg";
+import { CgAdd, CgOptions, CgUserAdd } from "react-icons/cg";
+import { MdEdit } from "react-icons/md";
 
 interface ClientTableProps {
   clients: ClientType[];
   handleDeleteClient: (id: string) => void;
   handleRegisterService: (clientId: string) => void;
   handleReferral: (clientId: string) => void;
+  handleEditClient: (client: ClientType) => void;
   error: string | null;
 }
 
@@ -25,8 +20,26 @@ const ClientTable: React.FC<ClientTableProps> = ({
   handleDeleteClient,
   handleRegisterService,
   handleReferral,
+  handleEditClient,
   error,
 }) => {
+  const confirmAction = (
+    action: () => void,
+    title: string,
+    message: string,
+    actionType: "register" | "refer" | "delete" 
+  ) => {
+    openConfirmModal({
+      title,
+      children: <Text size="sm">{message}</Text>,
+      labels: { confirm: "Confirmar", cancel: "Cancelar" },
+      confirmProps: {
+        color: actionType === "delete" ? "red" : "green", 
+      },
+      onConfirm: action,
+    });
+  };
+
   return (
     <Box m="auto" mb="lg">
       {error && (
@@ -34,7 +47,13 @@ const ClientTable: React.FC<ClientTableProps> = ({
           {error}
         </Text>
       )}
-      <Table mt="md" withTableBorder withColumnBorders striped style={{ overflowX: "auto" }}>
+      <Table
+        mt="md"
+        withTableBorder
+        withColumnBorders
+        striped
+        style={{ overflowX: "auto" }}
+      >
         <Table.Thead>
           <Table.Tr>
             <Table.Th style={{ textAlign: "center" }}>Nombre</Table.Th>
@@ -70,21 +89,63 @@ const ClientTable: React.FC<ClientTableProps> = ({
                 </Badge>
               </Table.Td>
               <Table.Td style={{ textAlign: "center" }}>
-                <Group justify="center">
-                  <Flex justify="center" align="center" gap="xs">
-                    <ActionIcon
-                      onClick={() => handleRegisterService(client._id)}
+                <Menu shadow="sm" width={200}>
+                  <Menu.Target>
+                    <ActionIcon radius="xl">
+                      <CgOptions size={20} />
+                    </ActionIcon>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Label>Acciones</Menu.Label>
+                    <Menu.Item
+                      leftSection={<CgAdd />}
+                      onClick={() =>
+                        confirmAction(
+                          () => handleRegisterService(client._id),
+                          "Registrar Servicio",
+                          "¿Estás seguro de que deseas registrar un servicio para este cliente?",
+                          "register"
+                        )
+                      }
                     >
-                      <CgAdd />
-                    </ActionIcon>
-                    <ActionIcon onClick={() => handleReferral(client._id)}>
-                      <CgUserAdd />
-                    </ActionIcon>
-                    <ActionIcon onClick={() => handleDeleteClient(client._id)}>
-                      <BiTrash />
-                    </ActionIcon>
-                  </Flex>
-                </Group>
+                      Registrar Servicio
+                    </Menu.Item>
+                    <Menu.Item
+                      leftSection={<CgUserAdd />}
+                      onClick={() =>
+                        confirmAction(
+                          () => handleReferral(client._id),
+                          "Registrar Referido",
+                          "¿Estás seguro de que deseas registrar un referido para este cliente?",
+                          "refer"
+                        )
+                      }
+                    >
+                      Registrar Referido
+                    </Menu.Item>
+                    <Menu.Item
+                      leftSection={<MdEdit />}
+                      onClick={() => handleEditClient(client)}
+                    >
+                      Editar Cliente
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Item
+                      color="red"
+                      leftSection={<BiTrash />}
+                      onClick={() =>
+                        confirmAction(
+                          () => handleDeleteClient(client._id),
+                          "Eliminar Cliente",
+                          "¿Estás seguro de que deseas eliminar este cliente? Esta acción no se puede deshacer.",
+                          "delete"
+                        )
+                      }
+                    >
+                      Eliminar Cliente
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
               </Table.Td>
             </Table.Tr>
           ))}

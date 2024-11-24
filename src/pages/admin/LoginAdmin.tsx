@@ -5,17 +5,21 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../features/auth/sliceAuth";
 import { login } from "../../services/authService";
+import { IoEye, IoEyeOff } from "react-icons/io5";
+import { useMediaQuery } from "@mantine/hooks";
 
 const LoginAdmin: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const navigation = useNavigate();
   const dispatch = useDispatch();
 
+  const isMobile = useMediaQuery("(max-width: 768px)") ?? false;
+
   useEffect(() => {
-    // Cargar el email guardado en localStorage al cargar el componente
     const savedEmail = localStorage.getItem("rememberedEmail");
     if (savedEmail) {
       setEmail(savedEmail);
@@ -29,8 +33,6 @@ const LoginAdmin: React.FC = () => {
       if (data) {
         const organizationId =
           data.userType === "admin" ? data.userId : data.organizationId;
-        console.log(organizationId);
-        // Autenticación exitosa
         dispatch(
           loginSuccess({
             userId: data.userId,
@@ -42,7 +44,6 @@ const LoginAdmin: React.FC = () => {
         );
         navigation("/gestionar-agenda");
 
-        // Guardar o eliminar el email de localStorage según el estado de rememberMe
         if (rememberMe) {
           localStorage.setItem("rememberedEmail", email);
         } else {
@@ -60,9 +61,9 @@ const LoginAdmin: React.FC = () => {
   return (
     <Flex justify="center" align="center" style={{ height: "100%" }}>
       <Card
-        w={{ xs: "70%", sm: "60%", md: "50%", lg: "40%" }}
         style={{
-          margin: "auto",
+          width: isMobile ? "90%" : "auto",
+          margin : "auto",
           padding: "2rem",
           backgroundColor: colors.cardBackground,
           color: colors.primaryText,
@@ -80,14 +81,28 @@ const LoginAdmin: React.FC = () => {
           required
           mb="md"
         />
-        <TextInput
-          placeholder="Ingresa tu contraseña *"
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.currentTarget.value)}
-          required
-          mb="md"
-        />
+        <div style={{ position: "relative", marginBottom: "1rem" }}>
+          <TextInput
+            placeholder="Ingresa tu contraseña *"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(event) => setPassword(event.currentTarget.value)}
+            required
+          />
+          <Button
+            variant="subtle"
+            size="xs"
+            onClick={() => setShowPassword(!showPassword)}
+            style={{
+              position: "absolute",
+              top: "50%",
+              right: "-0.5rem",
+              transform: "translateY(-50%)",
+            }}
+          >
+            {showPassword ? <IoEyeOff size={16} /> : <IoEye size={16} />}
+          </Button>
+        </div>
         <Checkbox
           label="Recordar mis datos"
           checked={rememberMe}

@@ -1,6 +1,6 @@
 import React from "react";
-import LoyaltyPlan from "./LoyaltyPlan.tsx";
-import ReferredPlan from "./ReferredPlan.tsx";
+import LoyaltyPlan from "./LoyaltyPlan";
+import ReferredPlan from "./ReferredPlan";
 import {
   Box,
   Card,
@@ -12,7 +12,7 @@ import {
   Badge,
   Button,
 } from "@mantine/core";
-import { Client as ClientType } from "../../services/clientService.ts";
+import { Client as ClientType } from "../../services/clientService";
 
 interface PlanInfoProps {
   client: ClientType;
@@ -23,14 +23,15 @@ const PlanInfo: React.FC<PlanInfoProps> = ({ client, onLogout }) => {
   return (
     <Box p="md">
       <Group justify="center" grow>
-        <Flex direction="column" align="center">
+        <Flex direction="column" align="center" style={{ width: "100%" }}>
           <Card
             shadow="sm"
             padding="lg"
             radius="md"
             withBorder
-            style={{ width: "100%", maxWidth: 400 }}
+            style={{ maxWidth: 400, width: "100%" }}
           >
+            {/* Sección de perfil */}
             <Card.Section withBorder inheritPadding py="xs">
               <Flex justify="center" align="center" direction="column">
                 <Avatar
@@ -40,13 +41,13 @@ const PlanInfo: React.FC<PlanInfoProps> = ({ client, onLogout }) => {
                   color="blue"
                   variant="filled"
                 >
-                  {client.name[0].toUpperCase()}
+                  {client.name?.[0]?.toUpperCase() || "?"}
                 </Avatar>
                 <Text size="xl" fw={700}>
-                  {client.name}
+                  {client.name || "Cliente desconocido"}
                 </Text>
                 <Text c="dimmed" size="sm">
-                  {client.phoneNumber}
+                  {client.phoneNumber || "Teléfono no disponible"}
                 </Text>
                 {client.email && (
                   <Text c="dimmed" size="xs" mt="xs">
@@ -58,30 +59,33 @@ const PlanInfo: React.FC<PlanInfoProps> = ({ client, onLogout }) => {
 
             <Divider my="sm" variant="dashed" />
 
+            {/* Sección de servicios tomados */}
             <Card.Section inheritPadding py="xs">
               <Badge color="teal" variant="light" size="lg">
-                Servicios Tomados: {client.servicesTaken}
+                Servicios Tomados: {client.servicesTaken || 0}
               </Badge>
-
               <LoyaltyPlan
-                servicesTaken={client?.servicesTaken || 0}
+                servicesTaken={client.servicesTaken || 0}
                 totalServices={7}
               />
             </Card.Section>
 
             <Divider my="sm" variant="dashed" />
 
+            {/* Sección de referidos */}
             <Card.Section inheritPadding py="xs">
               <Badge color="indigo" variant="light" size="lg">
-                Referidos Hechos: {client.referralsMade}
+                Referidos Hechos: {client.referralsMade || 0}
               </Badge>
               <ReferredPlan
-                referralsMade={client.referralsMade}
+                referralsMade={client.referralsMade || 0}
                 totalReferrals={5}
               />
             </Card.Section>
+
             <Divider my="sm" variant="dashed" />
 
+            {/* Botón de logout */}
             <Card.Section inheritPadding py="xs" mt="md">
               <Button fullWidth color="red" variant="light" onClick={onLogout}>
                 Salir

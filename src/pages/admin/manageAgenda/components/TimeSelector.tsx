@@ -1,5 +1,5 @@
 import React from "react";
-import { Select, Text } from "@mantine/core";
+import { Flex, Select, Text } from "@mantine/core";
 import { format, set } from "date-fns";
 
 interface TimeSelectorProps {
@@ -49,43 +49,43 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({
   return (
     <div>
       <Text>{label}</Text>
+      <Flex>
+        <Select
+          data={hours}
+          comboboxProps={{ zIndex: 1000 }}
+          placeholder="Hora"
+          size="xs"
+          value={date ? format(date, "h") : ""}
+          onChange={(value) =>
+            handleTimeChange(
+              parseInt(value || "0"),
+              date?.getMinutes() || 0,
+              "AM"
+            )
+          }
+          searchable
+        />
+        <Select
+          data={minutes}
+          comboboxProps={{ zIndex: 1000 }}
+          placeholder="Minutos"
+          size="xs"
+          value={date ? format(date, "mm") : ""}
+          onChange={(value) =>
+            handleTimeChange(
+              date?.getHours() || 0,
+              parseInt(value || "0"),
+              (date?.getHours() ?? 0) >= 12 ? "PM" : "AM"
+            )
+          }
+          searchable
+        />
+      </Flex>
       <Select
-        label="Hora"
-        data={hours}
-        comboboxProps={{ zIndex: 1000 }}
-        placeholder="Hora"
-        value={date ? format(date, "h") : ""}
-        onChange={(value) =>
-          handleTimeChange(
-            parseInt(value || "0"),
-            date?.getMinutes() || 0,
-            "AM"
-          )
-        }
-        searchable
-        clearable
-      />
-      <Select
-        label="Minutos"
-        data={minutes}
-        comboboxProps={{ zIndex: 1000 }}
-        placeholder="Minutos"
-        value={date ? format(date, "mm") : ""}
-        onChange={(value) =>
-          handleTimeChange(
-            date?.getHours() || 0,
-            parseInt(value || "0"),
-            (date?.getHours() ?? 0) >= 12 ? "PM" : "AM"
-          )
-        }
-        searchable
-        clearable
-      />
-      <Select
-        label="AM/PM"
         data={ampm}
         comboboxProps={{ zIndex: 1000 }}
         placeholder="AM/PM"
+        size="xs"
         value={date && date.getHours() >= 12 ? "PM" : "AM"}
         onChange={(value) =>
           handleTimeChange(
@@ -95,7 +95,6 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({
           )
         }
         searchable
-        clearable
       />
     </div>
   );

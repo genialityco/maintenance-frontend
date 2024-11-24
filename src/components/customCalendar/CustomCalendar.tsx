@@ -35,7 +35,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 }) => {
   const [modalOpened, setModalOpened] = useState(false);
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
-  const [view, setView] = useState<"month" | "week" | "day">("day");
+  const [view, setView] = useState<"month" | "week" | "day">("month");
   const [currentDate, setCurrentDate] = useState(new Date());
   const isMobile = useMediaQuery("(max-width: 768px)") ?? false;
 

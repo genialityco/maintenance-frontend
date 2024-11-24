@@ -1,5 +1,5 @@
 import React from "react";
-import { Text } from "@mantine/core";
+import { Input, Text } from "@mantine/core";
 import { format, set } from "date-fns";
 
 interface DateSelectorProps {
@@ -22,11 +22,10 @@ const DateSelector: React.FC<DateSelectorProps> = ({ label, value, onChange }) =
   return (
     <div>
       <Text>{label}</Text>
-      <input
+      <Input
         type="date"
         value={value ? format(value, "yyyy-MM-dd") : ""}
         onChange={handleDateChange}
-        style={{ width: "100%", padding: "8px", marginBottom: "8px" }}
       />
     </div>
   );

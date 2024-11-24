@@ -6,7 +6,7 @@ import { MdOutlineLoyalty, MdPriceCheck } from "react-icons/md";
 import { GrUserSettings } from "react-icons/gr";
 import { BiCalendarCheck } from "react-icons/bi";
 import { GiClawSlashes } from "react-icons/gi";
-import { FaUsers } from "react-icons/fa";
+import { FaCashRegister, FaUsers } from "react-icons/fa";
 import { usePermissions } from "../hooks/usePermissions";
 
 interface NavbarLinksProps {
@@ -59,12 +59,72 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ closeNavbar }) => {
             </Flex>
           </NavLink> */}
         </Flex>
+        {(hasPermission("businessInformation:read") ||
+          hasPermission("appointments:view_own") ||
+          hasPermission("appointments:view_all")) && (
+          <Divider my="xs" label="Gestión de cuenta" labelPosition="center" />
+        )}
 
-        {(hasPermission("clients:read") ||
-          hasPermission("appointments:view_all") ||
-          hasPermission("services:read") ||
-          hasPermission("employees:read") ||
+        {hasPermission("cashManagement:red") && (
+          <NavLink
+            to="/gestion-caja"
+            onClick={closeNavbar}
+            style={{ textDecoration: "none" }}
+          >
+            <Flex align="center" justify="center" gap="sm">
+              <FaCashRegister size={20} color="white" />
+              <Text c="white" fw={600} my="md">
+                Gestión de caja
+              </Text>
+            </Flex>
+          </NavLink>
+        )}
+        {(hasPermission("appointments:view_all") ||
           hasPermission("appointments:view_own")) && (
+          <NavLink
+            to="/gestionar-agenda"
+            onClick={closeNavbar}
+            style={{ textDecoration: "none" }}
+          >
+            <Flex align="center" justify="center" gap="sm">
+              <BiCalendarCheck size={20} color="white" />
+              <Text c="white" fw={600} my="md">
+                Gestionar agenda
+              </Text>
+            </Flex>
+          </NavLink>
+        )}
+        {hasPermission("businessInformation:read") && (
+          <NavLink
+            to="/informacion-negocio"
+            onClick={closeNavbar}
+            style={{ textDecoration: "none" }}
+          >
+            <Flex align="center" justify="center" gap="sm">
+              <MdOutlineLoyalty size={20} color="white" />
+              <Text c="white" fw={600} my="md">
+                Información del negocio
+              </Text>
+            </Flex>
+          </NavLink>
+        )}
+        {hasPermission("employeeInformation:read") && (
+          <NavLink
+            to="/informacion-empleado"
+            onClick={closeNavbar}
+            style={{ textDecoration: "none" }}
+          >
+            <Flex align="center" justify="center" gap="sm">
+              <MdOutlineLoyalty size={20} color="white" />
+              <Text c="white" fw={600} my="md">
+                Información del empleado
+              </Text>
+            </Flex>
+          </NavLink>
+        )}
+        {(hasPermission("clients:read") ||
+          hasPermission("services:read") ||
+          hasPermission("employees:read")) && (
           <Divider
             my="xs"
             label="Sección administrativa"
@@ -83,22 +143,6 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ closeNavbar }) => {
                 <GrUserSettings size={20} color="white" />
                 <Text c="white" fw={600} my="md">
                   Gestionar clientes
-                </Text>
-              </Flex>
-            </NavLink>
-          )}
-
-          {(hasPermission("appointments:view_all") ||
-            hasPermission("appointments:view_own")) && (
-            <NavLink
-              to="/gestionar-agenda"
-              onClick={closeNavbar}
-              style={{ textDecoration: "none" }}
-            >
-              <Flex align="center" justify="center" gap="sm">
-                <BiCalendarCheck size={20} color="white" />
-                <Text c="white" fw={600} my="md">
-                  Gestionar agenda
                 </Text>
               </Flex>
             </NavLink>
@@ -134,37 +178,6 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ closeNavbar }) => {
             </NavLink>
           )}
         </Flex>
-        {hasPermission("businessInformation:read") && (
-          <Divider my="xs" label="Gestión de cuenta" labelPosition="center" />
-        )}
-        {hasPermission("businessInformation:read") && (
-          <NavLink
-            to="/informacion-negocio"
-            onClick={closeNavbar}
-            style={{ textDecoration: "none" }}
-          >
-            <Flex align="center" justify="center" gap="sm">
-              <MdOutlineLoyalty size={20} color="white" />
-              <Text c="white" fw={600} my="md">
-                Información del negocio
-              </Text>
-            </Flex>
-          </NavLink>
-        )}
-        {hasPermission("employeeInformation:read") && (
-          <NavLink
-            to="/informacion-empleado"
-            onClick={closeNavbar}
-            style={{ textDecoration: "none" }}
-          >
-            <Flex align="center" justify="center" gap="sm">
-              <MdOutlineLoyalty size={20} color="white" />
-              <Text c="white" fw={600} my="md">
-                Información del empleado
-              </Text>
-            </Flex>
-          </NavLink>
-        )}
       </Box>
     </ScrollArea>
   );

@@ -1,3 +1,4 @@
+import SearchClient from "../pages/loyalty/SearchClient";
 import PlanViewer from "../pages/loyalty/PlanViewer";
 import ServicesAndPrices from "../components/ServicesAndPrices";
 import LoginAdmin from "../pages/admin/LoginAdmin";
@@ -9,14 +10,24 @@ import AdminServices from "../pages/admin/manageServices";
 import AdminEmployees from "../pages/admin/manageEmployees";
 import OrganizationInfo from "../pages/account/OrganizationInfo";
 import EmployeeInfo from "../pages/account/EmployeeInfo";
+import DailyCashbox from "../pages/account/DailyCashbox";
 
 const generalRoutes = [
   {
     path: "/",
+    component: SearchClient,
+    MediaMetadata: {
+      title: "Buscar Cliente",
+      description: "Búsqueda de cliente para el plan de fidelidad.",
+      image: "/galaxia_glamour.png",
+    },
+  },
+  {
+    path: "/plan-viewer",
     component: PlanViewer,
     MediaMetadata: {
       title: "Plan de fidelidad",
-      description: "Sección plan fidelidad.",
+      description: "Visualización del plan de fidelidad del cliente.",
       image: "/galaxia_glamour.png",
     },
   },
@@ -104,8 +115,16 @@ const generalRoutes = [
       <ProtectedRoute>
         <EmployeeInfo {...props} />
       </ProtectedRoute>
-    )
-  }
+    ),
+  },
+  {
+    path: "/gestion-caja",
+    component: (props: JSX.IntrinsicAttributes) => (
+      <ProtectedRoute>
+        <DailyCashbox {...props} />
+      </ProtectedRoute>
+    ),
+  },
 ];
 
 export default generalRoutes;

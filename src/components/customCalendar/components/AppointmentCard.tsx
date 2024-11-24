@@ -46,7 +46,9 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
       p="sm"
       radius="sm"
       style={{
-        backgroundColor: backgroundColor,
+        backgroundColor: appointment.employeeRequestedByClient
+          ? "#e5dbff"
+          : backgroundColor,
         color: "#333",
         borderLeft: `4px solid ${borderColor}`,
         display: "flex",

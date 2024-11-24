@@ -8,7 +8,7 @@ import {
   Button,
 } from "@mantine/core";
 import { useState, useEffect } from "react";
-import CreateClient from "./CreateClient";
+import ClientFormModal from "./ClientFormModal";
 import ClientTable from "./ClientTable";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { BsSearch } from "react-icons/bs";
@@ -31,12 +31,16 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [editCLient, setEditClient] = useState<Client | null>(null);
 
   const organizationId = useSelector(
     (state: RootState) => state.auth.organizationId
   );
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (client: Client | null) => {
+    if (client) {
+      setEditClient(client);
+    }
     setOpenModal(true);
   };
 
@@ -63,7 +67,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    if(organizationId) {
+    if (organizationId) {
       fetchClients();
     }
   }, [organizationId]);
@@ -145,7 +149,10 @@ const Dashboard = () => {
         mb="md"
       >
         <Title order={1}>Gestionar clientes</Title>
-        <Button leftSection={<IoAddCircleOutline />} onClick={handleOpenModal}>
+        <Button
+          leftSection={<IoAddCircleOutline />}
+          onClick={() => handleOpenModal(null)}
+        >
           Crear cliente
         </Button>
       </Flex>
@@ -162,10 +169,11 @@ const Dashboard = () => {
         />
       </Group>
 
-      <CreateClient
+      <ClientFormModal
         opened={openModal}
         onClose={handleCloseModal}
         fetchClients={fetchClients}
+        client={editCLient}
       />
       <div>
         <ClientTable
@@ -173,6 +181,7 @@ const Dashboard = () => {
           handleDeleteClient={handleDeleteClient}
           handleRegisterService={handleRegisterService}
           handleReferral={handleReferral}
+          handleEditClient={handleOpenModal}
           error={error}
         />
       </div>

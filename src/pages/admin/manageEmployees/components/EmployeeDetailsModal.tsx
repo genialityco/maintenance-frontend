@@ -23,6 +23,7 @@ import {
   getAdvancesByEmployee,
 } from "../../../../services/advanceService";
 import { Employee } from "../../../../services/employeeService";
+import dayjs from "dayjs";
 
 interface EmployeeDetailsModalProps {
   isOpen: boolean;
@@ -71,8 +72,8 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
 
     switch (interval) {
       case "daily":
-        start = now;
-        end = now;
+        start = dayjs(now).startOf("day").toDate();
+        end = dayjs(now).endOf("day").toDate();
         break;
       case "weekly":
         start = new Date(
@@ -81,7 +82,7 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
           now.getDate() - now.getDay() + 1
         ); // Lunes
         end = new Date(start);
-        end.setDate(start.getDate() + 6); // Domingo
+        end.setDate(start.getDate() + 6);
         break;
       case "biweekly":
         start =

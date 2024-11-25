@@ -6,10 +6,12 @@ import {
   BiTrash,
   BiCheck,
   BiLock,
+  BiUser,
 } from "react-icons/bi";
 import { format } from "date-fns";
 import { Appointment } from "../../../services/appointmentService";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { RiUserSmileLine } from "react-icons/ri";
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -46,9 +48,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
       p="sm"
       radius="sm"
       style={{
-        backgroundColor: appointment.employeeRequestedByClient
-          ? "#e5dbff"
-          : backgroundColor,
+        backgroundColor: backgroundColor,
         color: "#333",
         borderLeft: `4px solid ${borderColor}`,
         display: "flex",
@@ -59,6 +59,25 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
         position: "relative",
       }}
     >
+      {/* Badge flotante a la izquierda */}
+      {appointment.employeeRequestedByClient && (
+        <Badge
+          color="violet"
+          size="xs"
+          radius="xxs"
+          style={{
+            position: "absolute",
+            top: "-1px",
+            left: "0px",
+            fontSize: "8px",
+            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          🌟Cita con {appointment.employee.names}
+        </Badge>
+      )}
+
+      {/* Contenido principal */}
       <Group justify="space-between" mb="xs">
         <Text fw={500} size="sm" truncate>
           {appointment.service.name}
@@ -68,13 +87,14 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           {format(appointment.endDate, "h:mm a")}
         </Badge>
       </Group>
-      <Text size="xs" c="dimmed" truncate>
-        Empleado: {appointment.employee.names}
+      <Text size="smd" c="dimmed" truncate>
+        <RiUserSmileLine size={16} /> {appointment.employee.names}
       </Text>
       <Text size="xs" c="dimmed" truncate>
-        Cliente: {appointment.client.name}
+        <BiUser size={16} /> {appointment.client.name}
       </Text>
 
+      {/* Menú de acciones */}
       <Menu
         disabled={appointment.status === "confirmed"}
         position="top-end"

@@ -27,6 +27,7 @@ import { MdCheckCircle } from "react-icons/md";
 import dayjs from "dayjs";
 import localeData from "dayjs/plugin/localeData";
 import "dayjs/locale/es";
+import { registerService } from "../../services/clientService";
 
 dayjs.extend(localeData);
 dayjs.locale("es");
@@ -60,8 +61,8 @@ const DailyCashbox: React.FC = () => {
 
     switch (interval) {
       case "daily":
-        start = now;
-        end = now;
+        start = dayjs(now).startOf("day").toDate();
+        end = dayjs(now).endOf("day").toDate();
         break;
       case "weekly":
         start = startOfWeek(now, { weekStartsOn: 1 });
@@ -127,7 +128,7 @@ const DailyCashbox: React.FC = () => {
     }
   };
 
-  const handleConfirmAppointment = (appointmentId: string) => {
+  const handleConfirmAppointment = (appointmentId: string, clientId: string) => {
     openConfirmModal({
       title: "Confirmar cita",
       children: <p>¿Estás seguro de que deseas confirmar esta cita?</p>,
@@ -137,9 +138,10 @@ const DailyCashbox: React.FC = () => {
       onConfirm: async () => {
         try {
           await updateAppointment(appointmentId, { status: "confirmed" });
+          await registerService(clientId);
           showNotification({
             title: "Éxito",
-            message: "La cita ha sido confirmada.",
+            message: "Cita confirmada y servicio registrado exitosamente",
             color: "green",
             autoClose: 3000,
             position: "top-right",
@@ -246,7 +248,7 @@ const DailyCashbox: React.FC = () => {
                           <ActionIcon
                             color="green"
                             onClick={() =>
-                              handleConfirmAppointment(appointment._id)
+                              handleConfirmAppointment(appointment._id, appointment.client._id)
                             }
                           >
                             <MdCheckCircle />

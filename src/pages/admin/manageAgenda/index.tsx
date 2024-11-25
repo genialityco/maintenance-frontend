@@ -300,7 +300,6 @@ const ScheduleView: React.FC = () => {
       if (
         service &&
         employee &&
-        employeeRequestedByClient &&
         client &&
         startDate &&
         endDate
@@ -309,7 +308,7 @@ const ScheduleView: React.FC = () => {
           service,
           employee,
           client,
-          employeeRequestedByClient,
+          employeeRequestedByClient: employeeRequestedByClient ?? false,
           startDate,
           endDate,
           status: status || "pending",

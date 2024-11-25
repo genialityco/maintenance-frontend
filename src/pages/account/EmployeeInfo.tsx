@@ -22,6 +22,7 @@ import { Advance, getAdvancesByEmployee } from "../../services/advanceService";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { addDays, startOfWeek, startOfMonth, endOfMonth } from "date-fns";
+import dayjs from "dayjs";
 
 interface PayrollSummary {
   totalAppointments: number;
@@ -62,8 +63,8 @@ const EmployeeInfo: React.FC = () => {
 
     switch (interval) {
       case "daily":
-        start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        end = start;
+        start = dayjs(now).startOf("day").toDate();
+        end = dayjs(now).endOf("day").toDate();
         break;
       case "weekly":
         start = startOfWeek(now, { weekStartsOn: 1 });

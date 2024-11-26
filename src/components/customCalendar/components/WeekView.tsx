@@ -6,8 +6,7 @@ import {
   Text,
   Button,
   Collapse,
-  ScrollArea,
-  Card,
+  ScrollArea
 } from "@mantine/core";
 import { startOfWeek, addDays, format, getHours, isSameDay } from "date-fns";
 import { es } from "date-fns/locale";
@@ -127,38 +126,38 @@ const WeekView: React.FC<WeekViewProps> = ({
                 >
                   {/* Cabecera fija con los nombres de empleados */}
                   <Box
+                    bg="gray"
                     style={{
                       display: "flex",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "white",
                       zIndex: 2,
                       borderBottom: "1px solid #e0e0e0",
                     }}
                   >
                     <Box style={{ width: "80px" }} />
                     {employees.map((employee) => (
-                      <Card
-                        withBorder
+                      <Box
+                        bg="gray"
+                        p="sm"
                         key={employee.id}
                         style={{
                           width: `${CARD_WIDTH}px`,
                           textAlign: "center",
                           marginLeft: "10px",
-                          backgroundColor: "#E3F2FD",
+                          border: "1px solid gray",
+                          borderRadius: "5px",
                         }}
                       >
                         <Text size="sm">{employee.name}</Text>
-                      </Card>
+                      </Box>
                     ))}
                   </Box>
 
                   {/* Contenedor de la línea de tiempo y citas */}
                   <Box style={{ display: "flex", position: "relative" }}>
                     {/* Columna de Intervalos de Tiempo */}
-                    <Box
-                      style={{ width: "80px", backgroundColor: "white" }}
-                    >
+                    <Box style={{ width: "80px" }}>
                       {timeIntervals.map((interval, index) => (
                         <Box
                           key={index}

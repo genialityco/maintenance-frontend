@@ -91,11 +91,11 @@ const DayView: React.FC<DayViewProps> = ({
           >
             {/* Cabecera fija con los nombres de empleados */}
             <Box
+              bg="gray"
               style={{
                 display: "flex",
                 position: "sticky",
                 top: 0,
-                backgroundColor: "white",
                 zIndex: 2,
                 borderBottom: "1px solid #e0e0e0",
               }}
@@ -103,25 +103,28 @@ const DayView: React.FC<DayViewProps> = ({
               <Box style={{ width: "80px" }} />
               {/* Espacio para la línea de tiempo */}
               {employees.map((employee) => (
-                <Card
+                <Paper
+                  bg="gray"
+                  p="sm"
                   withBorder
                   key={employee.id}
                   style={{
                     width: `${CARD_WIDTH}px`,
                     textAlign: "center",
                     marginLeft: "10px",
-                    backgroundColor: "#E3F2FD",
+                    border: "1px solid gray",
+                    borderRadius: "5px",
                   }}
                 >
                   <Text size="sm">{employee.name}</Text>
-                </Card>
+                </Paper>
               ))}
             </Box>
 
             {/* Contenedor de la línea de tiempo y citas */}
             <Box style={{ display: "flex", position: "relative" }}>
               {/* Columna de Intervalos de Tiempo ocupando todo el alto */}
-              <Box style={{ width: "80px", backgroundColor: "white" }}>
+              <Box style={{ width: "80px" }}>
                 {timeIntervals.map((interval, index) => (
                   <Box
                     key={index}

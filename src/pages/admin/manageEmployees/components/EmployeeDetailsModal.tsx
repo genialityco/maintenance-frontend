@@ -271,7 +271,7 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
 
         <Card shadow="lg" radius="md" p="md" withBorder>
           <Flex justify="space-between" align="center" wrap="wrap" gap="sm">
-            <Title order={4} c="dark" style={{ flexShrink: 0 }}>
+            <Title order={4} style={{ flexShrink: 0 }}>
               Citas Agendadas
             </Title>
             <Group
@@ -313,7 +313,7 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
                     <Table.Tr
                       key={appointment._id}
                       style={{
-                        backgroundColor: getStatusStyles(appointment.status).bg,
+                        backgroundColor: getStatusStyles(appointment.status).bg, color: getStatusStyles(appointment.status).color,
                       }}
                     >
                       <Table.Td>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Box, Text, ScrollArea, Card } from "@mantine/core";
+import { Modal, Box, Text, ScrollArea } from "@mantine/core";
 import { format, getHours } from "date-fns";
 import { es } from "date-fns/locale";
 import { Appointment } from "../../../services/appointmentService";
@@ -90,11 +90,11 @@ const DayModal: React.FC<DayModalProps> = ({
       >
         {/* Cabecera fija con los nombres de empleados */}
         <Box
+          bg="gray"
           style={{
             display: "flex",
             position: "sticky",
             top: 0,
-            backgroundColor: "white",
             zIndex: 2,
             borderBottom: "1px solid #e0e0e0",
           }}
@@ -102,27 +102,27 @@ const DayModal: React.FC<DayModalProps> = ({
           <Box style={{ width: "80px" }} />
           {/* Espacio para la línea de tiempo */}
           {employees.map((employee) => (
-            <Card
-              withBorder
+            <Box
+              p="sm"
+              bg="gray"
               key={employee.id}
               style={{
                 width: `${CARD_WIDTH}px`,
                 textAlign: "center",
                 marginLeft: "10px",
-                backgroundColor: "#E3F2FD",
+                border: "1px solid gray",
+                borderRadius: "5px",
               }}
             >
               <Text size="sm">{employee.name}</Text>
-            </Card>
+            </Box>
           ))}
         </Box>
 
         {/* Contenedor de la línea de tiempo y citas */}
         <Box style={{ display: "flex", position: "relative" }}>
           {/* Columna de Intervalos de Tiempo ocupando todo el alto */}
-          <Box
-            style={{ width: "80px", backgroundColor: "white" }}
-          >
+          <Box style={{ width: "80px" }}>
             {timeIntervals.map((interval, index) => (
               <Box
                 key={index}
@@ -135,7 +135,8 @@ const DayModal: React.FC<DayModalProps> = ({
                   borderRight: "1px solid #e0e0e0",
                 }}
                 onClick={() =>
-                  hasPermission("appointments:create") && onOpenModal(selectedDay, interval)
+                  hasPermission("appointments:create") &&
+                  onOpenModal(selectedDay, interval)
                 }
               >
                 <Text size="sm">{format(interval, "h a")}</Text>

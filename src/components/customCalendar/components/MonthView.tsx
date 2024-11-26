@@ -46,7 +46,7 @@ const MonthView: React.FC<MonthViewProps> = ({
 
   return (
     <Box>
-      <Paper bg="#e0e0e0">
+      <Paper withBorder>
         <Text
           ta="center"
           style={{
@@ -58,23 +58,21 @@ const MonthView: React.FC<MonthViewProps> = ({
           {formatDate(currentDate, "MMMM", { locale: es })}
         </Text>
       </Paper>
-      <Grid
-        mb="xs"
-        style={{
-          border: "1px solid #e0e0e0",
-          borderRadius: "5px",
-          padding: "2px",
-          paddingBlock: "10px",
-        }}
-      >
-        {daysOfWeek.map((day, index) => (
-          <Grid.Col span={1.7} key={index}>
-            <Text ta="center" fw={500} style={{ fontSize: isMobile ? 11 : 16 }}>
-              {day}
-            </Text>
-          </Grid.Col>
-        ))}
-      </Grid>
+      <Paper withBorder my="xs">
+        <Grid>
+          {daysOfWeek.map((day, index) => (
+            <Grid.Col span={1.7} key={index}>
+              <Text
+                ta="center"
+                fw={500}
+                style={{ fontSize: isMobile ? 11 : 16 }}
+              >
+                {day}
+              </Text>
+            </Grid.Col>
+          ))}
+        </Grid>
+      </Paper>
       <Grid gutter="xs">
         {daysInMonth.map((day) => (
           <Grid.Col span={1.7} key={day.toISOString()}>
@@ -97,7 +95,7 @@ const MonthView: React.FC<MonthViewProps> = ({
                 borderWidth: isSameDay(day, currentDate) ? 2 : 1,
               }}
             >
-              <Text size={isMobile ? "xs" : "sm"} mb="xs" ta="center" fw={500}>
+              <Text size={isMobile ? "xs" : "sm"} c="dimmed" mb="xs" ta="center" fw={800}>
                 {format(day, "d", { locale: es })}
               </Text>
               {getAppointmentsForDay(day).length > 0 && (

@@ -37,8 +37,8 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
     radius="md"
     withBorder
     style={{
-      backgroundColor: employee.isActive ? "white" : "#f8d7da",
-      borderColor: employee.isActive ? "#ced4da" : "#f5c6cb",
+      backgroundColor: employee.isActive ? "" : "#f8d7da",
+      borderColor: employee.isActive ? "" : "#f5c6cb",
     }}
   >
     <Box p="xs" mt="md">

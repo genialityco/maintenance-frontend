@@ -11,6 +11,7 @@ import {
   Container,
   ActionIcon,
   Badge,
+  CheckIcon,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { openConfirmModal } from "@mantine/modals";
@@ -23,7 +24,6 @@ import { showNotification } from "@mantine/notifications";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { startOfWeek, addDays, startOfMonth, endOfMonth } from "date-fns";
-import { MdCheckCircle } from "react-icons/md";
 import dayjs from "dayjs";
 import localeData from "dayjs/plugin/localeData";
 import "dayjs/locale/es";
@@ -161,6 +161,19 @@ const DailyCashbox: React.FC = () => {
     });
   };
 
+  const getRowStyles = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return { backgroundColor: "#d4edda", color: "#155724" };
+      case "pending":
+        return { backgroundColor: "#fff3cd", color: "#856404" };
+      case "cancelled":
+        return { backgroundColor: "#f8d7da", color: "#721c24" };
+      default:
+        return { backgroundColor: "#f0f4f8", color: "#333" };
+    }
+  };
+
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("es-CO", {
       style: "currency",
@@ -234,7 +247,7 @@ const DailyCashbox: React.FC = () => {
               <Table.Tbody>
                 {appointments.length > 0 ? (
                   appointments.map((appointment) => (
-                    <Table.Tr key={appointment._id}>
+                    <Table.Tr key={appointment._id} style={getRowStyles(appointment.status)}>
                       <Table.Td>
                         {new Date(appointment.startDate).toLocaleDateString()}
                       </Table.Td>
@@ -251,7 +264,7 @@ const DailyCashbox: React.FC = () => {
                               handleConfirmAppointment(appointment._id, appointment.client._id)
                             }
                           >
-                            <MdCheckCircle />
+                            <CheckIcon />
                           </ActionIcon>
                         )}
                       </Table.Td>

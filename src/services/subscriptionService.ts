@@ -21,3 +21,16 @@ export const createSubscription = async (
     handleAxiosError(error, "Error al crear la suscripción de notificación");
   }
 };
+
+export const getSubscriptionByEndpoint = async (endpoint: string): Promise<unknown> => {
+  try {
+    const response = await apiSubscribe.get(`/endpoint`, {
+      params: { endpoint }, 
+    });
+
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, "Error al obtener una suscripción por endpoint");
+  }
+};
+

@@ -75,7 +75,6 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
     );
 
     if (selectedService) {
-      console.log(employees)
       setService(selectedService);
       fetchAppointmentsAndAvailableTimes(
         bookingData.employeeId, 

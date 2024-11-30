@@ -39,8 +39,6 @@ const Booking = () => {
     (state: RootState) => state.organization.organization
   );
 
-  {console.log()}
-
   const [activeStep, setActiveStep] = useState(0);
   const [services, setServices] = useState<Service[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);

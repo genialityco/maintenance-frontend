@@ -7,11 +7,18 @@ import {
   Flex,
   MultiSelect,
   ActionIcon,
+  Group,
+  Image,
+  Text,
+  Loader,
 } from "@mantine/core";
-import { Service } from "../../../../services/serviceService";
-import { Employee } from "../../../../services/employeeService";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IoEyeOff } from "react-icons/io5";
 import { FaEye } from "react-icons/fa";
+import { BiImageAdd, BiSolidXCircle } from "react-icons/bi";
+import { uploadImage } from "../../../../services/imageService"; // Importa el servicio de carga
+import { Employee } from "../../../../services/employeeService";
+import { Service } from "../../../../services/serviceService";
 
 interface ModalCreateEditEmployeeProps {
   isOpen: boolean;
@@ -43,8 +50,10 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
     },
     customPermissions: [],
     isActive: true,
+    profileImage: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
+  const [isUploading, setIsUploading] = useState(false); // Indicador de carga de imagen
 
   useEffect(() => {
     if (employee) {
@@ -63,6 +72,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
         },
         customPermissions: employee.customPermissions || [],
         isActive: employee.isActive ?? true,
+        profileImage: employee.profileImage || "",
       });
     } else {
       resetForm();
@@ -70,9 +80,27 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
   }, [employee]);
 
   const handleSave = () => {
-    // Guardar el empleado con servicios como IDs
+    if (isUploading) {
+      return;
+    }
     onSave(editingEmployee);
     handleClose();
+  };
+
+  const handleDrop = async (files: File[]) => {
+    setIsUploading(true); 
+    try {
+      const imageUrl = await uploadImage(files[0]);
+      setEditingEmployee({ ...editingEmployee, profileImage: imageUrl as string }); 
+    } catch (error) {
+      console.error("Error al cargar la imagen:", error);
+    } finally {
+      setIsUploading(false); 
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setEditingEmployee({ ...editingEmployee, profileImage: "" });
   };
 
   const handleClose = () => {
@@ -96,6 +124,7 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
       },
       customPermissions: [],
       isActive: true,
+      profileImage: "",
     });
   };
 
@@ -191,8 +220,58 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
           }
         />
 
+        <Text>Imagen de perfil</Text>
+        <Dropzone
+          onDrop={handleDrop}
+          accept={IMAGE_MIME_TYPE}
+          multiple={false}
+          style={{
+            border: "2px dashed #ced4da",
+            borderRadius: "8px",
+            textAlign: "center",
+            cursor: "pointer",
+          }}
+        >
+          <Group justify="center">
+            {isUploading ? (
+              <Loader size="lg" />
+            ) : (
+              <>
+                <BiImageAdd size={50} color="#228be6" />
+                <Text size="lg">Arrastra una imagen aquí o haz clic para cargar</Text>
+              </>
+            )}
+          </Group>
+        </Dropzone>
+
+        {editingEmployee.profileImage && (
+          <div style={{ position: "relative" }}>
+            <Image
+              src={editingEmployee.profileImage}
+              alt="Imagen de perfil"
+              width={80}
+              height={80}
+              radius="sm"
+            />
+            <ActionIcon
+              style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+              }}
+              variant="white"
+              radius="lg"
+              size="sm"
+              color="red"
+              onClick={handleRemoveImage}
+            >
+              <BiSolidXCircle />
+            </ActionIcon>
+          </div>
+        )}
+
         <Flex justify="end">
-          <Button onClick={handleSave}>
+          <Button onClick={handleSave} disabled={isUploading}>
             {employee ? "Guardar Cambios" : "Agregar Empleado"}
           </Button>
         </Flex>

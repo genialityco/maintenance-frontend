@@ -8,6 +8,7 @@ import {
   Flex,
   ActionIcon,
   Badge,
+  Avatar,
 } from "@mantine/core";
 import { BsPencil, BsTrash } from "react-icons/bs";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
@@ -41,14 +42,23 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
       borderColor: employee.isActive ? "" : "#f5c6cb",
     }}
   >
-    <Box p="xs" mt="md">
+    <Box >
       <Flex justify="space-between" align="center">
-        <Title order={4}>{employee.names}</Title>
-        {!employee.isActive && (
-          <Badge color="red" variant="filled">
-            Desactivado
-          </Badge>
-        )}
+        <Avatar
+          src={employee.profileImage || "https://ik.imagekit.io/6cx9tc1kx/default_smile.png?updatedAt=1732716506174"}
+          alt={employee.names}
+          size={80}
+          radius="xl"
+          style={{ marginRight: "1rem" }}
+        />
+        <Box>
+          <Title order={4}>{employee.names}</Title>
+          {!employee.isActive && (
+            <Badge color="red" variant="filled" mt="xs">
+              Desactivado
+            </Badge>
+          )}
+        </Box>
       </Flex>
       <Divider my="sm" />
       <Text fw={500} c="dimmed">

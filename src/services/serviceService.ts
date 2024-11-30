@@ -40,7 +40,7 @@ export const getServices = async (): Promise<Service[]> => {
   }
 };
 
-// Obtener empleados por organizationId
+// Obtener servicios por organizationId
 export const getServicesByOrganizationId = async (
   organizationId: string
 ): Promise<Service[]> => {

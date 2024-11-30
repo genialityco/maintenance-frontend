@@ -1,17 +1,24 @@
 import React from "react";
-import { Paper, Group, Text, Badge, Menu, ActionIcon } from "@mantine/core";
+import {
+  Paper,
+  Group,
+  Text,
+  Badge,
+  Menu,
+  ActionIcon,
+  Avatar,
+  Flex,
+} from "@mantine/core";
 import {
   BiDotsVertical,
   BiEdit,
   BiTrash,
   BiCheck,
   BiLock,
-  BiUser,
 } from "react-icons/bi";
 import { format } from "date-fns";
 import { Appointment } from "../../../services/appointmentService";
 import { usePermissions } from "../../../hooks/usePermissions";
-import { RiUserSmileLine } from "react-icons/ri";
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -87,11 +94,39 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           {format(appointment.endDate, "h:mm a")}
         </Badge>
       </Group>
-      <Text size="smd" c="dimmed" truncate>
-        <RiUserSmileLine size={16} /> {appointment.employee.names}
+      <Text size="sm" c="dimmed" truncate>
+        <Flex gap="xs">
+          <Avatar
+            src={appointment.employee.profileImage}
+            alt={appointment.employee.names}
+            size={24}
+            radius="xl"
+            color="blue"
+          >
+            {!appointment.employee.profileImage &&
+              appointment.employee.names
+                .split(" ")
+                .map((word) => word[0])
+                .join("")}
+          </Avatar>
+          {appointment.employee.names}
+        </Flex>
       </Text>
-      <Text size="xs" c="dimmed" truncate>
-        <BiUser size={16} /> {appointment.client.name}
+      <Text size="xs" c="dimmed" mt="xs" truncate>
+        <Flex gap="xs">
+          <Avatar
+            alt={appointment.client.name}
+            size={24}
+            radius="xl"
+            color="blue"
+          >
+            {appointment.client.name
+              .split(" ")
+              .map((word) => word[0])
+              .join("")}
+          </Avatar>{" "}
+          {appointment.client.name}
+        </Flex>
       </Text>
 
       {/* Menú de acciones */}

@@ -11,6 +11,7 @@ import AdminEmployees from "../pages/admin/manageEmployees";
 import OrganizationInfo from "../pages/account/OrganizationInfo";
 import EmployeeInfo from "../pages/account/EmployeeInfo";
 import DailyCashbox from "../pages/account/DailyCashbox";
+import Booking from "../pages/onlineReservation/Booking";
 
 const generalRoutes = [
   {
@@ -37,6 +38,15 @@ const generalRoutes = [
     MediaMetadata: {
       title: "Servicios y Precios",
       description: "Consulta nuestros servicios y precios en Galaxia Glamour.",
+      image: "/galaxia_glamour.png",
+    },
+  },
+  {
+    path: "/online-reservation",
+    component: Booking,
+    MediaMetadata: {
+      title: "Reserva en linea",
+      description: "Reserva con nosotros rápido y facíl.",
       image: "/galaxia_glamour.png",
     },
   },

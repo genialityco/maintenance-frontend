@@ -8,6 +8,7 @@ import { BiCalendarCheck } from "react-icons/bi";
 import { GiClawSlashes } from "react-icons/gi";
 import { FaCashRegister, FaUsers } from "react-icons/fa";
 import { usePermissions } from "../hooks/usePermissions";
+import { RiReservedFill } from "react-icons/ri";
 
 interface NavbarLinksProps {
   closeNavbar: () => void;
@@ -46,18 +47,18 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ closeNavbar }) => {
             </Flex>
           </NavLink>
 
-          {/* <NavLink
-            to="/reservar"
+          <NavLink
+            to="/online-reservation"
             onClick={closeNavbar}
             style={{ textDecoration: "none" }}
           >
             <Flex align="center" justify="center" gap="sm">
-              <RiReservedLine size={20} color="white" />
+              <RiReservedFill size={20} color="white" />
               <Text c="white" fw={600} my="md">
                 Reserva en linea
               </Text>
             </Flex>
-          </NavLink> */}
+          </NavLink>
         </Flex>
         {(hasPermission("businessInformation:read") ||
           hasPermission("appointments:view_own") ||

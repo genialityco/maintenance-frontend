@@ -20,6 +20,7 @@ export interface Employee {
   role: Role;
   customPermissions: string[];
   isActive: boolean;
+  profileImage: string;
 }
 
 interface CreateEmployeePayload {
@@ -31,6 +32,7 @@ interface CreateEmployeePayload {
   organizationId: string;
   password: string;
   isActive: boolean;
+  profileImage: string;
 }
 
 interface Response<T> {

@@ -35,9 +35,11 @@ export interface BookingData {
 }
 
 const Booking = () => {
-  const organizationId = useSelector(
-    (state: RootState) => state.auth.organizationId
+  const organization = useSelector(
+    (state: RootState) => state.organization.organization
   );
+
+  {console.log()}
 
   const [activeStep, setActiveStep] = useState(0);
   const [services, setServices] = useState<Service[]>([]);
@@ -59,8 +61,10 @@ const Booking = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchServicesAndEmployees(organizationId, setServices, setEmployees);
-  }, [organizationId]);
+    if(organization?._id) {
+      fetchServicesAndEmployees(organization?._id, setServices, setEmployees);
+    }
+  }, [organization]);
 
   const handleBooking = async () => {
     const {
@@ -79,7 +83,7 @@ const Booking = () => {
       !time ||
       !customerName ||
       !customerPhone ||
-      !organizationId
+      !organization?._id
     ) {
       const missingFields = [];
       if (!serviceId) missingFields.push("servicio");
@@ -111,7 +115,7 @@ const Booking = () => {
         email: customerEmail,
         phoneNumber: customerPhone,
       },
-      organizationId,
+      organizationId: organization?._id,
     };
 
     try {

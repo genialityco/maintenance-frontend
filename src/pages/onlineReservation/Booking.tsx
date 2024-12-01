@@ -174,6 +174,14 @@ const Booking = () => {
       });
 
       console.error("Error al crear la reserva:", error);
+    } finally {
+      showNotification({
+        title: "Finalizó",
+        message: "No se pudo enviar la reserva.se ha finalizado.",
+        color: "red",
+        icon: <BsExclamationCircleFill />,
+        position: "top-right",
+      });
     }
   };
 

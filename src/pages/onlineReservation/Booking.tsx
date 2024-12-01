@@ -65,6 +65,7 @@ const Booking = () => {
   }, [organization]);
 
   const handleBooking = async () => {
+    alert("Se hizo clic en enviar")
     const {
       serviceId,
       employeeId,

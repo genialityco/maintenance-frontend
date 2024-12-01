@@ -1,19 +1,23 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="es" translate="no">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/galaxia_glamour.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  <!-- Icono y tema -->
+  <link rel="icon" type="image/svg+xml" href="/galaxia_glamour.png" />
+  <meta name="theme-color" content="#ffffff" />
+  
+  <!-- Manifest para PWA -->
   <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#ffffff">
+
+  <!-- Desactivar traducción en Chrome -->
+  <meta name="google" content="notranslate" />
 
   <title>Galaxia Glamour</title>
 </head>
-
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
-
 </html>

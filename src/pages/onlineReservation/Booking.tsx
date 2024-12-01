@@ -90,7 +90,7 @@ const Booking = () => {
       if (!time) missingFields.push("hora");
       if (!customerName) missingFields.push("nombre");
       if (!customerPhone) missingFields.push("teléfono");
-
+      alert("Campos faltantes")
       setError(
         `Por favor, completa los siguientes campos requeridos: ${missingFields.join(
           ", "
@@ -116,8 +116,10 @@ const Booking = () => {
       },
       organizationId: organization?._id,
     };
+    alert("Payload creado")
 
     try {
+      alert("Enviando petición")
       setLoading(true);
       const newReservation = await createReservation(reservationPayload);
       setLoading(false);
@@ -125,6 +127,7 @@ const Booking = () => {
         setIsBookingConfirmed(true);
       }
     } catch (error) {
+      alert("Hubo un error")
       console.error("Error al crear la reserva:", error);
       setLoading(false);
     }

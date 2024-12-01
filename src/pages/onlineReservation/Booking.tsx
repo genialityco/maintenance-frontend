@@ -22,7 +22,8 @@ import StepCustomerData from "./StepCustomerData";
 import BookingCompleted from "./BookingCompleted";
 import { createReservation } from "../../services/reservationService";
 import dayjs from "dayjs";
-import { BsExclamationCircleFill } from "react-icons/bs";
+import { showNotification } from "@mantine/notifications";
+import { BsExclamationCircleFill, BsCheckCircleFill } from "react-icons/bs";
 
 export interface BookingData {
   serviceId: string | null;
@@ -59,12 +60,18 @@ const Booking = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if(organization?._id) {
+    if (organization?._id) {
       fetchServicesAndEmployees(organization?._id, setServices, setEmployees);
     }
   }, [organization]);
 
   const handleBooking = async () => {
+    showNotification({
+      title: "Inicio de reserva",
+      message: "Se está validando la información ingresada.",
+      color: "blue",
+    });
+
     const {
       serviceId,
       employeeId,
@@ -89,13 +96,20 @@ const Booking = () => {
       if (!time) missingFields.push("hora");
       if (!customerName) missingFields.push("nombre");
       if (!customerPhone) missingFields.push("teléfono");
-      alert("Campos faltantes")
+
       setError(
         `Por favor, completa los siguientes campos requeridos: ${missingFields.join(
           ", "
         )}.`
       );
-      setLoading(false);
+
+      showNotification({
+        title: "Error en la validación",
+        message: `Faltan campos requeridos: ${missingFields.join(", ")}.`,
+        color: "red",
+        icon: <BsExclamationCircleFill />,
+      });
+
       return;
     }
 
@@ -115,20 +129,37 @@ const Booking = () => {
       },
       organizationId: organization?._id,
     };
-    alert("Payload creado")
+
+    showNotification({
+      title: "Enviando reserva",
+      message: "Se está enviando la solicitud de reserva al servidor.",
+      color: "blue",
+    });
 
     try {
-      alert("Enviando petición")
       setLoading(true);
-      const newReservation = await createReservation(reservationPayload);
+      await createReservation(reservationPayload);
+
       setLoading(false);
-      if (newReservation) {
-        setIsBookingConfirmed(true);
-      }
+      setIsBookingConfirmed(true);
+
+      showNotification({
+        title: "Reserva creada",
+        message: "La reserva se ha enviado con éxito.",
+        color: "green",
+        icon: <BsCheckCircleFill />,
+      });
     } catch (error) {
-      alert("Hubo un error")
-      console.error("Error al crear la reserva:", error);
       setLoading(false);
+
+      showNotification({
+        title: "Error al enviar la reserva",
+        message: "No se pudo enviar la reserva. Por favor, inténtalo de nuevo.",
+        color: "red",
+        icon: <BsExclamationCircleFill />,
+      });
+
+      console.error("Error al crear la reserva:", error);
     }
   };
 
@@ -214,7 +245,7 @@ const Booking = () => {
             icon={<BsExclamationCircleFill />}
             mt="md"
             color="red"
-            title="No se pudo gestionar intenta de nuevo"
+            title="Error"
             radius="md"
           >
             {error}

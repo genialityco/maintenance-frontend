@@ -83,6 +83,7 @@ const Booking = () => {
       customerPhone,
     } = bookingData;
 
+    // Validación de campos obligatorios
     if (
       !serviceId ||
       !date ||
@@ -112,8 +113,16 @@ const Booking = () => {
         position: "top-right",
       });
 
-      return;
+      return; // Detenemos aquí si hay errores
     }
+
+    // Construir el payload de la reserva
+    showNotification({
+      title: "Preparando reserva",
+      message: "Se está preparando el payload para enviar la reserva.",
+      color: "blue",
+      position: "top-right",
+    });
 
     const startDateTime = dayjs(
       `${dayjs(date).format("YYYY-MM-DD")} ${time}`,

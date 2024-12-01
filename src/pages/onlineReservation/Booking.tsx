@@ -70,6 +70,7 @@ const Booking = () => {
       title: "Inicio de reserva",
       message: "Se está validando la información ingresada.",
       color: "blue",
+      position: "top-right",
     });
 
     const {
@@ -108,6 +109,7 @@ const Booking = () => {
         message: `Faltan campos requeridos: ${missingFields.join(", ")}.`,
         color: "red",
         icon: <BsExclamationCircleFill />,
+        position: "top-right",
       });
 
       return;
@@ -134,6 +136,7 @@ const Booking = () => {
       title: "Enviando reserva",
       message: "Se está enviando la solicitud de reserva al servidor.",
       color: "blue",
+      position: "top-right",
     });
 
     try {
@@ -148,6 +151,7 @@ const Booking = () => {
         message: "La reserva se ha enviado con éxito.",
         color: "green",
         icon: <BsCheckCircleFill />,
+        position: "top-right",
       });
     } catch (error) {
       setLoading(false);
@@ -157,6 +161,7 @@ const Booking = () => {
         message: "No se pudo enviar la reserva. Por favor, inténtalo de nuevo.",
         color: "red",
         icon: <BsExclamationCircleFill />,
+        position: "top-right",
       });
 
       console.error("Error al crear la reserva:", error);

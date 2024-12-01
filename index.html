@@ -3,21 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  
-  <!-- Icono y tema -->
   <link rel="icon" type="image/svg+xml" href="/galaxia_glamour.png" />
   <meta name="theme-color" content="#ffffff" />
-  
-  <!-- Manifest para PWA -->
   <link rel="manifest" href="/manifest.json" />
-
-  <!-- Desactivar traducción en Chrome -->
   <meta name="google" content="notranslate" />
-
   <title>Galaxia Glamour</title>
+  <style>
+    #debug-logs {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      font-family: monospace;
+      font-size: 12px;
+      z-index: 9999;
+      padding: 10px;
+      display: none; /* Ocultarlo por defecto */
+    }
+  </style>
 </head>
 <body>
   <div id="root"></div>
+  <div id="debug-logs"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

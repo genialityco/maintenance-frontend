@@ -22,8 +22,7 @@ import StepCustomerData from "./StepCustomerData";
 import BookingCompleted from "./BookingCompleted";
 import { createReservation } from "../../services/reservationService";
 import dayjs from "dayjs";
-import { showNotification } from "@mantine/notifications";
-import { BsExclamationCircleFill, BsCheckCircleFill } from "react-icons/bs";
+import { BsExclamationCircleFill } from "react-icons/bs";
 
 export interface BookingData {
   serviceId: string | null;
@@ -65,13 +64,28 @@ const Booking = () => {
     }
   }, [organization]);
 
+  const logToDebugDiv = (message: string | object) => {
+    const debugDiv = document.getElementById("debug-logs");
+    if (!debugDiv) return;
+
+    // Formatear el mensaje si es un objeto
+    const formattedMessage =
+      typeof message === "object" ? JSON.stringify(message, null, 2) : message;
+
+    // Crear una nueva línea de log
+    const logLine = document.createElement("div");
+    logLine.textContent = `[${new Date().toLocaleTimeString()}] ${formattedMessage}`;
+    debugDiv.appendChild(logLine);
+
+    // Mostrar el contenedor si está oculto
+    debugDiv.style.display = "block";
+
+    // Desplazarse al final
+    debugDiv.scrollTop = debugDiv.scrollHeight;
+  };
+
   const handleBooking = async () => {
-    showNotification({
-      title: "Inicio de reserva",
-      message: "Se está validando la información ingresada.",
-      color: "blue",
-      position: "top-right",
-    });
+    logToDebugDiv("Inicio de reserva: Validando información ingresada.");
 
     const {
       serviceId,
@@ -83,7 +97,6 @@ const Booking = () => {
       customerPhone,
     } = bookingData;
 
-    // Validación de campos obligatorios
     if (
       !serviceId ||
       !date ||
@@ -105,24 +118,13 @@ const Booking = () => {
         )}.`
       );
 
-      showNotification({
-        title: "Error en la validación",
-        message: `Faltan campos requeridos: ${missingFields.join(", ")}.`,
-        color: "red",
-        icon: <BsExclamationCircleFill />,
-        position: "top-right",
-      });
-
-      return; // Detenemos aquí si hay errores
+      logToDebugDiv(
+        `Error en validación: Faltan campos requeridos - ${missingFields.join(
+          ", "
+        )}.`
+      );
+      return;
     }
-
-    // Construir el payload de la reserva
-    showNotification({
-      title: "Preparando reserva",
-      message: "Se está preparando el payload para enviar la reserva.",
-      color: "blue",
-      position: "top-right",
-    });
 
     const startDateTime = dayjs(
       `${dayjs(date).format("YYYY-MM-DD")} ${time}`,
@@ -141,47 +143,21 @@ const Booking = () => {
       organizationId: organization?._id,
     };
 
-    showNotification({
-      title: "Enviando reserva",
-      message: "Se está enviando la solicitud de reserva al servidor.",
-      color: "blue",
-      position: "top-right",
-    });
+    logToDebugDiv("Payload preparado:");
+    logToDebugDiv(reservationPayload);
 
     try {
       setLoading(true);
+      logToDebugDiv("Enviando solicitud al servidor...");
       await createReservation(reservationPayload);
-
       setLoading(false);
+
       setIsBookingConfirmed(true);
 
-      showNotification({
-        title: "Reserva creada",
-        message: "La reserva se ha enviado con éxito.",
-        color: "green",
-        icon: <BsCheckCircleFill />,
-        position: "top-right",
-      });
+      logToDebugDiv("Reserva creada con éxito.");
     } catch (error) {
       setLoading(false);
-
-      showNotification({
-        title: "Error al enviar la reserva",
-        message: "No se pudo enviar la reserva. Por favor, inténtalo de nuevo.",
-        color: "red",
-        icon: <BsExclamationCircleFill />,
-        position: "top-right",
-      });
-
-      console.error("Error al crear la reserva:", error);
-    } finally {
-      showNotification({
-        title: "Finalizó",
-        message: "No se pudo enviar la reserva.se ha finalizado.",
-        color: "red",
-        icon: <BsExclamationCircleFill />,
-        position: "top-right",
-      });
+      logToDebugDiv(`Error al enviar la reserva: ${error}`);
     }
   };
 

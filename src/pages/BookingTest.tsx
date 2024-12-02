@@ -80,7 +80,7 @@ const BookingTest = () => {
       logToDebugDiv("Enviando solicitud al servidor...");
 
       // Usar fetch para aislar problemas con axios
-      const response = await fetch("https://api.tuservidor.com/reservations", {
+      const response = await fetch("https://api.galaxiaglamour.com/api/reservations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

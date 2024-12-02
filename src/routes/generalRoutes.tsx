@@ -12,7 +12,7 @@ import OrganizationInfo from "../pages/account/OrganizationInfo";
 import EmployeeInfo from "../pages/account/EmployeeInfo";
 import DailyCashbox from "../pages/account/DailyCashbox";
 import Booking from "../pages/onlineReservation/Booking";
-import BookingTest from "../pages/BookingTest";
+import { BookingTest } from "../pages/BookingTest";
 
 const generalRoutes = [
   {

@@ -118,6 +118,7 @@ const Booking = () => {
       await createReservation(reservationPayload);
       setLoading(false);
       setIsBookingConfirmed(true);
+      setCurrentStep(4); 
     } catch (error) {
       setLoading(false);
       console.log(error);

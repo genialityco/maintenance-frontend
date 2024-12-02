@@ -4,7 +4,6 @@ import {
   Paper,
   Title,
   Divider,
-  Stepper,
   Button,
   Group,
   Loader,
@@ -19,7 +18,6 @@ import { fetchServicesAndEmployees } from "./bookingUtils";
 import StepServiceEmployee from "./StepServiceEmployee";
 import StepDateTime from "./StepDateTime";
 import StepCustomerData from "./StepCustomerData";
-import BookingCompleted from "./BookingCompleted";
 import { createReservation } from "../../services/reservationService";
 import dayjs from "dayjs";
 import { BsExclamationCircleFill } from "react-icons/bs";
@@ -39,7 +37,7 @@ const Booking = () => {
     (state: RootState) => state.organization.organization
   );
 
-  const [activeStep, setActiveStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1); // Controla el paso actual
   const [services, setServices] = useState<Service[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
@@ -64,29 +62,7 @@ const Booking = () => {
     }
   }, [organization]);
 
-  const logToDebugDiv = (message: string | object) => {
-    const debugDiv = document.getElementById("debug-logs");
-    if (!debugDiv) return;
-
-    // Formatear el mensaje si es un objeto
-    const formattedMessage =
-      typeof message === "object" ? JSON.stringify(message, null, 2) : message;
-
-    // Crear una nueva línea de log
-    const logLine = document.createElement("div");
-    logLine.textContent = `[${new Date().toLocaleTimeString()}] ${formattedMessage}`;
-    debugDiv.appendChild(logLine);
-
-    // Mostrar el contenedor si está oculto
-    debugDiv.style.display = "block";
-
-    // Desplazarse al final
-    debugDiv.scrollTop = debugDiv.scrollHeight;
-  };
-
   const handleBooking = async () => {
-    logToDebugDiv("Inicio de reserva: Validando información ingresada.");
-
     const {
       serviceId,
       employeeId,
@@ -117,12 +93,6 @@ const Booking = () => {
           ", "
         )}.`
       );
-
-      logToDebugDiv(
-        `Error en validación: Faltan campos requeridos - ${missingFields.join(
-          ", "
-        )}.`
-      );
       return;
     }
 
@@ -143,32 +113,75 @@ const Booking = () => {
       organizationId: organization?._id,
     };
 
-    logToDebugDiv("Payload preparado:");
-    logToDebugDiv(reservationPayload);
-
     try {
       setLoading(true);
-      logToDebugDiv("Enviando solicitud al servidor...");
       await createReservation(reservationPayload);
       setLoading(false);
-
       setIsBookingConfirmed(true);
-
-      logToDebugDiv("Reserva creada con éxito.");
     } catch (error) {
       setLoading(false);
-      logToDebugDiv(`Error al enviar la reserva: ${error}`);
+      console.log(error);
+      setError("Error al enviar la reserva. Intenta nuevamente.");
     }
   };
 
-  const validateCustomerData = () => {
-    const { customerName, customerEmail, customerPhone } = bookingData;
-    const isPhoneValid = customerPhone && customerPhone.trim().length >= 10;
-    const isNameValid = customerName && customerName.trim() !== "";
-    const isEmailValid =
-      typeof customerEmail === "string" && /\S+@\S+\.\S+/.test(customerEmail);
-
-    return isPhoneValid && isNameValid && isEmailValid;
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <StepServiceEmployee
+            services={services}
+            employees={employees}
+            filteredEmployees={filteredEmployees}
+            setFilteredEmployees={setFilteredEmployees}
+            bookingData={bookingData}
+            setBookingData={setBookingData}
+          />
+        );
+      case 2:
+        return (
+          <StepDateTime
+            bookingData={bookingData}
+            setBookingData={setBookingData}
+            availableTimes={availableTimes}
+            setAvailableTimes={setAvailableTimes}
+            setAppointments={setAppointments}
+            services={services}
+            employees={employees}
+          />
+        );
+      case 3:
+        return (
+          <StepCustomerData
+            bookingData={bookingData}
+            setBookingData={setBookingData}
+          />
+        );
+      case 4:
+        return isBookingConfirmed ? (
+          <Notification
+            icon={<BsExclamationCircleFill />}
+            mt="md"
+            color="green"
+            title="Reserva confirmada"
+            radius="md"
+          >
+            Tu reserva ha sido realizada con éxito.
+          </Notification>
+        ) : (
+          <Notification
+            icon={<BsExclamationCircleFill />}
+            mt="md"
+            color="red"
+            title="Error"
+            radius="md"
+          >
+            {error || "Algo salió mal. Intenta nuevamente."}
+          </Notification>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -176,58 +189,25 @@ const Booking = () => {
       <Paper shadow="md" p="lg" radius="lg" withBorder>
         <Title ta="center">Reserva en Línea</Title>
         <Divider my="xs" />
-        <Stepper active={activeStep} onStepClick={setActiveStep} size="sm">
-          <Stepper.Step label="Servicio y empleado">
-            <StepServiceEmployee
-              services={services}
-              employees={employees}
-              filteredEmployees={filteredEmployees}
-              setFilteredEmployees={setFilteredEmployees}
-              bookingData={bookingData}
-              setBookingData={setBookingData}
-            />
-          </Stepper.Step>
-          <Stepper.Step label="Fecha y horario">
-            <StepDateTime
-              bookingData={bookingData}
-              setBookingData={setBookingData}
-              availableTimes={availableTimes}
-              setAvailableTimes={setAvailableTimes}
-              setAppointments={setAppointments}
-              services={services}
-              employees={employees}
-            />
-          </Stepper.Step>
-          <Stepper.Step label="Datos del cliente">
-            <StepCustomerData
-              bookingData={bookingData}
-              setBookingData={setBookingData}
-            />
-          </Stepper.Step>
-          <Stepper.Completed>
-            <BookingCompleted isBookingConfirmed={isBookingConfirmed} />
-          </Stepper.Completed>
-        </Stepper>
+        {renderStep()}
         <Group justify="space-around" mt="xl">
-          {activeStep > 0 && (
+          {currentStep > 1 && currentStep < 4 && (
             <Button
               variant="outline"
-              onClick={() => setActiveStep((prev) => prev - 1)}
+              onClick={() => setCurrentStep((prev) => prev - 1)}
             >
               Atrás
             </Button>
           )}
-          {activeStep < 3 && (
+          {currentStep < 3 && (
             <Button
-              onClick={() => setActiveStep((prev) => prev + 1)}
-              disabled={
-                activeStep === 2 && !validateCustomerData() ? true : false
-              }
+              onClick={() => setCurrentStep((prev) => prev + 1)}
+              disabled={currentStep === 3 && !isBookingConfirmed}
             >
               Siguiente
             </Button>
           )}
-          {activeStep === 3 && (
+          {currentStep === 3 && (
             <Button
               color="green"
               onClick={handleBooking}
@@ -238,17 +218,6 @@ const Booking = () => {
             </Button>
           )}
         </Group>
-        {error && (
-          <Notification
-            icon={<BsExclamationCircleFill />}
-            mt="md"
-            color="red"
-            title="Error"
-            radius="md"
-          >
-            {error}
-          </Notification>
-        )}
       </Paper>
     </Container>
   );

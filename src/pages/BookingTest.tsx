@@ -6,14 +6,23 @@ const BookingTest = () => {
   const [debugLogs, setDebugLogs] = useState<string[]>([]);
 
   const logToDebugDiv = (message: string | object) => {
+    const debugDiv = document.getElementById("debug-logs");
+    if (!debugDiv) return;
+
+    // Formatear el mensaje si es un objeto
     const formattedMessage =
       typeof message === "object" ? JSON.stringify(message, null, 2) : message;
 
-    const logEntry = `[${new Date().toLocaleTimeString()}] ${formattedMessage}`;
-    setDebugLogs((prevLogs) => [...prevLogs, logEntry]);
+    // Crear una nueva línea de log
+    const logLine = document.createElement("div");
+    logLine.textContent = `[${new Date().toLocaleTimeString()}] ${formattedMessage}`;
+    debugDiv.appendChild(logLine);
 
-    // Opcionalmente, imprimir también en la consola para duplicar el log
-    console.log(logEntry);
+    // Mostrar el contenedor si está oculto
+    debugDiv.style.display = "block";
+
+    // Desplazarse al final
+    debugDiv.scrollTop = debugDiv.scrollHeight;
   };
 
   const handleBooking = async () => {
@@ -73,7 +82,7 @@ const BookingTest = () => {
       logToDebugDiv("Enviando solicitud al servidor...");
 
       // Usar fetch para aislar problemas con axios
-      const response = await fetch("https://api.galaxiaglamour.com/api/reservations", {
+      const response = await fetch("https://api.tuservidor.com/reservations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -64,8 +64,19 @@ function App() {
   // Recarga automática cuando haya un nuevo service worker activo
   useEffect(() => {
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        window.location.reload();
+      navigator.serviceWorker.register("/custom-sw.js").then((registration) => {
+        registration.onupdatefound = () => {
+          const installingWorker = registration.installing;
+          if (installingWorker)
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === "installed") {
+                if (navigator.serviceWorker.controller) {
+                  console.log("Nueva versión disponible. Actualizando...");
+                  window.location.reload();
+                }
+              }
+            };
+        };
       });
     }
   }, []);

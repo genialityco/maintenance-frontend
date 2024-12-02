@@ -152,7 +152,7 @@ const Booking = () => {
 
       setIsBookingConfirmed(true);
       setLoading(false);
-      setCurrentStep(4); // Avanzar al paso de confirmación
+      setCurrentStep(4); 
       logToDebugDiv("Reserva creada con éxito.");
     } catch (error) {
       setLoading(false);

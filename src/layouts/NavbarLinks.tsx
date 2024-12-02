@@ -59,6 +59,18 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ closeNavbar }) => {
               </Text>
             </Flex>
           </NavLink>
+          <NavLink
+            to="/online-reservation-test"
+            onClick={closeNavbar}
+            style={{ textDecoration: "none" }}
+          >
+            <Flex align="center" justify="center" gap="sm">
+              <RiReservedFill size={20} color="white" />
+              <Text c="white" fw={600} my="md">
+                Reserva en linea -test
+              </Text>
+            </Flex>
+          </NavLink>
         </Flex>
         {(hasPermission("businessInformation:read") ||
           hasPermission("appointments:view_own") ||

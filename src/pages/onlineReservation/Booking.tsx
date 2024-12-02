@@ -62,7 +62,29 @@ const Booking = () => {
     }
   }, [organization]);
 
+  const logToDebugDiv = (message: string | object) => {
+    const debugDiv = document.getElementById("debug-logs");
+    if (!debugDiv) return;
+
+    // Formatear el mensaje si es un objeto
+    const formattedMessage =
+      typeof message === "object" ? JSON.stringify(message, null, 2) : message;
+
+    // Crear una nueva línea de log
+    const logLine = document.createElement("div");
+    logLine.textContent = `[${new Date().toLocaleTimeString()}] ${formattedMessage}`;
+    debugDiv.appendChild(logLine);
+
+    // Mostrar el contenedor si está oculto
+    debugDiv.style.display = "block";
+
+    // Desplazarse al final
+    debugDiv.scrollTop = debugDiv.scrollHeight;
+  };
+
   const handleBooking = async () => {
+    logToDebugDiv("Inicio de reserva: Validando información ingresada.");
+
     const {
       serviceId,
       employeeId,
@@ -93,6 +115,12 @@ const Booking = () => {
           ", "
         )}.`
       );
+
+      logToDebugDiv(
+        `Error en validación: Faltan campos requeridos - ${missingFields.join(
+          ", "
+        )}.`
+      );
       return;
     }
 
@@ -113,16 +141,23 @@ const Booking = () => {
       organizationId: organization?._id,
     };
 
+    logToDebugDiv("Payload preparado:");
+    logToDebugDiv(reservationPayload);
+
     try {
       setLoading(true);
+      logToDebugDiv("Enviando solicitud al servidor...");
       await createReservation(reservationPayload);
-      setLoading(false);
+      logToDebugDiv("Respuesta del servidor:");
+
       setIsBookingConfirmed(true);
-      setCurrentStep(4); 
+      setLoading(false);
+      setCurrentStep(4); // Avanzar al paso de confirmación
+      logToDebugDiv("Reserva creada con éxito.");
     } catch (error) {
       setLoading(false);
-      console.log(error);
       setError("Error al enviar la reserva. Intenta nuevamente.");
+      logToDebugDiv(`Error al enviar la reserva: ${error}`);
     }
   };
 

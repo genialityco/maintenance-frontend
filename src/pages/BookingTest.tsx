@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { Container, Button } from "@mantine/core";
 import dayjs from "dayjs";
 
 const BookingTest = () => {
-  const [debugLogs, setDebugLogs] = useState<string[]>([]);
 
   const logToDebugDiv = (message: string | object) => {
     const debugDiv = document.getElementById("debug-logs");
@@ -107,23 +105,6 @@ const BookingTest = () => {
 
   return (
     <Container fluid>
-      <div
-        id="debug-logs"
-        style={{
-          height: "200px",
-          overflowY: "auto",
-          border: "1px solid #ddd",
-          padding: "10px",
-          marginBottom: "10px",
-          background: "#f8f9fa",
-          fontFamily: "monospace",
-          fontSize: "12px",
-        }}
-      >
-        {debugLogs.map((log, index) => (
-          <div key={index}>{log}</div>
-        ))}
-      </div>
       <Button onClick={handleBooking}>Enviar reserva</Button>
     </Container>
   );

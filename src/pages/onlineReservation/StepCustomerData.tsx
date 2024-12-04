@@ -8,7 +8,6 @@ export interface BookingData {
   serviceId: string | null;
   employeeId: string | null;
   date: Date | null;
-  time: string | null;
   customerName: string;
   customerEmail: string;
   customerPhone: string;

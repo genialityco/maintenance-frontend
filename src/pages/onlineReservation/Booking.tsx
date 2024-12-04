@@ -19,14 +19,12 @@ import StepServiceEmployee from "./StepServiceEmployee";
 import StepDateTime from "./StepDateTime";
 import StepCustomerData from "./StepCustomerData";
 import { createReservation } from "../../services/reservationService";
-import dayjs from "dayjs";
 import { BsExclamationCircleFill } from "react-icons/bs";
 
 export interface BookingData {
   serviceId: string | null;
   employeeId: string | null;
   date: Date | null;
-  time: string | null;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
@@ -47,7 +45,6 @@ const Booking = () => {
     serviceId: null,
     employeeId: null,
     date: null,
-    time: null,
     customerName: "",
     customerEmail: "",
     customerPhone: "",
@@ -89,7 +86,6 @@ const Booking = () => {
       serviceId,
       employeeId,
       date,
-      time,
       customerName,
       customerEmail,
       customerPhone,
@@ -98,7 +94,6 @@ const Booking = () => {
     if (
       !serviceId ||
       !date ||
-      !time ||
       !customerName ||
       !customerPhone ||
       !organization?._id
@@ -106,7 +101,6 @@ const Booking = () => {
       const missingFields = [];
       if (!serviceId) missingFields.push("servicio");
       if (!date) missingFields.push("fecha");
-      if (!time) missingFields.push("hora");
       if (!customerName) missingFields.push("nombre");
       if (!customerPhone) missingFields.push("teléfono");
 
@@ -124,15 +118,10 @@ const Booking = () => {
       return;
     }
 
-    const startDateTime = dayjs(
-      `${dayjs(date).format("YYYY-MM-DD")} ${time}`,
-      "YYYY-MM-DD h:mm A"
-    ).toISOString();
-
     const reservationPayload = {
       serviceId,
       employeeId: employeeId || null,
-      startDate: startDateTime,
+      startDate: date,
       customerDetails: {
         name: customerName,
         email: customerEmail,

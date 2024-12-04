@@ -22,8 +22,7 @@ import { Employee } from "../../services/employeeService";
 export interface BookingData {
   serviceId: string | null;
   employeeId: string | null;
-  date: Date | null;
-  time: string | null;
+  date: Date | null; // Almacena fecha y hora combinadas
   customerName: string;
   customerEmail: string;
   customerPhone: string;
@@ -32,7 +31,7 @@ export interface BookingData {
 interface StepDateTimeProps {
   bookingData: BookingData;
   setBookingData: React.Dispatch<React.SetStateAction<BookingData>>;
-  availableTimes: string[];
+  availableTimes: string[]; // Lista de horarios disponibles como strings
   setAvailableTimes: React.Dispatch<React.SetStateAction<string[]>>;
   setAppointments: React.Dispatch<React.SetStateAction<Appointment[]>>;
   services: Service[];
@@ -65,9 +64,10 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
 }) => {
   const [service, setService] = useState<Service>();
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const handleDateSelection = (date: Date) => {
-    setBookingData({ ...bookingData, date });
+    setSelectedDate(date);
     setShowConfirmation(false);
 
     const selectedService = services.find(
@@ -77,18 +77,26 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
     if (selectedService) {
       setService(selectedService);
       fetchAppointmentsAndAvailableTimes(
-        bookingData.employeeId, 
+        bookingData.employeeId,
         date,
         selectedService.duration,
         setAppointments,
         setAvailableTimes,
-        employees 
+        employees
       );
     }
   };
 
   const handleTimeSelection = (time: string) => {
-    setBookingData({ ...bookingData, time });
+    if (!selectedDate) return;
+
+    // Combinar la fecha seleccionada con la hora seleccionada
+    const combinedDateTime = dayjs(
+      `${dayjs(selectedDate).format("YYYY-MM-DD")} ${time}`,
+      "YYYY-MM-DD h:mm A"
+    ).toDate();
+
+    setBookingData({ ...bookingData, date: combinedDateTime });
     setShowConfirmation(true);
   };
 
@@ -105,7 +113,7 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
         <Divider />
         <Flex justify="center">
           <DatePicker
-            value={bookingData.date}
+            value={selectedDate}
             onChange={(date) => date && handleDateSelection(date)}
             minDate={new Date()}
             size="sm"
@@ -127,15 +135,14 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
         )}
         <Divider />
 
-        {showConfirmation && bookingData.date && bookingData.time ? (
+        {showConfirmation && bookingData.date ? (
           // Mensaje de Confirmación
           <Stack align="center" m="md">
             <Text size="lg" ta="center">
               Vas a agendar para el día{" "}
               <strong>
-                {dayjs(bookingData.date).format("DD [de] MMMM [a las]")}
-              </strong>{" "}
-              {bookingData.time}.
+                {dayjs(bookingData.date).format("DD [de] MMMM [a las] h:mm A")}
+              </strong>.
             </Text>
             <Button
               variant="subtle"
@@ -145,14 +152,19 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
               Cambiar la hora
             </Button>
           </Stack>
-        ) : bookingData.date && availableTimes.length > 0 ? (
+        ) : selectedDate && availableTimes.length > 0 ? (
           // Horarios Disponibles
           <Grid gutter="md">
             {availableTimes.map((time) => (
               <Grid.Col key={time} span={{ base: 6, sm: 4, md: 3 }}>
                 <Badge
                   fullWidth
-                  variant={bookingData.time === time ? "filled" : "outline"}
+                  variant={
+                    bookingData.date &&
+                    dayjs(bookingData.date).format("h:mm A") === time
+                      ? "filled"
+                      : "outline"
+                  }
                   onClick={() => handleTimeSelection(time)}
                   size="lg"
                   style={{
@@ -166,7 +178,7 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
               </Grid.Col>
             ))}
           </Grid>
-        ) : bookingData.date && availableTimes.length === 0 ? (
+        ) : selectedDate && availableTimes.length === 0 ? (
           // Mensaje de No Disponibilidad
           <Notification
             icon={<BsExclamationCircle />}

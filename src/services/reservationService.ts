@@ -7,7 +7,7 @@ export interface Reservation {
   _id?: string;
   serviceId: Service | string;
   employeeId: Employee | string | null;
-  startDate: string;
+  startDate: Date | string;
   customer: string | null; // ID del cliente asociado (si existe)
   customerDetails: {
     name: string;
@@ -21,7 +21,7 @@ export interface Reservation {
 interface CreateReservationPayload {
   serviceId: string; // ID del servicio
   employeeId?: string | null; // ID del empleado o null
-  startDate: string;
+  startDate: Date | string;
   customerDetails: {
     name: string;
     email?: string;

@@ -95,6 +95,20 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ closeNavbar }) => {
             </Flex>
           </NavLink>
         )}
+        {hasPermission("reservationOnline:read") && (
+          <NavLink
+            to="/gestionar-reservas-online"
+            onClick={closeNavbar}
+            style={{ textDecoration: "none" }}
+          >
+            <Flex align="center" justify="center" gap="sm">
+              <FaUsers size={20} color="white" />
+              <Text c="white" fw={600} my="md">
+                Gestionar reservas online
+              </Text>
+            </Flex>
+          </NavLink>
+        )}
         {hasPermission("businessInformation:read") && (
           <NavLink
             to="/informacion-negocio"

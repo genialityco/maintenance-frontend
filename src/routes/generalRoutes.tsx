@@ -12,6 +12,7 @@ import OrganizationInfo from "../pages/account/OrganizationInfo";
 import EmployeeInfo from "../pages/account/EmployeeInfo";
 import DailyCashbox from "../pages/account/DailyCashbox";
 import Booking from "../pages/onlineReservation/Booking";
+import ReservationsList from "../pages/admin/manageReservation";
 
 const generalRoutes = [
   {
@@ -82,6 +83,19 @@ const generalRoutes = [
     MediaMetadata: {
       title: "Gestionar Agenda",
       description: "Gestiona la agenda de Galaxia Glamour.",
+      image: "/galaxia_glamour.png",
+    },
+  },
+  {
+    path: "/gestionar-reservas-online",
+    component: (props: JSX.IntrinsicAttributes) => (
+      <ProtectedRoute>
+        <ReservationsList {...props} />
+      </ProtectedRoute>
+    ),
+    MediaMetadata: {
+      title: "Gestionar Reservas Online",
+      description: "Gestiona las reservas de Galaxia Glamour.",
       image: "/galaxia_glamour.png",
     },
   },

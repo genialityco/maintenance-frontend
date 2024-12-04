@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextInput, Button, Text, Card, Flex, Checkbox } from "@mantine/core";
+import { TextInput, Button, Text, Card, Flex, Checkbox, Loader } from "@mantine/core";
 import colors from "../../theme/colores";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -14,6 +14,7 @@ const LoginAdmin: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigate();
   const dispatch = useDispatch();
 
@@ -28,6 +29,8 @@ const LoginAdmin: React.FC = () => {
   }, []);
 
   const handleLogin = async () => {
+    setIsLoading(true); 
+    setError("");
     try {
       const data = await login(email, password);
       if (data) {
@@ -55,6 +58,8 @@ const LoginAdmin: React.FC = () => {
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       setError("Error al iniciar sesión. Intenta nuevamente.");
+    } finally {
+      setIsLoading(false); 
     }
   };
 
@@ -63,7 +68,7 @@ const LoginAdmin: React.FC = () => {
       <Card
         style={{
           width: isMobile ? "90%" : "auto",
-          margin : "auto",
+          margin: "auto",
           padding: "2rem",
           backgroundColor: colors.cardBackground,
           color: colors.primaryText,
@@ -114,8 +119,13 @@ const LoginAdmin: React.FC = () => {
             {error}
           </Text>
         )}
-        <Button fullWidth onClick={handleLogin}>
-          Iniciar sesión
+        <Button
+          fullWidth
+          onClick={handleLogin}
+          disabled={isLoading} 
+          leftSection={isLoading && <Loader size="xs" />} 
+        >
+          {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
         </Button>
       </Card>
     </Flex>

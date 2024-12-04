@@ -1,5 +1,8 @@
 import { Container, Button } from "@mantine/core";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 const BookingTest = () => {
   const logToDebugDiv = (message: string | object) => {
@@ -40,16 +43,26 @@ const BookingTest = () => {
       return;
     }
 
-    // Asegurar el formato correcto para la hora y la fecha
+    // Formatear fecha y hora de manera robusta
     try {
       const formattedDate = dayjs(date).format("YYYY-MM-DD");
-      const formattedDateTime = dayjs(`${formattedDate} ${time}`, "YYYY-MM-DD h:mm A").toISOString();
-      logToDebugDiv(`Fecha y hora formateadas: ${formattedDateTime}`);
+      const parsedDateTime = dayjs(
+        `${formattedDate} ${time}`,
+        "YYYY-MM-DD h:mm A",
+        true // Estricto para evitar errores de formato
+      );
+
+      if (!parsedDateTime.isValid()) {
+        throw new Error(`Fecha/Hora no válida: ${formattedDate} ${time}`);
+      }
+
+      const startDateTime = parsedDateTime.toISOString();
+      logToDebugDiv(`Fecha y hora formateadas correctamente: ${startDateTime}`);
 
       const reservationPayload = {
         serviceId,
         employeeId: employeeId || null,
-        startDate: formattedDateTime,
+        startDate: startDateTime,
         customerDetails: {
           name: customerName,
           email: customerEmail,
@@ -66,9 +79,6 @@ const BookingTest = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Cache-Control": "no-cache",
-          Pragma: "no-cache",
-          Expires: "0",
         },
         body: JSON.stringify(reservationPayload),
       });

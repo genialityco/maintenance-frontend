@@ -50,7 +50,7 @@ const ScheduleView: React.FC = () => {
     useState<Appointment | null>(null);
   const [loadingAgenda, setLoadingAgenda] = useState(false);
 
-  const userId = useSelector((state: RootState) => state.auth.userId);
+  const userId = useSelector((state: RootState) => state.auth.userId as string);
   const organization = useSelector(
     (state: RootState) => state.organization.organization
   );

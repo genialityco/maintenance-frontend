@@ -13,12 +13,15 @@ import {
 import { DatePicker } from "@mantine/dates";
 import { BsExclamationCircle, BsClock } from "react-icons/bs";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { fetchAppointmentsAndAvailableTimes } from "./bookingUtils";
 import { Appointment } from "../../services/appointmentService";
 import { Service } from "../../services/serviceService";
 import { Employee } from "../../services/employeeService";
 import { Reservation } from "../../services/reservationService";
 import { useState } from "react";
+
+dayjs.extend(customParseFormat);
 
 interface StepDateTimeProps {
   bookingData: Partial<Reservation>;
@@ -86,9 +89,14 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
     const combinedDateTime = dayjs(
       `${dayjs(selectedDate).format("YYYY-MM-DD")} ${time}`,
       "YYYY-MM-DD h:mm A"
-    ).toDate();
+    );
 
-    setBookingData({ ...bookingData, startDate: combinedDateTime });
+    if (!combinedDateTime.isValid()) {
+      console.error("Fecha inválida:", combinedDateTime);
+      return;
+    }
+
+    setBookingData({ ...bookingData, startDate: combinedDateTime.toDate() });
     setShowConfirmation(true);
   };
 
@@ -136,7 +144,8 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
                 {dayjs(bookingData.startDate).format(
                   "DD [de] MMMM [a las] h:mm A"
                 )}
-              </strong>.
+              </strong>
+              .
             </Text>
             <Button
               variant="subtle"

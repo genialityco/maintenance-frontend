@@ -29,7 +29,7 @@ const BookingTest = () => {
       serviceId: "6709203e3fde4132d82d5b1a",
       employeeId: "6731729ab254219efc60ee11",
       date: new Date(),
-      time: "08:00 AM",
+      time: "08:00 AM", // Asegúrate de que el formato sea correcto
       customerName: "Nataly Martinez",
       customerEmail: "nataly@mail.com",
       customerPhone: "3132735116",
@@ -43,16 +43,19 @@ const BookingTest = () => {
       return;
     }
 
-    // Formatear fecha y hora de manera robusta
     try {
       const formattedDate = dayjs(date).format("YYYY-MM-DD");
+      logToDebugDiv(`Fecha formateada: ${formattedDate}`);
+      logToDebugDiv(`Hora recibida: ${time}`);
+
       const parsedDateTime = dayjs(
         `${formattedDate} ${time}`,
         "YYYY-MM-DD h:mm A",
-        true // Estricto para evitar errores de formato
+        true // Validación estricta del formato
       );
 
       if (!parsedDateTime.isValid()) {
+        logToDebugDiv(`Fecha/Hora no válida: Fecha (${formattedDate}), Hora (${time})`);
         throw new Error(`Fecha/Hora no válida: ${formattedDate} ${time}`);
       }
 

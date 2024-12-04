@@ -8,26 +8,29 @@ export interface Reservation {
   serviceId: Service | string;
   employeeId: Employee | string | null;
   startDate: Date | string;
-  customer: string | null; // ID del cliente asociado (si existe)
+  customer: string | null;
   customerDetails: {
     name: string;
-    email?: string;
+    email: string;
     phone: string;
   };
-  organizationId: string;
+  organizationId: string | undefined;
   status: "pending" | "approved" | "rejected";
 }
 
 interface CreateReservationPayload {
-  serviceId: string; // ID del servicio
-  employeeId?: string | null; // ID del empleado o null
+  _id?: string;
+  serviceId: Service | string;
+  employeeId: Employee | string | null;
   startDate: Date | string;
+  customer: string | null;
   customerDetails: {
     name: string;
-    email?: string;
-    phoneNumber: string;
+    email: string;
+    phone: string;
   };
-  organizationId: string;
+  organizationId: string | undefined;
+  status: "pending" | "approved" | "rejected";
 }
 
 interface Response<T> {

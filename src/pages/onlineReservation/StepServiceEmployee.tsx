@@ -1,16 +1,7 @@
 import { Stack, Select } from "@mantine/core";
-import { Employee } from "../../services/employeeService";
 import { Service } from "../../services/serviceService";
-
-export interface BookingData {
-  serviceId: string | null;
-  employeeId: string | null;
-  date: Date | null;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-}
-
+import { Employee } from "../../services/employeeService";
+import { Reservation} from "../../services/reservationService";
 import { filterEmployeesByService } from "./bookingUtils";
 
 interface StepServiceEmployeeProps {
@@ -18,8 +9,8 @@ interface StepServiceEmployeeProps {
   employees: Employee[];
   filteredEmployees: Employee[];
   setFilteredEmployees: React.Dispatch<React.SetStateAction<Employee[]>>;
-  bookingData: BookingData;
-  setBookingData: React.Dispatch<React.SetStateAction<BookingData>>;
+  bookingData: Partial<Reservation>;
+  setBookingData: React.Dispatch<React.SetStateAction<Partial<Reservation>>>;
 }
 
 const StepServiceEmployee: React.FC<StepServiceEmployeeProps> = ({
@@ -31,7 +22,11 @@ const StepServiceEmployee: React.FC<StepServiceEmployeeProps> = ({
   setBookingData,
 }) => {
   const handleServiceSelection = (serviceId: string) => {
-    setBookingData({ ...bookingData, serviceId, employeeId: null }); // Resetea el empleado seleccionado
+    setBookingData({
+      ...bookingData,
+      serviceId,
+      employeeId: null,
+    });
     setFilteredEmployees(filterEmployeesByService(employees, serviceId));
   };
 
@@ -41,7 +36,6 @@ const StepServiceEmployee: React.FC<StepServiceEmployeeProps> = ({
 
   return (
     <Stack>
-      {/* Selector de Servicio */}
       <Select
         label="Selecciona un servicio"
         placeholder="Elige un servicio"
@@ -49,11 +43,9 @@ const StepServiceEmployee: React.FC<StepServiceEmployeeProps> = ({
           value: service._id,
           label: service.name,
         }))}
-        value={bookingData.serviceId}
+        value={bookingData.serviceId as string}
         onChange={(value) => handleServiceSelection(value!)}
       />
-
-      {/* Selector de Empleado */}
       <Select
         label="Selecciona un empleado"
         placeholder="Elige un empleado o selecciona 'Sin preferencia'"
@@ -64,7 +56,7 @@ const StepServiceEmployee: React.FC<StepServiceEmployeeProps> = ({
             label: employee.names,
           })),
         ]}
-        value={bookingData.employeeId || "none"}
+        value={bookingData.employeeId as string || "none"}
         disabled={!bookingData.serviceId}
         onChange={(value) =>
           handleEmployeeSelection(value === "none" ? null : value!)

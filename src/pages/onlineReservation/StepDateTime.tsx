@@ -16,22 +16,14 @@ import dayjs from "dayjs";
 import { fetchAppointmentsAndAvailableTimes } from "./bookingUtils";
 import { Appointment } from "../../services/appointmentService";
 import { Service } from "../../services/serviceService";
-import { useState } from "react";
 import { Employee } from "../../services/employeeService";
-
-export interface BookingData {
-  serviceId: string | null;
-  employeeId: string | null;
-  date: Date | null; // Almacena fecha y hora combinadas
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-}
+import { Reservation } from "../../services/reservationService";
+import { useState } from "react";
 
 interface StepDateTimeProps {
-  bookingData: BookingData;
-  setBookingData: React.Dispatch<React.SetStateAction<BookingData>>;
-  availableTimes: string[]; // Lista de horarios disponibles como strings
+  bookingData: Partial<Reservation>;
+  setBookingData: React.Dispatch<React.SetStateAction<Partial<Reservation>>>;
+  availableTimes: string[];
   setAvailableTimes: React.Dispatch<React.SetStateAction<string[]>>;
   setAppointments: React.Dispatch<React.SetStateAction<Appointment[]>>;
   services: Service[];
@@ -77,7 +69,7 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
     if (selectedService) {
       setService(selectedService);
       fetchAppointmentsAndAvailableTimes(
-        bookingData.employeeId,
+        bookingData.employeeId as string | null,
         date,
         selectedService.duration,
         setAppointments,
@@ -96,7 +88,7 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
       "YYYY-MM-DD h:mm A"
     ).toDate();
 
-    setBookingData({ ...bookingData, date: combinedDateTime });
+    setBookingData({ ...bookingData, startDate: combinedDateTime });
     setShowConfirmation(true);
   };
 
@@ -135,13 +127,15 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
         )}
         <Divider />
 
-        {showConfirmation && bookingData.date ? (
+        {showConfirmation && bookingData.startDate ? (
           // Mensaje de Confirmación
           <Stack align="center" m="md">
             <Text size="lg" ta="center">
               Vas a agendar para el día{" "}
               <strong>
-                {dayjs(bookingData.date).format("DD [de] MMMM [a las] h:mm A")}
+                {dayjs(bookingData.startDate).format(
+                  "DD [de] MMMM [a las] h:mm A"
+                )}
               </strong>.
             </Text>
             <Button
@@ -160,8 +154,8 @@ const StepDateTime: React.FC<StepDateTimeProps> = ({
                 <Badge
                   fullWidth
                   variant={
-                    bookingData.date &&
-                    dayjs(bookingData.date).format("h:mm A") === time
+                    bookingData.startDate &&
+                    dayjs(bookingData.startDate).format("h:mm A") === time
                       ? "filled"
                       : "outline"
                   }

@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { useState, useEffect } from "react";
 import {
   Container,
@@ -7,7 +8,7 @@ import {
   Button,
   Group,
   Loader,
-  Notification,
+  Stepper,
 } from "@mantine/core";
 import { RootState } from "../../app/store";
 import { useSelector } from "react-redux";
@@ -18,40 +19,38 @@ import { fetchServicesAndEmployees } from "./bookingUtils";
 import StepServiceEmployee from "./StepServiceEmployee";
 import StepDateTime from "./StepDateTime";
 import StepCustomerData from "./StepCustomerData";
-import { createReservation } from "../../services/reservationService";
-import { BsExclamationCircleFill } from "react-icons/bs";
-
-export interface BookingData {
-  serviceId: string | null;
-  employeeId: string | null;
-  date: Date | null;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-}
+import {
+  Reservation,
+  createReservation,
+} from "../../services/reservationService";
+import BookingCompleted from "./BookingCompleted";
+import { showNotification } from "@mantine/notifications";
 
 const Booking = () => {
   const organization = useSelector(
     (state: RootState) => state.organization.organization
   );
 
-  const [currentStep, setCurrentStep] = useState(1); // Controla el paso actual
+  const [currentStep, setCurrentStep] = useState(1);
   const [services, setServices] = useState<Service[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
-  const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [, setAppointments] = useState<Appointment[]>([]);
-  const [bookingData, setBookingData] = useState<BookingData>({
-    serviceId: null,
+  const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+  const [bookingData, setBookingData] = useState<Partial<Reservation>>({
+    serviceId: "",
     employeeId: null,
-    date: null,
-    customerName: "",
-    customerEmail: "",
-    customerPhone: "",
+    startDate: "",
+    customerDetails: {
+      name: "",
+      email: "",
+      phone: "",
+    },
+    organizationId: organization?._id,
+    status: "pending",
   });
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (organization?._id) {
@@ -59,98 +58,109 @@ const Booking = () => {
     }
   }, [organization]);
 
-  const logToDebugDiv = (message: string | object) => {
-    const debugDiv = document.getElementById("debug-logs");
-    if (!debugDiv) return;
-
-    // Formatear el mensaje si es un objeto
-    const formattedMessage =
-      typeof message === "object" ? JSON.stringify(message, null, 2) : message;
-
-    // Crear una nueva línea de log
-    const logLine = document.createElement("div");
-    logLine.textContent = `[${new Date().toLocaleTimeString()}] ${formattedMessage}`;
-    debugDiv.appendChild(logLine);
-
-    // Mostrar el contenedor si está oculto
-    debugDiv.style.display = "block";
-
-    // Desplazarse al final
-    debugDiv.scrollTop = debugDiv.scrollHeight;
+  // Validar si se puede avanzar al siguiente paso
+  const canAdvance = (): boolean => {
+    switch (currentStep) {
+      case 1:
+        return !!bookingData.serviceId;
+      case 2:
+        return !!bookingData.startDate;
+      case 3:
+        // Aseguramos que `customerDetails` tenga valores iniciales
+        const customerDetails = bookingData.customerDetails || {
+          name: "",
+          email: "",
+          phone: "",
+        };
+        return (
+          customerDetails.name.trim() !== "" &&
+          customerDetails.phone.trim() !== "" &&
+          customerDetails.email.trim() !== ""
+        );
+      default:
+        return true;
+    }
   };
 
-  const handleBooking = async () => {
-    logToDebugDiv("Inicio de reserva: Validando información ingresada.");
-
-    const {
-      serviceId,
-      employeeId,
-      date,
-      customerName,
-      customerEmail,
-      customerPhone,
-    } = bookingData;
-
-    if (
-      !serviceId ||
-      !date ||
-      !customerName ||
-      !customerPhone ||
-      !organization?._id
-    ) {
-      const missingFields = [];
-      if (!serviceId) missingFields.push("servicio");
-      if (!date) missingFields.push("fecha");
-      if (!customerName) missingFields.push("nombre");
-      if (!customerPhone) missingFields.push("teléfono");
-
-      setError(
-        `Por favor, completa los siguientes campos requeridos: ${missingFields.join(
-          ", "
-        )}.`
-      );
-
-      logToDebugDiv(
-        `Error en validación: Faltan campos requeridos - ${missingFields.join(
-          ", "
-        )}.`
-      );
+  const handleNextStep = () => {
+    if (!canAdvance()) {
+      let errorMessage = "";
+      switch (currentStep) {
+        case 1:
+          errorMessage = "Por favor, selecciona un servicio y un empleado.";
+          break;
+        case 2:
+          errorMessage = "Por favor, selecciona una fecha y una hora.";
+          break;
+        case 3:
+          errorMessage =
+            "Por favor, completa los campos de nombre, teléfono y correo electrónico.";
+          break;
+        default:
+          errorMessage = "Algo salió mal. Intenta nuevamente.";
+      }
+      showNotification({
+        title: "Error",
+        message: errorMessage,
+        color: "red",
+        autoClose: 3000,
+        position: "top-right",
+      });
       return;
     }
 
-    const reservationPayload = {
-      serviceId,
-      employeeId: employeeId || null,
-      startDate: date,
-      customerDetails: {
-        name: customerName,
-        email: customerEmail,
-        phoneNumber: customerPhone,
-      },
-      organizationId: organization?._id,
-    };
+    setCurrentStep((prev) => prev + 1);
+  };
 
-    logToDebugDiv("Payload preparado:");
-    logToDebugDiv(reservationPayload);
+  const isSubmitDisabled = () => {
+    const { serviceId, startDate, customerDetails } = bookingData;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const isCustomerDetailsValid =
+      customerDetails &&
+      customerDetails.name.trim() !== "" &&
+      customerDetails.phone.trim() !== "" &&
+      emailRegex.test(customerDetails.email.trim());
+
+    return loading || !serviceId || !startDate || !isCustomerDetailsValid;
+  };
+
+  const handleBooking = async () => {
+    if (!bookingData.serviceId || !bookingData.startDate) {
+      showNotification({
+        title: "Error",
+        message: "Por favor completa todos los campos obligatorios.",
+        color: "red",
+        autoClose: 3000,
+      });
+      return;
+    }
 
     try {
       setLoading(true);
-      logToDebugDiv("Enviando solicitud al servidor...");
+      const reservationPayload = {
+        ...bookingData,
+        organizationId: organization?._id,
+      } as Reservation;
+
       await createReservation(reservationPayload);
-      logToDebugDiv("Respuesta del servidor:");
 
       setIsBookingConfirmed(true);
       setLoading(false);
-      setCurrentStep(4); 
-      logToDebugDiv("Reserva creada con éxito.");
+      setCurrentStep(4);
     } catch (error) {
+      console.error(error);
       setLoading(false);
-      setError("Error al enviar la reserva. Intenta nuevamente.");
-      logToDebugDiv(`Error al enviar la reserva: ${error}`);
+      showNotification({
+        title: "Error",
+        message: "Error al enviar la reserva. Intenta nuevamente.",
+        color: "red",
+        autoClose: 3000,
+      });
     }
   };
 
-  const renderStep = () => {
+  const renderStepContent = () => {
     switch (currentStep) {
       case 1:
         return (
@@ -182,28 +192,6 @@ const Booking = () => {
             setBookingData={setBookingData}
           />
         );
-      case 4:
-        return isBookingConfirmed ? (
-          <Notification
-            icon={<BsExclamationCircleFill />}
-            mt="md"
-            color="green"
-            title="Reserva confirmada"
-            radius="md"
-          >
-            Tu reserva ha sido realizada con éxito.
-          </Notification>
-        ) : (
-          <Notification
-            icon={<BsExclamationCircleFill />}
-            mt="md"
-            color="red"
-            title="Error"
-            radius="md"
-          >
-            {error || "Algo salió mal. Intenta nuevamente."}
-          </Notification>
-        );
       default:
         return null;
     }
@@ -214,8 +202,22 @@ const Booking = () => {
       <Paper shadow="md" p="lg" radius="lg" withBorder>
         <Title ta="center">Reserva en Línea</Title>
         <Divider my="xs" />
-        {renderStep()}
-        <Group justify="space-around" mt="xl">
+        <Stepper active={currentStep - 1} size="sm">
+          <Stepper.Step label="Servicio y Empleado" />
+          <Stepper.Step label="Fecha y Hora" />
+          <Stepper.Step label="Datos del Cliente" />
+          <Stepper.Completed>
+            <BookingCompleted
+              isBookingConfirmed={isBookingConfirmed}
+              bookingData={bookingData}
+              employees={employees}
+              services={services}
+            />
+          </Stepper.Completed>
+        </Stepper>
+        <Divider my="xs" />
+        {renderStepContent()}
+        <Group justify="space-between" mt="xl">
           {currentStep > 1 && currentStep < 4 && (
             <Button
               variant="outline"
@@ -225,10 +227,7 @@ const Booking = () => {
             </Button>
           )}
           {currentStep < 3 && (
-            <Button
-              onClick={() => setCurrentStep((prev) => prev + 1)}
-              disabled={currentStep === 3 && !isBookingConfirmed}
-            >
+            <Button onClick={handleNextStep} disabled={!canAdvance()}>
               Siguiente
             </Button>
           )}
@@ -236,7 +235,7 @@ const Booking = () => {
             <Button
               color="green"
               onClick={handleBooking}
-              disabled={loading}
+              disabled={loading || isSubmitDisabled()}
               leftSection={loading && <Loader size="xs" />}
             >
               {loading ? "Procesando..." : "Enviar Reserva"}

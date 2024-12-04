@@ -12,7 +12,6 @@ import OrganizationInfo from "../pages/account/OrganizationInfo";
 import EmployeeInfo from "../pages/account/EmployeeInfo";
 import DailyCashbox from "../pages/account/DailyCashbox";
 import Booking from "../pages/onlineReservation/Booking";
-import BookingTest from "../pages/BookingTest";
 
 const generalRoutes = [
   {
@@ -47,15 +46,6 @@ const generalRoutes = [
     component: Booking,
     MediaMetadata: {
       title: "Reserva en linea",
-      description: "Reserva con nosotros rápido y facíl.",
-      image: "/galaxia_glamour.png",
-    },
-  },
-  {
-    path: "/online-reservation-test",
-    component: BookingTest,
-    MediaMetadata: {
-      title: "Reserva en linea test",
       description: "Reserva con nosotros rápido y facíl.",
       image: "/galaxia_glamour.png",
     },

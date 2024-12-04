@@ -3,19 +3,11 @@ import { Stack, TextInput, Loader } from "@mantine/core";
 import { getClientByPhoneNumberAndOrganization } from "../../services/clientService";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-
-export interface BookingData {
-  serviceId: string | null;
-  employeeId: string | null;
-  date: Date | null;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-}
+import { Reservation } from "../../services/reservationService";
 
 interface StepCustomerDataProps {
-  bookingData: BookingData;
-  setBookingData: React.Dispatch<React.SetStateAction<BookingData>>;
+  bookingData: Partial<Reservation>;
+  setBookingData: React.Dispatch<React.SetStateAction<Partial<Reservation>>>;
 }
 
 const StepCustomerData: React.FC<StepCustomerDataProps> = ({
@@ -28,30 +20,47 @@ const StepCustomerData: React.FC<StepCustomerDataProps> = ({
     (state: RootState) => state.organization.organization
   );
 
-  const handleInputChange = (field: keyof BookingData, value: string) => {
-    setBookingData({ ...bookingData, [field]: value });
+  // Aseguramos que `customerDetails` tenga valores iniciales
+  const customerDetails = bookingData.customerDetails || {
+    name: "",
+    email: "",
+    phone: "",
+  };
+
+  const handleInputChange = (
+    field: keyof Reservation["customerDetails"],
+    value: string
+  ) => {
+    setBookingData({
+      ...bookingData,
+      customerDetails: {
+        ...customerDetails,
+        [field]: value,
+      },
+    });
   };
 
   const handlePhoneBlur = async () => {
-    if (
-      !bookingData.customerPhone ||
-      bookingData.customerPhone.trim().length < 10
-    )
-      return;
+    const phone = customerDetails.phone;
+    if (!phone || phone.trim().length < 10) return;
 
     setIsCheckingPhone(true);
 
     try {
       const client = await getClientByPhoneNumberAndOrganization(
-        bookingData.customerPhone.trim(),
+        phone.trim(),
         organization?._id as string
       );
 
       if (client) {
         setBookingData({
           ...bookingData,
-          customerName: client.name,
-          customerEmail: client.email || "",
+          customerDetails: {
+            ...customerDetails,
+            name: client.name || "",
+            email: client.email || "",
+            phone,
+          },
         });
       }
     } catch (error) {
@@ -67,9 +76,9 @@ const StepCustomerData: React.FC<StepCustomerDataProps> = ({
       <TextInput
         label="Teléfono"
         placeholder="Ingresa tu número de teléfono"
-        value={bookingData.customerPhone}
+        value={customerDetails.phone}
         onChange={(e) =>
-          handleInputChange("customerPhone", e.currentTarget.value)
+          handleInputChange("phone", e.currentTarget.value)
         }
         onBlur={handlePhoneBlur}
         rightSection={isCheckingPhone ? <Loader size="xs" /> : null}
@@ -79,9 +88,9 @@ const StepCustomerData: React.FC<StepCustomerDataProps> = ({
       <TextInput
         label="Nombre completo"
         placeholder="Ingresa tu nombre"
-        value={bookingData.customerName}
+        value={customerDetails.name}
         onChange={(e) =>
-          handleInputChange("customerName", e.currentTarget.value)
+          handleInputChange("name", e.currentTarget.value)
         }
         disabled={isCheckingPhone}
       />
@@ -91,9 +100,9 @@ const StepCustomerData: React.FC<StepCustomerDataProps> = ({
         label="Correo electrónico"
         placeholder="Ingresa tu correo"
         type="email"
-        value={bookingData.customerEmail}
+        value={customerDetails.email}
         onChange={(e) =>
-          handleInputChange("customerEmail", e.currentTarget.value)
+          handleInputChange("email", e.currentTarget.value)
         }
         disabled={isCheckingPhone}
       />

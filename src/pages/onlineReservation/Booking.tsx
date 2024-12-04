@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import {
   Container,
-  Paper,
   Title,
   Divider,
   Button,
@@ -199,50 +198,48 @@ const Booking = () => {
 
   return (
     <Container fluid>
-      <Paper shadow="md" p="lg" radius="lg" withBorder>
-        <Title ta="center">Reserva en Línea</Title>
-        <Divider my="xs" />
-        <Stepper active={currentStep - 1} size="sm">
-          <Stepper.Step label="Servicio y Empleado" />
-          <Stepper.Step label="Fecha y Hora" />
-          <Stepper.Step label="Datos del Cliente" />
-          <Stepper.Completed>
-            <BookingCompleted
-              isBookingConfirmed={isBookingConfirmed}
-              bookingData={bookingData}
-              employees={employees}
-              services={services}
-            />
-          </Stepper.Completed>
-        </Stepper>
-        <Divider my="xs" />
-        {renderStepContent()}
-        <Group justify="space-between" mt="xl">
-          {currentStep > 1 && currentStep < 4 && (
-            <Button
-              variant="outline"
-              onClick={() => setCurrentStep((prev) => prev - 1)}
-            >
-              Atrás
-            </Button>
-          )}
-          {currentStep < 3 && (
-            <Button onClick={handleNextStep} disabled={!canAdvance()}>
-              Siguiente
-            </Button>
-          )}
-          {currentStep === 3 && (
-            <Button
-              color="green"
-              onClick={handleBooking}
-              disabled={loading || isSubmitDisabled()}
-              leftSection={loading && <Loader size="xs" />}
-            >
-              {loading ? "Procesando..." : "Enviar Reserva"}
-            </Button>
-          )}
-        </Group>
-      </Paper>
+      <Title ta="center">Reserva en Línea</Title>
+      <Divider my="xs" />
+      <Stepper active={currentStep - 1} size="sm">
+        <Stepper.Step label="Servicio y Empleado" />
+        <Stepper.Step label="Fecha y Hora" />
+        <Stepper.Step label="Datos del Cliente" />
+        <Stepper.Completed>
+          <BookingCompleted
+            isBookingConfirmed={isBookingConfirmed}
+            bookingData={bookingData}
+            employees={employees}
+            services={services}
+          />
+        </Stepper.Completed>
+      </Stepper>
+      <Divider my="xs" />
+      {renderStepContent()}
+      <Group justify="space-between" my="xl">
+        {currentStep > 1 && currentStep < 4 && (
+          <Button
+            variant="outline"
+            onClick={() => setCurrentStep((prev) => prev - 1)}
+          >
+            Atrás
+          </Button>
+        )}
+        {currentStep < 3 && (
+          <Button onClick={handleNextStep} disabled={!canAdvance()}>
+            Siguiente
+          </Button>
+        )}
+        {currentStep === 3 && (
+          <Button
+            color="green"
+            onClick={handleBooking}
+            disabled={loading || isSubmitDisabled()}
+            leftSection={loading && <Loader size="xs" />}
+          >
+            {loading ? "Procesando..." : "Enviar Reserva"}
+          </Button>
+        )}
+      </Group>
     </Container>
   );
 };

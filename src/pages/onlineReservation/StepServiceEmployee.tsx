@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
   Stack,
   Select,
@@ -49,9 +48,6 @@ const StepServiceEmployee: React.FC<StepServiceEmployeeProps> = ({
     checked,
   }) => (
     <Group flex="1" gap="xs">
-      {/* Ignorar el error relacionado con `option.image` */}
-      {/* @ts-expect-error */}
-      <Avatar src={option.image || ""} radius="xl" />
       <Text>{option.label}</Text>
       {checked && (
         <Text c="green" style={{ marginInlineStart: "auto" }}>

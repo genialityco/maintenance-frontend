@@ -13,10 +13,20 @@ import EmployeeInfo from "../pages/account/EmployeeInfo";
 import DailyCashbox from "../pages/account/DailyCashbox";
 import Booking from "../pages/onlineReservation/Booking";
 import ReservationsList from "../pages/admin/manageReservation";
+import Home from "../pages/home";
 
 const generalRoutes = [
   {
     path: "/",
+    component: Home,
+    MediaMetadata: {
+      title: "Inicio",
+      description: "Inicio de página.",
+      image: "/galaxia_glamour.png",
+    },
+  },
+  {
+    path: "/search-client",
     component: SearchClient,
     MediaMetadata: {
       title: "Buscar Cliente",

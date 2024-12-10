@@ -1,187 +1,119 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
   Stack,
-  Badge,
-  Notification,
-  Grid,
-  Flex,
-  Text,
-  Card,
+  Select,
+  Avatar,
   Group,
-  Divider,
-  Button,
-  Loader,
+  Text,
+  Box,
+  Center,
+  SelectProps,
 } from "@mantine/core";
-import { DatePicker } from "@mantine/dates";
-import { BsExclamationCircle, BsClock } from "react-icons/bs";
-import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-import { fetchAppointmentsAndAvailableTimes } from "./bookingUtils";
-import { Appointment } from "../../services/appointmentService";
 import { Service } from "../../services/serviceService";
 import { Employee } from "../../services/employeeService";
 import { Reservation } from "../../services/reservationService";
-import { useState } from "react";
+import { filterEmployeesByService } from "./bookingUtils";
 
-dayjs.extend(customParseFormat);
-
-interface StepDateTimeProps {
-  bookingData: Partial<Reservation>;
-  setBookingData: React.Dispatch<React.SetStateAction<Partial<Reservation>>>;
-  availableTimes: string[];
-  setAvailableTimes: React.Dispatch<React.SetStateAction<string[]>>;
-  setAppointments: React.Dispatch<React.SetStateAction<Appointment[]>>;
+interface StepServiceEmployeeProps {
   services: Service[];
   employees: Employee[];
+  filteredEmployees: Employee[];
+  setFilteredEmployees: React.Dispatch<React.SetStateAction<Employee[]>>;
+  bookingData: Partial<Reservation>;
+  setBookingData: React.Dispatch<React.SetStateAction<Partial<Reservation>>>;
 }
 
-const StepDateTime: React.FC<StepDateTimeProps> = ({
-  bookingData,
-  setBookingData,
-  availableTimes,
-  setAvailableTimes,
-  setAppointments,
+const StepServiceEmployee: React.FC<StepServiceEmployeeProps> = ({
   services,
   employees,
+  filteredEmployees,
+  setFilteredEmployees,
+  bookingData,
+  setBookingData,
 }) => {
-  const [, setService] = useState<Service>();
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [isLoadingTimes, setIsLoadingTimes] = useState(false);
-
-  const handleDateSelection = async (date: Date) => {
-    setSelectedDate(date);
-    setShowConfirmation(false);
-    setIsLoadingTimes(true); // Mostrar estado de carga
-
-    const selectedService = services.find(
-      (s) => s._id === bookingData.serviceId
-    );
-
-    if (selectedService) {
-      setService(selectedService);
-      await fetchAppointmentsAndAvailableTimes(
-        bookingData.employeeId as string | null,
-        date,
-        selectedService.duration,
-        setAppointments,
-        setAvailableTimes,
-        employees
-      );
-    }
-
-    setIsLoadingTimes(false); // Ocultar estado de carga
+  const handleServiceSelection = (serviceId: string) => {
+    setBookingData({
+      ...bookingData,
+      serviceId,
+      employeeId: null,
+    });
+    setFilteredEmployees(filterEmployeesByService(employees, serviceId));
   };
 
-  const handleTimeSelection = (time: string) => {
-    if (!selectedDate) return;
-
-    // Combinar la fecha seleccionada con la hora seleccionada
-    const combinedDateTime = dayjs(
-      `${dayjs(selectedDate).format("YYYY-MM-DD")} ${time}`,
-      "YYYY-MM-DD h:mm A"
-    );
-
-    if (!combinedDateTime.isValid()) {
-      console.error("Fecha inválida:", combinedDateTime);
-      return;
-    }
-
-    setBookingData({ ...bookingData, startDate: combinedDateTime.toDate() });
-    setShowConfirmation(true);
+  const handleEmployeeSelection = (employeeId: string | null) => {
+    setBookingData({ ...bookingData, employeeId });
   };
+
+  const renderEmployeeOption: SelectProps["renderOption"] = ({
+    option,
+    checked,
+  }) => (
+    <Group flex="1" gap="xs">
+      {/* Ignorar el error relacionado con `option.image` */}
+      {/* @ts-expect-error */}
+      <Avatar src={option.image || ""} radius="xl" />
+      <Text>{option.label}</Text>
+      {checked && (
+        <Text c="green" style={{ marginInlineStart: "auto" }}>
+          ✔
+        </Text>
+      )}
+    </Group>
+  );
+
+  const selectedEmployee = filteredEmployees.find(
+    (employee) => employee._id === bookingData.employeeId
+  );
 
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Stack>
-        {/* Selección de Fecha */}
-        <Group align="center">
-          <Text size="lg" fw={600}>
-            Selecciona una Fecha
+    <Stack>
+      <Select
+        label="Selecciona un servicio"
+        placeholder="Elige un servicio"
+        data={services.map((service) => ({
+          value: service._id,
+          label: service.name,
+        }))}
+        value={bookingData.serviceId as string}
+        onChange={(value) => handleServiceSelection(value!)}
+      />
+      <Select
+        label="Selecciona un empleado"
+        placeholder="Elige un empleado o selecciona 'Sin preferencia'"
+        data={[
+          { value: "none", label: "Sin preferencia", image: "" },
+          ...filteredEmployees.map((employee) => ({
+            value: employee._id,
+            label: employee.names,
+            image: employee.profileImage || "",
+          })),
+        ]}
+        value={(bookingData.employeeId as string) || "none"}
+        disabled={!bookingData.serviceId}
+        onChange={(value) =>
+          handleEmployeeSelection(value === "none" ? null : value!)
+        }
+        searchable
+        renderOption={renderEmployeeOption}
+      />
+      {selectedEmployee && (
+        <Box
+          p="md"
+          style={{ border: "1px solid #e0e0e0", borderRadius: "8px" }}
+        >
+          <Center>
+            <Avatar src={selectedEmployee.profileImage} size="xl" radius="xl" />
+          </Center>
+          <Text ta="center" fw={500} size="lg" mt="sm">
+            {selectedEmployee.names}
           </Text>
-          <BsClock size={24} />
-        </Group>
-        <Divider />
-        <Flex justify="center">
-          <DatePicker
-            value={selectedDate}
-            onChange={(date) => date && handleDateSelection(date)}
-            minDate={new Date()}
-            size="sm"
-          />
-        </Flex>
-
-        <Divider />
-
-        {/* Horarios Disponibles */}
-        {isLoadingTimes ? (
-          <Flex justify="center" mt="md">
-            <Loader size="lg" />
-          </Flex>
-        ) : showConfirmation && bookingData.startDate ? (
-          // Mensaje de Confirmación
-          <Stack align="center" m="md">
-            <Text size="lg" ta="center">
-              Vas a agendar para el día{" "}
-              <strong>
-                {dayjs(bookingData.startDate).format(
-                  "DD [de] MMMM [a las] h:mm A"
-                )}
-              </strong>
-              .
-            </Text>
-            <Button
-              variant="subtle"
-              color="blue"
-              onClick={() => setShowConfirmation(false)}
-            >
-              Cambiar la hora
-            </Button>
-          </Stack>
-        ) : selectedDate && availableTimes.length > 0 ? (
-          // Horarios Disponibles
-          <Grid gutter="md">
-            {availableTimes.map((time) => (
-              <Grid.Col key={time} span={{ base: 6, sm: 4, md: 3 }}>
-                <Badge
-                  fullWidth
-                  variant={
-                    bookingData.startDate &&
-                    dayjs(bookingData.startDate).format("h:mm A") === time
-                      ? "filled"
-                      : "outline"
-                  }
-                  onClick={() => handleTimeSelection(time)}
-                  size="lg"
-                  style={{
-                    cursor: "pointer",
-                    textAlign: "center",
-                    padding: "10px",
-                  }}
-                >
-                  {time}
-                </Badge>
-              </Grid.Col>
-            ))}
-          </Grid>
-        ) : selectedDate && availableTimes.length === 0 ? (
-          // Mensaje de No Disponibilidad
-          <Notification
-            icon={<BsExclamationCircle />}
-            color="red"
-            title="No hay horarios disponibles"
-            radius="md"
-          >
-            Selecciona otro día o verifica la disponibilidad.
-          </Notification>
-        ) : (
-          // Mensaje Inicial
-          <Text ta="center" size="md" c="dimmed">
-            Selecciona una fecha para ver los horarios disponibles.
+          <Text ta="center" size="sm" color="dimmed">
+            {selectedEmployee.position || "Sin posición especificada"}
           </Text>
-        )}
-      </Stack>
-    </Card>
+        </Box>
+      )}
+    </Stack>
   );
 };
 
-export default StepDateTime;
+export default StepServiceEmployee;

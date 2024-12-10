@@ -13,7 +13,7 @@ import EmployeeInfo from "../pages/account/EmployeeInfo";
 import DailyCashbox from "../pages/account/DailyCashbox";
 import Booking from "../pages/onlineReservation/Booking";
 import ReservationsList from "../pages/admin/manageReservation";
-import Home from "../pages/home";
+import Home from "../pages/Home";
 
 const generalRoutes = [
   {

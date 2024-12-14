@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { GoogleMap, Marker } from "@react-google-maps/api";
-import { Text, Title, Container, Stack, Center, Button, Group } from "@mantine/core";
+import {
+  Text,
+  Title,
+  Container,
+  Stack,
+  Center,
+  Button,
+  Group,
+} from "@mantine/core";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { getOrganizationById } from "../../services/organizationService";
 import CustomLoader from "../../components/customLoader/CustomLoader";
-import { FaAndroid, FaApple, FaGoogle } from "react-icons/fa";
+import { FaAndroid, FaApple } from "react-icons/fa";
 
 const mapContainerStyle = {
   width: "100%",

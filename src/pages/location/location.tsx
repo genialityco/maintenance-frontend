@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { GoogleMap, Marker } from "@react-google-maps/api";
-import { Text, Title, Container, Stack, Center } from "@mantine/core";
+import { Text, Title, Container, Stack, Center, Button, Group } from "@mantine/core";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { getOrganizationById } from "../../services/organizationService";
 import CustomLoader from "../../components/customLoader/CustomLoader";
+import { FaAndroid, FaApple, FaGoogle } from "react-icons/fa";
 
 const mapContainerStyle = {
   width: "100%",
@@ -52,6 +53,18 @@ const Location: React.FC = () => {
     fetchOrganization();
   }, [organization]);
 
+  // Generar URL para Google Maps
+  const getGoogleMapsUrl = () => {
+    if (!location) return "#";
+    return `https://www.google.com/maps?q=${location.lat},${location.lng}`;
+  };
+
+  // Generar URL para Apple Maps
+  const getAppleMapsUrl = () => {
+    if (!location) return "#";
+    return `https://maps.apple.com/?q=${location.lat},${location.lng}`;
+  };
+
   if (loading) return <CustomLoader />;
 
   return (
@@ -72,6 +85,32 @@ const Location: React.FC = () => {
           <Center>
             <Text c="red">No se pudo cargar la ubicación</Text>
           </Center>
+        )}
+
+        {/* Botones para abrir en Google Maps y Apple Maps */}
+        {location && (
+          <Group justify="center" mt="md">
+            <Button
+              component="a"
+              href={getGoogleMapsUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outline"
+              leftSection={<FaAndroid />}
+            >
+              Abrir en Google Maps
+            </Button>
+            <Button
+              component="a"
+              href={getAppleMapsUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outline"
+              leftSection={<FaApple />}
+            >
+              Abrir en Apple Maps
+            </Button>
+          </Group>
         )}
       </Stack>
     </Container>

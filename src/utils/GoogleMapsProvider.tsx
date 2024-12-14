@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CustomLoader from "../components/customLoader/CustomLoader";
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyCfyDeozLToCQxweOsJDC7_-uHN6CpZ2p8";
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const GoogleMapsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,

@@ -14,6 +14,7 @@ import DailyCashbox from "../pages/account/DailyCashbox";
 import Booking from "../pages/onlineReservation/Booking";
 import ReservationsList from "../pages/admin/manageReservation";
 import Home from "../pages/Home";
+import Location from "../pages/location/location";
 
 const generalRoutes = [
   {
@@ -58,6 +59,15 @@ const generalRoutes = [
     MediaMetadata: {
       title: "Reserva en linea",
       description: "Reserva con nosotros rápido y facíl.",
+      image: "/galaxia_glamour.png",
+    },
+  },
+  {
+    path: "/location",
+    component: Location,
+    MediaMetadata: {
+      title: "Ubicación",
+      description: "Ubicación en google maps.",
       image: "/galaxia_glamour.png",
     },
   },

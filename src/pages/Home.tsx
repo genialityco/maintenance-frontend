@@ -1,14 +1,8 @@
-import {
-  Container,
-  Title,
-  Grid,
-  Button,
-  Group,
-  Text,
-} from "@mantine/core";
+import { Container, Title, Grid, Button, Group, Text } from "@mantine/core";
 import { BiCalendar } from "react-icons/bi";
 import { FaIdeal } from "react-icons/fa";
 import { GiPriceTag } from "react-icons/gi";
+import { GrLocation } from "react-icons/gr";
 import { Link } from "react-router-dom";
 
 const Home = () => {
@@ -28,6 +22,11 @@ const Home = () => {
       icon: <FaIdeal size={24} />,
       link: "/search-client",
     },
+    {
+      title: "Ubicación",
+      icon: <GrLocation size={24} />,
+      link: "location",
+    },
   ];
 
   return (
@@ -36,7 +35,8 @@ const Home = () => {
         ¡Holaaa! Bienvenido
       </Title>
       <Text ta="center" c="dimmed" mb="xl">
-        Estamos felices de tenerte aquí. Dale a tus uñas y pestañas el cuidado que merecen. 🌟
+        Estamos felices de tenerte aquí. Dale a tus uñas y pestañas el cuidado
+        que merecen. 🌟
       </Text>
 
       <Grid>

@@ -68,7 +68,7 @@ const SearchClient: React.FC = () => {
             })
           );
         }
-        navigate("/plan-viewer", { state: { client } });
+        navigate("/plan-viewer", { state: { client, organization: client.organizationId } });
       }
     } catch (error) {
       console.error("Error searching client:", error);

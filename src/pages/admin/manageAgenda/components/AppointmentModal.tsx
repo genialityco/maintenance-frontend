@@ -58,6 +58,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         ...appointment,
         startDate: new Date(appointment.startDate),
         endDate: new Date(appointment.endDate),
+        employee: appointment?.employee || newAppointment.employee,
       });
     }
   }, [appointment, setNewAppointment]);

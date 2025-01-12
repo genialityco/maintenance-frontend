@@ -65,7 +65,10 @@ const NotificationsMenu = () => {
 
     navigator.serviceWorker.addEventListener(
       "message",
-      handleServiceWorkerMessage
+      (event) => {
+        console.log("Mensaje recibido del Service Worker:", event.data);
+        handleServiceWorkerMessage(event);
+      }
     );
 
     // Cleanup the event listener on unmount

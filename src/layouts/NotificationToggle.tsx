@@ -76,7 +76,6 @@ const NotificationToggle = ({ userId }: NotificationToggleProps) => {
           },
           userId,
         });
-        console.log("Suscripción creada en el backend y navegador");
       }
 
       // Cambiar el estado del switch

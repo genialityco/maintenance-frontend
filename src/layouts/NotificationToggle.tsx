@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Switch, Text, Flex, Loader, Notification } from "@mantine/core";
+import { Switch, Text, Flex, Loader, Notification as Alert } from "@mantine/core";
 import {
   createSubscription,
   deleteSubscription,
@@ -51,28 +51,32 @@ const NotificationToggle = ({ userId }: NotificationToggleProps) => {
         if (subscription) {
           await subscription.unsubscribe();
           await deleteSubscription(subscription.endpoint, userId); // Llamar al backend para eliminar la suscripción
+          console.log("Suscripción eliminada del backend y navegador");
         }
       } else {
         // Habilitar notificaciones
-        const permission = await (Notification as unknown as typeof window.Notification).requestPermission();
-        if (permission === "granted") {
-          const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
-          });
-
-          // Enviar la suscripción al backend
-          await createSubscription({
-            endpoint: subscription.endpoint,
-            keys: {
-              p256dh: subscription.toJSON().keys?.p256dh ?? "",
-              auth: subscription.toJSON().keys?.auth ?? "",
-            },
-            userId,
-          });
-        } else {
-          throw new Error("Permiso de notificaciones denegado por el usuario.");
+        if (Notification.permission === "default") {
+          const permission = await Notification.requestPermission();
+          if (permission !== "granted") {
+            throw new Error("Permiso de notificaciones denegado por el usuario.");
+          }
         }
+
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+        });
+
+        // Enviar la suscripción al backend
+        await createSubscription({
+          endpoint: subscription.endpoint,
+          keys: {
+            p256dh: subscription.toJSON().keys?.p256dh ?? "",
+            auth: subscription.toJSON().keys?.auth ?? "",
+          },
+          userId,
+        });
+        console.log("Suscripción creada en el backend y navegador");
       }
 
       // Cambiar el estado del switch
@@ -104,13 +108,13 @@ const NotificationToggle = ({ userId }: NotificationToggleProps) => {
 
       {/* Mostrar error si ocurre */}
       {error && (
-        <Notification
+        <Alert
           color="red"
           onClose={() => setError(null)}
           withCloseButton
         >
           {error}
-        </Notification>
+        </Alert>
       )}
     </Flex>
   );

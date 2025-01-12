@@ -1,4 +1,4 @@
-import { Text, Box, Group, ActionIcon, Menu } from "@mantine/core";
+import { Text, Box, Group, ActionIcon, Menu, Flex } from "@mantine/core";
 import {
   FaFacebook,
   FaGlobe,
@@ -11,14 +11,18 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
 import { useMediaQuery } from "@mantine/hooks";
+import NotificationsMenu from "./NotificationsMenu";
 
 const Header = () => {
-  const isVerySmallScreen = useMediaQuery("(max-width: 346px)");
+  const isVerySmallScreen = useMediaQuery("(max-width: 390px)");
   const [menuOpened] = useState(false);
 
   const organization = useSelector(
     (state: RootState) => state.organization.organization
   );
+
+  const auth = useSelector((state: RootState) => state.auth);
+
   const { name, facebookUrl, instagramUrl, whatsappUrl, tiktokUrl } =
     organization || {};
 
@@ -31,20 +35,20 @@ const Header = () => {
       }}
     >
       <Group justify="space-between" px="sm" style={{ flexWrap: "wrap" }}>
-        <Text
-          size="xl"
-          fw={900}
-          variant="gradient"
-          gradient={{ from: "#FFD700", to: "#7928CA", deg: 182 }}
-          style={{
-            textShadow: "2px 2px 4px hsla(21, 72.60%, 58.40%, 0.50)",
-          }}
-        >
-          <Link to="/" style={{ textDecoration: "none", color: "white" }}>
-            {name}
-          </Link>
-        </Text>
-
+        <Flex gap="xs">
+          <Text
+            size="xl"
+            fw={900}
+            style={{
+              textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            <Link to="/" style={{ textDecoration: "none", color: "white" }}>
+              {name}
+            </Link>
+          </Text>
+          {auth.isAuthenticated && <NotificationsMenu />}
+        </Flex>
         <Group
           gap="xl"
           className="menu-links"

@@ -3,7 +3,7 @@ import { NavigationRoute, registerRoute } from "workbox-routing";
 import { createHandlerBoundToURL } from "workbox-precaching";
 import { CacheFirst } from "workbox-strategies";
 import { ExpirationPlugin } from "workbox-expiration";
-import { clientsClaim } from 'workbox-core';
+import { clientsClaim } from "workbox-core";
 
 self.skipWaiting();
 clientsClaim();
@@ -45,6 +45,18 @@ self.addEventListener("push", (event) => {
       icon: "/galaxia_glamour.png",
     })
   );
+
+  // Enviar un mensaje a los clientes abiertos
+  self.clients
+    .matchAll({ type: "window", includeUncontrolled: true })
+    .then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage({
+          type: "NEW_NOTIFICATION",
+          payload: data,
+        });
+      });
+    });
 });
 
 // Manejo de clic en las notificaciones

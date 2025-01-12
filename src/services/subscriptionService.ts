@@ -49,5 +49,3 @@ export const deleteSubscription = async (
     handleAxiosError(error, "Error al eliminar la suscripción de notificación");
   }
 };
-
-

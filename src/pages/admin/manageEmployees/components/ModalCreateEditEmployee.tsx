@@ -5,7 +5,6 @@ import {
   TextInput,
   Button,
   Flex,
-  MultiSelect,
   ActionIcon,
   Group,
   Image,
@@ -21,13 +20,11 @@ import { ColorInput } from "@mantine/core"; // <--- Agrega esta importación
 
 import { uploadImage } from "../../../../services/imageService"; 
 import { Employee } from "../../../../services/employeeService";
-import { Service } from "../../../../services/serviceService";
 
 interface ModalCreateEditEmployeeProps {
   isOpen: boolean;
   onClose: () => void;
   employee: Employee | null;
-  services: Service[];
   onSave: (employee: Employee) => void;
 }
 
@@ -35,7 +32,6 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
   isOpen,
   onClose,
   employee,
-  services,
   onSave,
 }) => {
   const [editingEmployee, setEditingEmployee] = useState<Employee>({
@@ -176,27 +172,6 @@ const ModalCreateEditEmployee: React.FC<ModalCreateEditEmployeeProps> = ({
               phoneNumber: e.currentTarget.value,
             })
           }
-        />
-
-        <MultiSelect
-          label="Servicios"
-          placeholder="Selecciona los servicios"
-          data={services.map((service) => ({
-            value: service._id,
-            label: service.name,
-          }))}
-          value={(editingEmployee.services || []).map((srv) => srv._id)}
-          onChange={(selectedServiceIds) => {
-            setEditingEmployee({
-              ...editingEmployee,
-              services: selectedServiceIds.map((id) => {
-                const found = services.find((srv) => srv._id === id);
-                return found!;
-              }),
-            });
-          }}
-          searchable
-          clearable
         />
 
         <TextInput

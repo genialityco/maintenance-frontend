@@ -11,9 +11,7 @@ import {
   Avatar,
 } from "@mantine/core";
 import { BsPencil, BsTrash } from "react-icons/bs";
-import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { Employee } from "../../../../services/employeeService";
-import { RiUserReceivedFill } from "react-icons/ri";
 import { FaUserCheck } from "react-icons/fa";
 
 interface EmployeeCardProps {
@@ -21,8 +19,6 @@ interface EmployeeCardProps {
   onEdit: (employee: Employee) => void;
   onDelete: (employeeId: string) => void;
   onActive: (employeeId: string) => void;
-  onViewDetails: (employee: Employee) => void;
-  onShowAdvanceModal: (employee: Employee) => void;
 }
 
 const EmployeeCard: React.FC<EmployeeCardProps> = ({
@@ -30,8 +26,6 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
   onEdit,
   onDelete,
   onActive,
-  onViewDetails,
-  onShowAdvanceModal,
 }) => (
   <Card
     shadow="md"
@@ -72,20 +66,6 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
       </Text>
       <Flex justify="flex-end" mt="sm">
         <ActionIcon.Group>
-          <ActionIcon
-            variant="gradient"
-            gradient={{ from: "purple", to: "pink", deg: 90 }}
-            onClick={() => onShowAdvanceModal(employee)}
-          >
-            <FaMoneyBillTransfer />
-          </ActionIcon>
-          <ActionIcon
-            variant="gradient"
-            gradient={{ from: "green", to: "cyan", deg: 90 }}
-            onClick={() => onViewDetails(employee)}
-          >
-            <RiUserReceivedFill />
-          </ActionIcon>
           <ActionIcon
             variant="gradient"
             gradient={{ from: "blue", to: "cyan", deg: 90 }}

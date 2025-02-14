@@ -14,19 +14,9 @@ const createAxiosInstance = (baseURL: string): AxiosInstance => {
 };
 
 // Crear instancias de Axios para diferentes partes de la API
-const apiClient: AxiosInstance = createAxiosInstance(`${API_BASE_URL}/clients`);
-const apiAppointment: AxiosInstance = createAxiosInstance(
-  `${API_BASE_URL}/appointments`
-);
-const apiService: AxiosInstance = createAxiosInstance(
-  `${API_BASE_URL}/services`
-);
 const apiImage: AxiosInstance = createAxiosInstance(`${API_BASE_URL}/image`);
 const apiEmployee: AxiosInstance = createAxiosInstance(
   `${API_BASE_URL}/employees`
-);
-const apiAdvance: AxiosInstance = createAxiosInstance(
-  `${API_BASE_URL}/advances`
 );
 const apiAuth: AxiosInstance = createAxiosInstance(`${API_BASE_URL}/login`);
 const apiOrganization: AxiosInstance = createAxiosInstance(
@@ -38,24 +28,20 @@ const apiSubscribe: AxiosInstance = createAxiosInstance(
 const apiCron: AxiosInstance = createAxiosInstance(
   `${API_BASE_URL}/cron`
 );
-const apiReservation: AxiosInstance = createAxiosInstance(
-  `${API_BASE_URL}/reservations`
-);
 const apiNotification: AxiosInstance = createAxiosInstance(
   `${API_BASE_URL}/notifications`
 );
+const apiMaintenanceRequest: AxiosInstance = createAxiosInstance(
+  `${API_BASE_URL}/maintenance-requests`
+);
 
 export {
-  apiClient,
-  apiAppointment,
-  apiService,
   apiImage,
   apiEmployee,
-  apiAdvance,
   apiAuth,
   apiOrganization,
   apiSubscribe,
   apiCron,
-  apiReservation,
-  apiNotification
+  apiNotification,
+  apiMaintenanceRequest
 };

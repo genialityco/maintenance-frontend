@@ -62,12 +62,12 @@ const Header = () => {
               to="/servicios-precios"
               style={{ textDecoration: "none", color: "white" }}
             >
-              Precios y servicios
+              Consultar solicitudes
             </Link>
           </Text>
           <Text c="white" fw={600}>
-            <Link to="/" style={{ textDecoration: "none", color: "white" }}>
-              Plan de fidelidad
+            <Link to="/maintenance-history" style={{ textDecoration: "none", color: "white" }}>
+              Historial de mantenimientos
             </Link>
           </Text>
         </Group>

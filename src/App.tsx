@@ -2,7 +2,6 @@
 import { AppShell, Burger, Flex, Select } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Analytics } from "@vercel/analytics/react";
 import "./App.css";
 import Header from "./layouts/Header";
 import Footer from "./layouts/Footer";
@@ -123,8 +122,6 @@ function App() {
 
   return (
     <Router>
-      <Analytics />
-
       <AppShell
         padding="md"
         navbar={{

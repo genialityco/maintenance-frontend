@@ -14,7 +14,7 @@ export const CustomLoader: MantineLoaderComponent = forwardRef<
   <Center style={{ height: "100vh", flexDirection: "column" }}>
     <Stack align="center" m="md">
       <Image
-        src="/galaxia_glamour.png"
+        src="/BUHO-OUTLINE.svg"
         alt="Galaxia Glamour Logo"
         className={classes.imageLoader}
         {...others}

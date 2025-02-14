@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { TextInput, Button, Text, Card, Flex, Checkbox, Loader } from "@mantine/core";
+import {
+  TextInput,
+  Button,
+  Text,
+  Card,
+  Flex,
+  Checkbox,
+  Loader,
+} from "@mantine/core";
 import colors from "../../theme/colores";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -29,7 +37,7 @@ const LoginAdmin: React.FC = () => {
   }, []);
 
   const handleLogin = async () => {
-    setIsLoading(true); 
+    setIsLoading(true);
     setError("");
     try {
       const data = await login(email, password);
@@ -45,7 +53,7 @@ const LoginAdmin: React.FC = () => {
             permissions: data.userPermissions,
           })
         );
-        navigation("/gestionar-agenda");
+        navigation("/");
 
         if (rememberMe) {
           localStorage.setItem("rememberedEmail", email);
@@ -59,7 +67,7 @@ const LoginAdmin: React.FC = () => {
       console.error("Error al iniciar sesión:", error);
       setError("Error al iniciar sesión. Intenta nuevamente.");
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -122,8 +130,8 @@ const LoginAdmin: React.FC = () => {
         <Button
           fullWidth
           onClick={handleLogin}
-          disabled={isLoading} 
-          leftSection={isLoading && <Loader size="xs" />} 
+          disabled={isLoading}
+          leftSection={isLoading && <Loader size="xs" />}
         >
           {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
         </Button>

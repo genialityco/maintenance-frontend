@@ -17,14 +17,8 @@ import {
   getEmployeesByOrganizationId,
 } from "../../../services/employeeService";
 import ModalCreateEdit from "./components/ModalCreateEditEmployee";
-import {
-  getServicesByOrganizationId,
-  Service,
-} from "../../../services/serviceService";
 import { Employee } from "../../../services/employeeService";
 import EmployeeCard from "./components/EmployeeCard";
-import EmployeeDetailsModal from "./components/EmployeeDetailsModal";
-import AdvanceModal from "./components/AdvanceModal";
 import { openConfirmModal } from "@mantine/modals";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
@@ -36,12 +30,6 @@ const AdminEmployees: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
-  const [services, setServices] = useState<Service[]>([]);
-  const [showEmployeeDetails, setShowEmployeeDetails] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
-    null
-  );
-  const [showAdvanceModal, setShowAdvanceModal] = useState(false);
   const [ isLoading, setIsLoading ] = useState(false);
 
   const organizationId = useSelector(
@@ -88,8 +76,6 @@ const AdminEmployees: React.FC = () => {
       if (!organizationId) {
         throw new Error("Organization ID is required");
       }
-      const servicesData = await getServicesByOrganizationId(organizationId);
-      setServices(servicesData);
     } catch (error) {
       console.error(error);
       showNotification({
@@ -250,13 +236,7 @@ const AdminEmployees: React.FC = () => {
 
   const handleEditEmployee = (employee: Employee) => {
     if (!employee.services) return;
-    const employeeWithServices = {
-      ...employee,
-      services: employee.services.map(
-        (service) => services.find((s) => s._id === service._id) as Service
-      ),
-    };
-    setEditingEmployee(employeeWithServices);
+    setEditingEmployee(employee);
     setIsModalOpen(true);
   };
 
@@ -302,24 +282,6 @@ const AdminEmployees: React.FC = () => {
     setEditingEmployee(null);
   };
 
-  const showEmployeeDetailsModal = (employee: Employee) => {
-    setShowEmployeeDetails(true);
-    setSelectedEmployee(employee);
-  };
-
-  const onCloseModalEmployeeDetails = () => {
-    setShowEmployeeDetails(false);
-  };
-
-  const handleShowAdvanceModal = (employee: Employee) => {
-    setShowAdvanceModal(true);
-    setSelectedEmployee(employee);
-  };
-
-  const onCloseAdvanceModal = () => {
-    setShowAdvanceModal(false);
-  };
-
   if( isLoading ) {
     return (
       <CustomLoader />
@@ -360,8 +322,6 @@ const AdminEmployees: React.FC = () => {
               onEdit={handleEditEmployee}
               onDelete={handleDeleteEmployee}
               onActive={handleActiveEmployee}
-              onViewDetails={showEmployeeDetailsModal}
-              onShowAdvanceModal={handleShowAdvanceModal}
             />
           </Grid.Col>
         ))}
@@ -371,20 +331,7 @@ const AdminEmployees: React.FC = () => {
         isOpen={isModalOpen}
         onClose={onCloseModal}
         employee={editingEmployee}
-        services={services}
         onSave={handleSaveEmployee}
-      />
-
-      <EmployeeDetailsModal
-        isOpen={showEmployeeDetails}
-        onClose={onCloseModalEmployeeDetails}
-        employee={selectedEmployee}
-      />
-
-      <AdvanceModal
-        isOpen={showAdvanceModal}
-        onClose={onCloseAdvanceModal}
-        employee={selectedEmployee}
       />
     </Container>
   );

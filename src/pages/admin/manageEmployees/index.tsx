@@ -235,7 +235,6 @@ const AdminEmployees: React.FC = () => {
   };
 
   const handleEditEmployee = (employee: Employee) => {
-    if (!employee.services) return;
     setEditingEmployee(employee);
     setIsModalOpen(true);
   };

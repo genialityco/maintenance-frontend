@@ -23,6 +23,7 @@ import CustomLoader from "../../../components/customLoader/CustomLoader";
 import { BiEdit, BiTrash, BiUserCircle } from "react-icons/bi";
 import dayjs from "dayjs";
 import MaintenanceForm from "../../../components/MaintenanceForm";
+import { usePermissions } from "../../../hooks/usePermissions";
 
 const ManageRequestMaintenance: React.FC = () => {
   const [requests, setRequests] = useState<MaintenanceRequest[]>([]);
@@ -35,6 +36,7 @@ const ManageRequestMaintenance: React.FC = () => {
   const [showEmployeeModal, setShowEmployeeModal] = useState<boolean>(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const { hasPermission } = usePermissions();
 
   useEffect(() => {
     fetchRequests();
@@ -113,6 +115,7 @@ const ManageRequestMaintenance: React.FC = () => {
         <Table striped highlightOnHover>
           <Table.Thead>
             <Table.Tr>
+              <Table.Th>Image</Table.Th>
               <Table.Th>Fecha de solicitud</Table.Th>
               <Table.Th>Ubicación</Table.Th>
               <Table.Th>Elemento</Table.Th>
@@ -125,6 +128,18 @@ const ManageRequestMaintenance: React.FC = () => {
           <Table.Tbody>
             {requests.map((request) => (
               <Table.Tr key={request._id}>
+                <Table.Td>
+                  <img
+                    src={request.photo || "/placeholder.jpg"} 
+                    alt="Miniatura"
+                    style={{
+                      width: 50,
+                      height: 50,
+                      objectFit: "cover",
+                      borderRadius: 5,
+                    }}
+                  />
+                </Table.Td>
                 <Table.Td>
                   {dayjs(request.createdAt).format("YYYY-MM-DD HH:mm:ss")}
                 </Table.Td>
@@ -159,12 +174,14 @@ const ManageRequestMaintenance: React.FC = () => {
                       <BiUserCircle size={18} />
                     </ActionIcon>
 
-                    <ActionIcon
-                      color="red"
-                      onClick={() => handleDelete(request._id)}
-                    >
-                      <BiTrash size={18} />
-                    </ActionIcon>
+                    {hasPermission("businessInformation:read") && (
+                      <ActionIcon
+                        color="red"
+                        onClick={() => handleDelete(request._id)}
+                      >
+                        <BiTrash size={18} />
+                      </ActionIcon>
+                    )}
 
                     <ActionIcon
                       color="yellow"

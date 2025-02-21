@@ -17,9 +17,14 @@ import { BiUpload } from "react-icons/bi";
 import { showNotification } from "@mantine/notifications";
 import { CreateMaintenanceRequestPayload } from "../services/maintenanceRequestService";
 import { uploadImage } from "../services/imageService";
+import dayjs from "dayjs";
 
 interface MaintenanceFormProps {
-  initialValues?: CreateMaintenanceRequestPayload;
+  initialValues?: CreateMaintenanceRequestPayload & {
+    assignedEmployee?: { names: string };
+    status?: string;
+    createdAt?: string;
+  };
   onSubmit: (values: CreateMaintenanceRequestPayload) => Promise<void>;
   isEditing?: boolean;
 }
@@ -66,7 +71,7 @@ const MaintenanceForm = ({
 
   const handleFileChange = async (file: File | null) => {
     if (!file) {
-      setPreview(isEditing && initialValues?.photo ? initialValues.photo : null); // Restaurar la imagen cargada si no se selecciona una nueva
+      setPreview(isEditing && initialValues?.photo ? initialValues.photo : null);
       form.setFieldValue("photo", initialValues?.photo || undefined);
       return;
     }
@@ -128,6 +133,26 @@ const MaintenanceForm = ({
         Describe el problema, selecciona la zona y adjunta una foto para
         ayudarnos a resolverlo rápidamente.
       </Text>
+
+      {/* Mostrar datos informativos en modo edición */}
+      {isEditing && (
+        <Container mb="md" p="sm" style={{ border: "1px solid #ddd", borderRadius: "5px" }}>
+          <Text fw={600}>Información de la Solicitud</Text>
+          <Text size="sm">
+            <strong>Empleado Asignado:</strong>{" "}
+            {initialValues?.assignedEmployee?.names || "Sin asignar"}
+          </Text>
+          <Text size="sm">
+            <strong>Estado:</strong> {initialValues?.status || "Desconocido"}
+          </Text>
+          <Text size="sm">
+            <strong>Fecha de Creación:</strong>{" "}
+            {initialValues?.createdAt
+              ? dayjs(initialValues.createdAt).format("YYYY-MM-DD HH:mm:ss")
+              : "Desconocida"}
+          </Text>
+        </Container>
+      )}
 
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Checkbox

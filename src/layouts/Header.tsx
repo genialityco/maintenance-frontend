@@ -1,4 +1,4 @@
-import { Text, Box, Group, ActionIcon, Menu, Flex } from "@mantine/core";
+import { Text, Box, Group, Flex, Avatar, ActionIcon, Menu } from "@mantine/core";
 import {
   FaFacebook,
   FaGlobe,
@@ -66,7 +66,10 @@ const Header = () => {
             </Link>
           </Text>
           <Text c="white" fw={600}>
-            <Link to="/maintenance-history" style={{ textDecoration: "none", color: "white" }}>
+            <Link
+              to="/maintenance-history"
+              style={{ textDecoration: "none", color: "white" }}
+            >
               Historial de mantenimientos
             </Link>
           </Text>
@@ -175,6 +178,15 @@ const Header = () => {
                 </ActionIcon>
               </a>
             )}
+          </Group>
+        )}
+
+        {auth.isAuthenticated && (
+          <Group>
+            <Text c="white" tt="capitalize">
+              {auth.role}
+            </Text>
+            <Avatar></Avatar>
           </Group>
         )}
       </Group>
